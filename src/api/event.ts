@@ -51,12 +51,19 @@ class LXL_Event<CB extends (...args: any[]) => void | false> {
 }
 
 export const LXL_Events = {
+    /** Valid 03-02-2022 19:21:40 */
     onPreJoin: new LXL_Event<(player: LXL_Player) => void | false>(),
+    /** Valid 03-02-2022 19:21:45 */
     onJoin: new LXL_Event<(player: LXL_Player) => void>(),
+    /** Valid 03-02-2022 19:21:53 */
     onLeft: new LXL_Event<(player: LXL_Player) => void>(),
+    /** Valid 03-02-2022 19:22:14 */
     onRespawn: new LXL_Event<(player: LXL_Player) => void>(),
+    /** Valid 03-02-2022 19:22:08 */
     onChat: new LXL_Event<(player: LXL_Player, msg: string) => void | false>(),
+    /** Valid 03-02-2022 19:22:27 */
     onChangeDim: new LXL_Event<(player: LXL_Player, dimid: number) => void>(),
+    /** Valid 03-02-2022 19:22:22 */
     onJump: new LXL_Event<(player: LXL_Player) => void>(),
     onSneak: new LXL_Event<(player: LXL_Player, isSneaking: boolean) => void>(),
     onAttackEntity: new LXL_Event<(player: LXL_Player, entity: LXL_Entity) => void | false>(),
@@ -70,15 +77,19 @@ export const LXL_Events = {
     onEffectUpdated: new LXL_Event<(player: LXL_Player, effectName: string) => void | false>(),
     onStartDestroyBlock: new LXL_Event<(player: LXL_Player, block: LXL_Block) => void>(),
     onPlaceBlock: new LXL_Event<(player: LXL_Player, block: LXL_Block) => void | false>(),
+    /** Valid 03-02-2022 19:21:02 */
     onOpenContainer: new LXL_Event<(player: LXL_Player, block: LXL_Block) => void | false>(),
     onCloseContainer: new LXL_Event<(player: LXL_Player, block: LXL_Block) => void>(),
     onInventoryChange: new LXL_Event<(player: LXL_Player, slotNum: number, oldItem: LXL_Item, newItem: LXL_Item) => void>(),
+    /** Valid 03-02-2022 19:21:18 */
     onMove: new LXL_Event<(player: LXL_Player, pos: FloatPos) => void>(),
     onChangeSprinting: new LXL_Event<(player: LXL_Player, sprinting: boolean) => void>(),
     onSetArmor: new LXL_Event<(player: LXL_Player, slotNum: number, item: LXL_Item) => void>(),
     onUseRespawnAnchor: new LXL_Event<(player: LXL_Player, pos: IntPos) => void | false>(),
     onOpenContainerScreen: new LXL_Event<(player: LXL_Player) => void | false>(),
+    /** Valid 03-02-2022 19:22:45 */
     onPlayerCmd: new LXL_Event<(player: LXL_Player, cmd: string) => void | false>(),
+    /** Valid 03-02-2022 19:22:50 */
     onConsoleCmd: new LXL_Event<(cmd: string) => void | false>(),
     onCmdBlockExecute: new LXL_Event<(cmd: string, pos: IntPos, isMinecart: boolean) => void | false>(),
     onBlockInteracted: new LXL_Event<(player: LXL_Player, block: LXL_Block) => void | false>(),
@@ -92,6 +103,7 @@ export const LXL_Events = {
     onHopperPushOut: new LXL_Event<(pos: FloatPos) => void | false>(),
     onPistonTryPush: new LXL_Event<(pistonPos: IntPos, block: LXL_Block) => void | false>(),
     onPistonPush: new LXL_Event<(pistonPos: IntPos, block: LXL_Block) => void>(),
+    /** Valid 03-02-2022 19:24:55 */
     onFarmLandDecay: new LXL_Event<(pos: IntPos, entity: LXL_Entity) => void | false>(),
     onUseFrameBlock: new LXL_Event<(player: LXL_Player, block: LXL_Block) => void | false>(),
     onLiquidFlow: new LXL_Event<(from: LXL_Block, to: IntPos) => void | false>(),
@@ -103,6 +115,7 @@ export const LXL_Events = {
     onMobDie: new LXL_Event<(mob: LXL_Entity, source: LXL_Entity | null) => void>(),
     onEntityExplode: new LXL_Event<(source: LXL_Entity, pos: FloatPos, radius: number, maxResistance: number, isDestroy: boolean, isFire: boolean) => void | false>(),
     onBlockExplode: new LXL_Event<(source: LXL_Block, pos: FloatPos, radius: number, maxResistance: number, isDestroy: boolean, isFire: boolean) => void | false>(),
+    /** Valid 03-02-2022 18:54:11 */
     onProjectileHitEntity: new LXL_Event<(entity: LXL_Entity, source: LXL_Entity) => void>(),
     onWitherBossDestroy: new LXL_Event<(witherBoss: LXL_Entity, AAbb: IntPos, aaBB: IntPos) => void | false>(),
     onRide: new LXL_Event<(entity1: LXL_Entity, entity2: LXL_Entity) => void | false>(),
@@ -111,8 +124,11 @@ export const LXL_Events = {
     onNpcCmd: new LXL_Event<(npc: LXL_Entity, pl: LXL_Player, cmd: string) => void | false>(),
     onChangeArmorStand: new LXL_Event<(as: LXL_Entity, pl: LXL_Player, slot: number) => void | false>(),
     onScoreChanged: new LXL_Event<(player: LXL_Player, num: number, name: string, disName: string) => void>(),
+    /** 03-02-2022 19:23:42 */
     onServerStarted: new LXL_Event<() => void>(),
+    /** 03-02-2022 19:23:49 */
     onConsoleOutput: new LXL_Event<(cmd: string) => void | false>(),
+    /** Valid 03-02-2022 19:21:26 */
     onTick: new LXL_Event<() => void>(),
 
     onMoneyAdd: new LXL_Event<(xuid: string, money: number) => void | false>(),
@@ -124,8 +140,8 @@ export const LXL_Events = {
 };
 (LXL_Events as any).onAttack = LXL_Events.onAttackEntity;
 (LXL_Events as any).onExplode = LXL_Events.onEntityExplode;
-// (LXL_Events as any).onRespawnAnchorExplode = bruh
-// (LXL_Events as any).onBedExplode = bruh
+(LXL_Events as any).onRespawnAnchorExplode = new LXL_Event<() => void | false>();
+(LXL_Events as any).onBedExplode = new LXL_Event<() => void | false>();
 
 export function listen<E extends keyof typeof LXL_Events>(event: E, callback: (typeof LXL_Events[E])["listeners"][number]) {
     if (!LXL_Events[event]) {

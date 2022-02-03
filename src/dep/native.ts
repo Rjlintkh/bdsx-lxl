@@ -1,4 +1,4 @@
-import { Actor, Actor as _Actor, ActorDamageCause, ActorDamageSource as _ActorDamageSource, DimensionId } from "bdsx/bds/actor";
+import { Actor, Actor as _Actor, ActorDamageCause, ActorDamageSource, DimensionId } from "bdsx/bds/actor";
 import { Block as _Block, BlockActor as _BlockActor, BlockLegacy as _BlockLegacy, BlockSource, BlockSource as _BlockSource } from "bdsx/bds/block";
 import { BlockPos as _BlockPos, Facing, Vec3, Vec3 as _Vec3 } from "bdsx/bds/blockpos";
 import { CommandPermissionLevel } from "bdsx/bds/command";
@@ -29,8 +29,6 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?getArmorContainer@Actor@@QEAAAEAVSimpleContainer@@XZ",
     "?getBlockPosCurrentlyStandingOn@Actor@@QEBA?AVBlockPos@@PEAV1@@Z",
     "?isInWater@Actor@@UEBA_NXZ",
-    // ActorDamageCause
-    "??0ActorDamageSource@@QEAA@W4ActorDamageCause@@@Z",
     // ActorEventCoordinator
     "?sendActorSneakChanged@ActorEventCoordinator@@QEAAXAEAVActor@@_N@Z",
     // BarrelBlockActor
@@ -233,9 +231,6 @@ export namespace MCAPI {
         @nativeField(bool_t)
         empty: bool_t;
     }
-    export namespace ActorDamageSource {
-        export const ActorDamageSource: (thiz: _ActorDamageSource, cause: ActorDamageCause) => _ActorDamageSource = symcall("??0ActorDamageSource@@QEAA@W4ActorDamageCause@@@Z", _ActorDamageSource, null, _ActorDamageSource, int32_t);
-    }
     export namespace Actor {
         export const _sendDirtyActorData: (thiz: _Actor) => void = symcall("?_sendDirtyActorData@Actor@@QEAAXXZ", void_t, null, _Actor);
         export const getArmorContainer: (thiz: _Actor) => SimpleContainer = symcall("?getArmorContainer@Actor@@QEAAAEAVSimpleContainer@@XZ", SimpleContainer, null, _Actor);
@@ -356,7 +351,7 @@ export namespace MCAPI {
         export const spawnParticleEffect: (thiz: _Level, effectName: string, spawnLocation: Vec3, dimension: Dimension) => void = symcall("?spawnParticleEffect@Level@@UEAAXAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVVec3@@PEAVDimension@@@Z", void_t, null, _Level, CxxString, Vec3, Dimension);
     }
     export namespace Mob {
-        export const _hurt: (thiz: _Actor, source: _ActorDamageSource, damage: number, knock: boolean, ignite: boolean) => boolean = symcall("?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z", bool_t, null, _Actor, _ActorDamageSource, int32_t, bool_t, bool_t);
+        export const _hurt: (thiz: _Actor, source: ActorDamageSource, damage: number, knock: boolean, ignite: boolean) => boolean = symcall("?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z", bool_t, null, _Actor, ActorDamageSource, int32_t, bool_t, bool_t);
         export const getSpeed: (thiz: _Actor) => number = symcall("?getSpeed@Mob@@UEBAMXZ", float32_t, null, _Actor);
         export const isSprinting: (thiz: _Actor) => boolean = symcall("?isSprinting@Mob@@QEBA_NXZ", bool_t, null, _Actor);
         export const sendArmorSlot: (thiz: _Actor, slot: ArmorSlot) => void = symcall("?sendArmorSlot@Mob@@QEAAXW4ArmorSlot@@@Z", void_t, null, _Actor, uint32_t);
@@ -440,7 +435,7 @@ export namespace LIAPI {
             }
         }
         export function hurtEntity(thiz: _Actor, damage: number) {
-            let ad = MCAPI.ActorDamageSource.ActorDamageSource(new _ActorDamageSource(true), ActorDamageCause.Void);
+            let ad = ActorDamageSource.constructWith(ActorDamageCause.Void);
             return MCAPI.Mob._hurt(thiz, ad, damage, true, false);
         }
         export function isOnGround(thiz: _Actor) {
