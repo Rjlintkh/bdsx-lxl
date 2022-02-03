@@ -101,6 +101,13 @@ We aim to be consistent with the features of LXL, even with the bugs it has. How
     - [ ] [锁箱子-全UI界面,高性能数据库,多类型](https://www.minebbs.com/resources/ui.2935/)
         - Uses `KVDataBase`
 
+#### Usage
+1. Download `bdsx-lxl.zip` from the [latest release](https://github.com/Rjlintkh/bdsx-lxl/releases/latest) and extract it to `your_bdsx_folder/plugins` so that there is a folder named `your_bdsx_folder/plugins/bdsx-lxl`.
+2. Create a folder `your_bdsx_folder/bedrock_server/plugins` and put all the LXL `.js` plugins inside.
+OR
+Copy all content or create a junction from `your_lxl_folder/plugins` to `your_bdsx_folder/bedrock_server/plugins` if you have previously worked on LXL.
+1. Start the server from `your_bdsx_folder/bdsx.bat`.
+
 #### Disclaimers
 - In order to use this project, you must follow the terms of EULA and LXL.
 - This project is not affiliated to LXL, but it imitates the functionalities of LXL. No code is directly copied, but the logic of codes are kept for the purpose of loading plugins.
