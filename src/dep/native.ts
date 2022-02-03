@@ -102,6 +102,8 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     // GameMode
     "?baseUseItem@GameMode@@QEAA_NAEAVItemStack@@@Z",
     "?useItemOn@GameMode@@UEAA_NAEAVItemStack@@AEBVBlockPos@@EAEBVVec3@@PEBVBlock@@@Z",
+    // HitResult
+    "?getEntity@HitResult@@QEBAPEAVActor@@XZ",
     // Hopper
     "?_pushOutItems@Hopper@@IEAA_NAEAVBlockSource@@AEAVContainer@@AEBVVec3@@H@Z",
     "?_tryPullInItemsFromAboveContainer@Hopper@@IEAA_NAEAVBlockSource@@AEAVContainer@@AEBVVec3@@@Z",
@@ -320,6 +322,9 @@ export namespace MCAPI {
     }
     export namespace Facing {
         export const convertYRotationToFacingDirection: (yRotation: number) => number = symcall("?convertYRotationToFacingDirection@Facing@@SAEM@Z", uint8_t, null, float32_t);
+    }
+    export namespace HitResult {
+        export const getEntity: (thiz: StaticPointer) => _Actor = symcall("?getEntity@HitResult@@QEBAPEAVActor@@XZ", _Actor.ref(), null, StaticPointer);
     }
     export namespace Item {
         const $getSerializedName = symcall("?getSerializedName@Item@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", CxxStringWith8Bytes, null, _Item, CxxStringWith8Bytes);

@@ -1111,8 +1111,8 @@ events.entityDie.on(event => {
     const original = symhook("?onHit@ProjectileComponent@@QEAAXAEAVActor@@AEBVHitResult@@@Z",
     void_t, null, ProjectileComponent, Actor, StaticPointer)
     ((thiz, owner, res) => {
-        const to = daccess(res, Actor.ref(), 0x38);
-        if (to.isNotNull()) {
+        const to = MCAPI.HitResult.getEntity(res);
+        if (to?.isNotNull()) {
             const cancelled = LXL_Events.onProjectileHitEntity.fire(Entity$newEntity(to), Entity$newEntity(owner));
             _tickCallback();
         }

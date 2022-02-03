@@ -1,6 +1,6 @@
 {
   "name": "@bdsx/bdsx-lxl",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "LiteXLoader ported into BDSX",
   "main": "index.js",
   "keywords": [],
@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/ini": "^1.3.31",
-    "bdsx": "file:../../bdsx"
+    "bdsx": "file:../bdsx"
   },
   "dependencies": {
     "ini": "^2.0.0",
