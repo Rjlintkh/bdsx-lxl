@@ -31,7 +31,7 @@ We aim to be consistent with the features of LXL, even with the bugs it has. How
         - [ ] [🎈 Entity](https://lxl.litebds.com/#/zh_CN/Development/EventAPI/EntityEvents)
             - `onNpcCmd` is not yet implemented
         - [x] [📦 Block](https://lxl.litebds.com/#/zh_CN/Development/EventAPI/BlockEvents)
-        - [ ] `onBedExplode` (deprecated) and `onRespawnAnchorExplode` (deprecated) will not be implemented
+            - `onBedExplode` (deprecated) and `onRespawnAnchorExplode` (deprecated) will not be implemented
         - [x] [💰 Economy](https://lxl.litebds.com/#/zh_CN/Development/EventAPI/EconomicEvents)
         - [x] [🔊 Misc](https://lxl.litebds.com/#/zh_CN/Development/EventAPI/OtherEvents)
     - NBT
