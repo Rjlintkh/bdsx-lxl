@@ -1,9 +1,11 @@
 import { MinecraftPacketIds } from "bdsx/bds/packetids";
 import { events } from "bdsx/event";
+import fs = require("fs");
 import path = require("path");
 
 const sqlite = new (require("sqlite-sync").constructor);
 
+fs.mkdirSync("./plugins/LiteLoader", { recursive: true });
 export const playerDB = sqlite.connect(path.join(process.cwd(), "./plugins/LiteLoader/PlayerDB.db"));
 playerDB.run(
     `CREATE TABLE IF NOT EXISTS player (

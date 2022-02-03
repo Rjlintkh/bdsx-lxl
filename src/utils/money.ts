@@ -1,10 +1,12 @@
 import { events } from "bdsx/event";
 import { bedrockServer } from "bdsx/launcher";
 import { LXL_Events } from "../api/event";
+import fs = require("fs");
 import path = require("path");
 
 const sqlite = new (require("sqlite-sync").constructor);
 
+fs.mkdirSync("./plugins/LLMoney/", { recursive: true });
 const db = sqlite.connect(path.join(process.cwd(), "./plugins/LLMoney/economy.db"));
 
 db.exec = function (sql: string, params?: string[]) {
