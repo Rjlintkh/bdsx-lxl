@@ -6,12 +6,12 @@ import { regConsoleCmd, regPlayerCmd, unregConsoleCmd, unregPlayerCmd } from "./
 import { listen } from "./api/event";
 import { Player$newPlayer } from "./api/player";
 import { LXL_DEPENDS_DIR } from "./constants";
+import { requestSync } from "./dep/sync";
 import { iniConf } from "./loader";
 import fs = require("fs");
 import path = require("path");
 import vm = require("vm");
 import ts = require("typescript");
-var request = require("sync-request");
 
 export class LXLPlugin {
     isLoaded = false;
@@ -103,14 +103,14 @@ export class LXLPlugin {
                     }
 
                     let status = 0;
-                    const result = request("GET", remotePath);
+                    const result = requestSync(remotePath);
                     if (result.statusCode !== 200) {
                         logger.error(`${thisName} - 插件依赖包拉取网络请求失败！错误码：${result.statusCode}`);
                         return false;
                     }
                     try {
                         const downloadPath = path.join(process.cwd(), LXL_DEPENDS_DIR, filepath);
-                        fs.writeFileSync(downloadPath, result.getBody("utf8"));
+                        fs.writeFileSync(downloadPath, result.body);
 
                         const plugin = new LXLPlugin(filepath);
                         plugin.load();
@@ -157,6 +157,7 @@ export class LXLPlugin {
                 };
             }
             (this.ctx as any).console = console;
+            (this.ctx as any).requestSync = requestSync;
             vm.runInContext(fs.readFileSync(path.join(__dirname, "./dep/polyfill.js"), "utf8"), this.ctx);
             this.isLoaded = true;
             if (this.pluginName !== "" && !virtual) {
