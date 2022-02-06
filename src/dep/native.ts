@@ -1,7 +1,7 @@
 import { Actor, Actor as _Actor, ActorDamageCause, ActorDamageSource, DimensionId } from "bdsx/bds/actor";
 import { Block as _Block, BlockActor as _BlockActor, BlockLegacy as _BlockLegacy, BlockSource, BlockSource as _BlockSource } from "bdsx/bds/block";
 import { BlockPos as _BlockPos, Facing, Vec3, Vec3 as _Vec3 } from "bdsx/bds/blockpos";
-import { CommandPermissionLevel } from "bdsx/bds/command";
+import { Command, CommandPermissionLevel } from "bdsx/bds/command";
 import { CommandOrigin as _CommandOrigin, ServerCommandOrigin as _ServerCommandOrigin } from "bdsx/bds/commandorigin";
 import { Dimension } from "bdsx/bds/dimension";
 import { MobEffectInstance as _MobEffectInstance } from "bdsx/bds/effects";
@@ -15,9 +15,10 @@ import { Player as _Player, ServerPlayer, ServerPlayer as _ServerPlayer } from "
 import { DisplaySlot, Objective, ObjectiveSortOrder, Scoreboard as _Scoreboard, ScoreboardId as _ScoreboardId } from "bdsx/bds/scoreboard";
 import { serverInstance } from "bdsx/bds/server";
 import { pdb, StaticPointer, VoidPointer } from "bdsx/core";
+import { CxxVector } from "bdsx/cxxvector";
 import { makefunc, ParamType } from "bdsx/makefunc";
 import { nativeClass, NativeClass, nativeField } from "bdsx/nativeclass";
-import { bool_t, CxxString, CxxStringWith8Bytes, float32_t, int16_t, int32_t, NativeType, uint16_t, uint32_t, uint8_t, void_t } from "bdsx/nativetype";
+import { bool_t, CxxString, CxxStringWith8Bytes, float32_t, int16_t, int32_t, NativeType, uint16_t, uint32_t, uint64_as_float_t, uint8_t, void_t } from "bdsx/nativetype";
 import { ProcHacker } from "bdsx/prochacker";
 import { logger, TODO } from "../api/api_help";
 import path = require("path");
@@ -132,6 +133,8 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?kill@Mob@@UEAAXXZ",
     // MobEffectInstance
     "?getComponentName@MobEffectInstance@@QEBAAEBVHashedString@@XZ",
+    // NpcActionsContainer
+    "?getActionAt@NpcActionsContainer@@QEAAPEAVNpcAction@@_K@Z",
     // NpcComponent
     "?executeCommandAction@NpcComponent@@QEAAXAEAVActor@@AEBVPlayer@@HAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     // NpcSceneDialogueData
@@ -380,9 +383,59 @@ export namespace MCAPI {
     export namespace MobEffectInstance {
         export const getComponentName: (thiz: _MobEffectInstance) => HashedString = symcall("?getComponentName@MobEffectInstance@@QEBAAEBVHashedString@@XZ", HashedString, null, _MobEffectInstance);
     }
+    @nativeClass(null)
+    export class NpcAction extends NativeClass {
+        @nativeField(VoidPointer)
+        vftable: VoidPointer;
+        @nativeField(uint8_t)
+        mType: NpcActionType;
+        @nativeField(uint8_t)
+        mMode: NpcActionMode;
+        @nativeField(CxxString)
+        mButtonName: CxxString;
+        @nativeField(CxxString)
+        mEvaluatedButtonName: CxxString;
+        @nativeField(CxxString)
+        mText: CxxString;
+        @nativeField(CxxString)
+        mEvaluatedText: CxxString;
+    }
+    export enum NpcActionType {
+        UrlAction,
+        CommandAction,
+        InvalidAction,
+    }
+    export enum NpcActionMode {
+        Button,
+        OnClose,
+    }
+    export namespace NpcActionsContainer {
+        export const getActionAt: (thiz: StaticPointer, index: uint64_as_float_t) => NpcAction = symcall("?getActionAt@NpcActionsContainer@@QEAAPEAVNpcAction@@_K@Z", NpcAction, null, StaticPointer, uint64_as_float_t);
+    }
+    @nativeClass(0x30)
+    class NpcCommandAction$SavedCommand extends NativeClass {
+        @nativeField(CxxString)
+        mCommandLine: CxxString;
+        @nativeField(Command.ref())
+        mCommand: Command;
+        @nativeField(int32_t)
+        mVersion: int32_t;
+    }
+    @nativeClass(null)
+    export class NpcCommandAction extends NativeClass {
+        @nativeField(CxxVector.make(NpcCommandAction$SavedCommand), 0x98)
+        mCommands: CxxVector<NpcCommandAction.SavedCommand>;
+    }
+    export namespace NpcCommandAction {
+        export const SavedCommand = NpcCommandAction$SavedCommand;
+        export type SavedCommand = NpcCommandAction$SavedCommand;
+    }
+    @nativeClass(0x38)
+    export class NpcSceneDialogueData extends NativeClass {
+    }
     export namespace NpcSceneDialogueData {
-        export const NpcSceneDialogueData: (component: StaticPointer, npc: Actor, data: string) => void = symcall("??0NpcSceneDialogueData@@QEAA@AEAVNpcComponent@@AEAVActor@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z", void_t, null, StaticPointer, _Actor, CxxString);
-        export const getActionsContainer: (thiz: StaticPointer) => StaticPointer = symcall("?getActionsContainer@NpcSceneDialogueData@@UEAAAEAUNpcActionsContainer@@XZ", StaticPointer, null, StaticPointer);
+        export const NpcSceneDialogueData: (thiz: NpcSceneDialogueData, component: StaticPointer, npc: Actor, data: string) => void = symcall("??0NpcSceneDialogueData@@QEAA@AEAVNpcComponent@@AEAVActor@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z", void_t, null, MCAPI.NpcSceneDialogueData, StaticPointer, _Actor, CxxString);
+        export const getActionsContainer: (thiz: NpcSceneDialogueData) => StaticPointer = symcall("?getActionsContainer@NpcSceneDialogueData@@UEAAAEAUNpcActionsContainer@@XZ", StaticPointer, null, MCAPI.NpcSceneDialogueData);
     }
     export namespace OnFireSystem {
         export const setOnFire: (target: _Actor, seconds: number) => void = symcall("?setOnFire@OnFireSystem@@SAXAEAVActor@@H@Z", void_t, null, _Actor, int32_t);

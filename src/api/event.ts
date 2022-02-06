@@ -13,11 +13,12 @@ import { RespawnPacket, TextPacket } from "bdsx/bds/packets";
 import { Player, ServerPlayer } from "bdsx/bds/player";
 import { Objective, Scoreboard, ScoreboardId } from "bdsx/bds/scoreboard";
 import { serverInstance } from "bdsx/bds/server";
+import { capi } from "bdsx/capi";
 import { CANCEL } from "bdsx/common";
 import { StaticPointer } from "bdsx/core";
 import { events } from "bdsx/event";
 import { bedrockServer } from "bdsx/launcher";
-import { bool_t, float32_t, int32_t, uint16_t, uint32_t, uint8_t, void_t } from "bdsx/nativetype";
+import { bool_t, CxxString, float32_t, int32_t, uint16_t, uint32_t, uint8_t, void_t } from "bdsx/nativetype";
 import { Wrapper } from "bdsx/pointer";
 import { _tickCallback } from "bdsx/util";
 import { daccess, LIAPI, MCAPI, symhook } from "../dep/native";
@@ -1207,16 +1208,29 @@ events.entityDie.on(event => {
 }
 
 ////////////// NpcCmd //////////////
-// {
-//     const original = symhook("?executeCommandAction@NpcComponent@@QEAAXAEAVActor@@AEBVPlayer@@HAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
-//     void_t, null, StaticPointer, Actor, Player, int32_t, CxxString)
-//     ((thiz, npc, owner, actionIndex, data) => {
-//         const container = MCAPI.NpcSceneDialogueData.getActionsContainer(MCAPI.NpcSceneDialogueData.NpcSceneDialogueData())
-//         const cancelled = LXLEvents.onNpcCmd.fire(Entity$newEntity(entity), Block$newBlock(pos, entity.getDimensionId()));
-//         _tickCallback();
-//         return original(thiz, region, pos, entity);
-//     });
-// }
+{
+    const original = symhook("?executeCommandAction@NpcComponent@@QEAAXAEAVActor@@AEBVPlayer@@HAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+    void_t, null, StaticPointer, Actor, Player, int32_t, CxxString)
+    ((thiz, owner, player, actionIndex, sceneName) => {
+        const data = MCAPI.NpcSceneDialogueData.allocate();
+        MCAPI.NpcSceneDialogueData.NpcSceneDialogueData(data, thiz, owner, sceneName);
+        const container = MCAPI.NpcSceneDialogueData.getActionsContainer(data);
+        const actionAt = MCAPI.NpcActionsContainer.getActionAt(container, actionIndex);
+        if (actionAt?.isNotNull() && actionAt.mType === MCAPI.NpcActionType.CommandAction) {
+            const str = actionAt.as(MCAPI.NpcCommandAction).mCommands.get(0)?.mCommandLine;
+            if (str) {
+                const cancelled = LXL_Events.onNpcCmd.fire(Entity$newEntity(owner), Player$newPlayer(<ServerPlayer>player), str);
+                _tickCallback();
+                if (cancelled) {
+                    return;
+                }
+            }
+        }
+        data.destruct();
+        capi.free(data);
+        return original(thiz, owner, player, actionIndex, sceneName);
+    });
+}
 
 ////////////// ArmorStandChange //////////////
 {
