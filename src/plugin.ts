@@ -6,6 +6,7 @@ import { regConsoleCmd, regPlayerCmd, unregConsoleCmd, unregPlayerCmd } from "./
 import { listen } from "./api/event";
 import { Player$newPlayer } from "./api/player";
 import { LXL_DEPENDS_DIR } from "./constants";
+import { LevelDB } from "./dep/leveldb";
 import { requestSync } from "./dep/sync";
 import { iniConf } from "./loader";
 import fs = require("fs");
@@ -158,6 +159,7 @@ export class LXLPlugin {
             }
             (this.ctx as any).console = console;
             (this.ctx as any).requestSync = requestSync;
+            (this.ctx as any).LevelDB = LevelDB;
             vm.runInContext(fs.readFileSync(path.join(__dirname, "./dep/polyfill.js"), "utf8"), this.ctx);
             this.isLoaded = true;
             if (this.pluginName !== "" && !virtual) {

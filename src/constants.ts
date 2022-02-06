@@ -3,7 +3,7 @@ export const LXL_MODULE_TYPE = "Js";
 
 export const LXL_VERSION_MAJOR = 0;
 export const LXL_VERSION_MINOR = 5;
-export const LXL_VERSION_REVISION = 11;
+export const LXL_VERSION_REVISION = 12;
 
 export const LXL_VERSION_STATUS = "Beta";
 export const LXL_VERSION_STATUS_STRING = "Release";

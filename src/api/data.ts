@@ -1,7 +1,8 @@
 import { createHash } from "crypto";
+import { LevelDB } from "../dep/leveldb";
 import { LLMoney } from "../utils/money";
 import { playerDB } from "../utils/playerDB";
-import { ArrayBuffer2Buffer, Buffer2ArrayBuffer, CreateSection, GetSection, JsonToValue, logger, PrivateFields, TODO, ValueToJson } from "./api_help";
+import { ArrayBuffer2Buffer, Buffer2ArrayBuffer, CreateSection, GetSection, JsonToValue, logger, PrivateFields, ValueToJson } from "./api_help";
 import fs = require("fs");
 import path = require("path");
 import INI = require("ini");
@@ -89,8 +90,29 @@ export const money = {
 }
 
 export class KVDatabase {
+    [PrivateFields]: LevelDB;
     constructor(dir: string) {
-        TODO("KVDatabase")();
+        const db = new LevelDB(dir);
+        if (db) {
+            this[PrivateFields] = db;
+        } else {
+            throw new Error("can't create class KVDatabase");
+        }
+    }
+    set(name: string, data: any) {
+        return this[PrivateFields].put(name, data);
+    }
+    get(name: string) {
+        return this[PrivateFields].get(name);
+    }
+    delete(name: string) {
+        return this[PrivateFields].delete(name);
+    }
+    listKey() {
+        return this[PrivateFields].keys();
+    }
+    close() {
+        return true;
     }
 }
 

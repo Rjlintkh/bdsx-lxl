@@ -45,8 +45,7 @@ We aim to be consistent with the features of LXL, even with the bugs it has. How
         - [x] [📰 Form Builder](https://lxl.litebds.com/#/zh_CN/Development/GuiAPI/FormBuilder)
     - Data
         - [x] [🔨 Config](https://lxl.litebds.com/#/zh_CN/Development/DataAPI/ConfigFile)
-        - [ ] [📦 Database](https://lxl.litebds.com/#/zh_CN/Development/DataAPI/DataBase)
-            - `KVDatabase` is not yet implemented
+        - [x] [📦 Database](https://lxl.litebds.com/#/zh_CN/Development/DataAPI/DataBase)
         - [x] [💰 Economy](https://lxl.litebds.com/#/zh_CN/Development/DataAPI/Economy)
         - [x] [🏃‍♂️ Player Data](https://lxl.litebds.com/#/zh_CN/Development/DataAPI/PlayerData)
         - [x] [🧰 Misc](https://lxl.litebds.com/#/zh_CN/Development/DataAPI/OtherData)
@@ -87,7 +86,9 @@ We aim to be consistent with the features of LXL, even with the bugs it has. How
     - [x] [Origin-多功能拓展插件](https://www.minebbs.com/resources/origin.3315/)
     - [x] [ServerStopper - 游戏内停服插件](https://www.minebbs.com/resources/serverstopper.2729/)
     - [x] [Wooden_axe-创世神简易版](https://www.minebbs.com/resources/wooden_axe.2720/)
+    - [x] [多功能命令木牌-可以多行命令](https://www.minebbs.com/resources/2944/)
     - [x] [服务器状态查询](https://www.minebbs.com/resources/3509/)
+    - [x] [锁箱子-全UI界面,高性能数据库,多类型](https://www.minebbs.com/resources/ui.2935/)
     - [x] [一个领地系统](https://www.minebbs.com/resources/2937/)
     - [ ] [gui商店、领地、经济、箱子商店、菜单、传送六合一](https://www.minebbs.com/resources/gui-_-_-_-_-_.2881/)
         - Too expensive to afford
@@ -95,10 +96,6 @@ We aim to be consistent with the features of LXL, even with the bugs it has. How
         - Written in Lua
     - [ ] [Moisture -- 更精致的口渴值？](https://www.minebbs.com/resources/moisture.2734/)
         - Written in Lua
-    - [ ] [多功能命令木牌-可以多行命令](https://www.minebbs.com/resources/2944/)
-        - Uses `KVDataBase`
-    - [ ] [锁箱子-全UI界面,高性能数据库,多类型](https://www.minebbs.com/resources/ui.2935/)
-        - Uses `KVDataBase`
 
 #### Usage
 1. Download `bdsx-lxl.zip` from the [latest release](https://github.com/Rjlintkh/bdsx-lxl/releases/latest) and extract it to `your_bdsx_folder/plugins` so that there is a folder named `your_bdsx_folder/plugins/bdsx-lxl`.

@@ -100,3 +100,18 @@ Then I tried glua but it does not support const and GOTO syntaxes so I have to g
 The LXL devs have still did not reply me, maybe I don't care now.
 
 I actually wrote this diary somewhere in BDSX discord server, but I guess no one discovered that lol, I am going to remove it and put that in this MarkDown file.
+
+## 6/2/2022
+I originally planned to finish some homework this afternoon, but idk why I suddenly wanted to implement KVDatabase.
+
+I used 5 hours damn, LXL's KVDatabase methods are all sync, and there are none NodeJS libraries for that.
+
+Which means I have to make my own, my way is to use child process to operate the DB in command line, that way it can be sync.
+
+However there are only two cli I can find, and only one of them is usable.
+
+But then when it came to saving a JSON, it saved as string, I tried to look into its source code and found some flags which were not in the documentation.
+
+Again, it wasn't easy, I strived and strived to put a value using the base64 flag, but the flag did not apply at all.
+
+Eventually I learnt something new, I guess, you need to put the flags before the arguments, damn, that's it.
