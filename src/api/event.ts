@@ -16,6 +16,7 @@ import { serverInstance } from "bdsx/bds/server";
 import { CANCEL } from "bdsx/common";
 import { StaticPointer } from "bdsx/core";
 import { events } from "bdsx/event";
+import { bedrockServer } from "bdsx/launcher";
 import { bool_t, float32_t, int32_t, uint16_t, uint32_t, uint8_t, void_t } from "bdsx/nativetype";
 import { Wrapper } from "bdsx/pointer";
 import { _tickCallback } from "bdsx/util";
@@ -574,23 +575,38 @@ events.playerDropItem.on(event => {
         return original(thiz, instance, entity, pos, face, clickX, clickY, clickZ);
     });
 }
-// {
-//     const original = symhook("?_calculatePlacePos@SignItem@@EEBA_NAEAVItemStackBase@@AEAVActor@@AEAEAEAVBlockPos@@@Z",
-//     bool_t, null, StaticPointer, ItemStack, Actor, uint8_t, BlockPos)
-//     ((thiz, instance, entity, face, pos) => {
-//         if (entity.isPlayer()) {
-//             const blockMap = daccess(thiz, CxxMap.make(int32_t, CxxPair.make(Block.ref(), Block.ref())), 552);
-//             const signType = daccess(thiz, int32_t, 568);
-//             const block = face === 1 ? blockMap.get(signType)!.first : blockMap.get(signType)!.second;
-//             const cancelled = LXL_Events.onPlaceBlock.fire(Player$newPlayer(entity), Block$newBlock(block, pos, entity.getDimensionId()));
-//             _tickCallback();
-//             if (cancelled) {
-//                 return false;
-//             }
-//         }
-//         return original(thiz, instance, entity, face, pos);
-//     });
-// }
+{
+    let blockMap: Map<MCAPI.SignBlockActor.SignType, [Block, Block]>;
+    bedrockServer.afterOpen().then(()=> {
+        blockMap = new Map<MCAPI.SignBlockActor.SignType, [Block, Block]>(
+            [
+                [MCAPI.SignBlockActor.SignType.Oak, [daccess(MCAPI.VanillaBlocks.mSign, Block.ref()), daccess(MCAPI.VanillaBlocks.mWallSign, Block.ref())]],
+                [MCAPI.SignBlockActor.SignType.Spruce, [daccess(MCAPI.VanillaBlocks.mSpruceSign, Block.ref()), daccess(MCAPI.VanillaBlocks.mSpruceWallSign, Block.ref())]],
+                [MCAPI.SignBlockActor.SignType.Birch, [daccess(MCAPI.VanillaBlocks.mBirchSign, Block.ref()), daccess(MCAPI.VanillaBlocks.mBirchWallSign, Block.ref())]],
+                [MCAPI.SignBlockActor.SignType.Jungle, [daccess(MCAPI.VanillaBlocks.mJungleSign, Block.ref()), daccess(MCAPI.VanillaBlocks.mJungleWallSign, Block.ref())]],
+                [MCAPI.SignBlockActor.SignType.Acacia, [daccess(MCAPI.VanillaBlocks.mAcaciaSign, Block.ref()), daccess(MCAPI.VanillaBlocks.mAcaciaWallSign, Block.ref())]],
+                [MCAPI.SignBlockActor.SignType.DarkOak, [daccess(MCAPI.VanillaBlocks.mDarkOakSign, Block.ref()), daccess(MCAPI.VanillaBlocks.mDarkOakWallSign, Block.ref())]],
+                [MCAPI.SignBlockActor.SignType.Crimson, [daccess(MCAPI.VanillaBlocks.mCrimsonStandingSign, Block.ref()), daccess(MCAPI.VanillaBlocks.mCrimsonWallSign, Block.ref())]],
+                [MCAPI.SignBlockActor.SignType.Warped, [daccess(MCAPI.VanillaBlocks.mWarpedStandingSign, Block.ref()), daccess(MCAPI.VanillaBlocks.mWarpedWallSign, Block.ref())]]
+            ]
+        );
+    });
+
+    const original = symhook("?_calculatePlacePos@SignItem@@EEBA_NAEAVItemStackBase@@AEAVActor@@AEAEAEAVBlockPos@@@Z",
+    bool_t, null, StaticPointer, ItemStack, Actor, uint8_t.ref(), BlockPos)
+    ((thiz, instance, entity, face, pos) => {
+        if (entity.isPlayer()) {
+            const signType = daccess(thiz, int32_t, 568);
+            const block = face === 1 ? blockMap.get(signType)![0] : blockMap.get(signType)![1];
+            const cancelled = LXL_Events.onPlaceBlock.fire(Player$newPlayer(entity), Block$newBlock(block, pos, entity.getDimensionId()));
+            _tickCallback();
+            if (cancelled) {
+                return false;
+            }
+        }
+        return original(thiz, instance, entity, face, pos);
+    });
+}
 {
     const original = symhook("?useOn@SeedItemComponentLegacy@@QEAA_NAEAVItemStack@@AEAVActor@@AEBVBlockPos@@EAEBVVec3@@@Z",
     bool_t, null, StaticPointer, ItemStack, Actor, BlockPos, uint8_t, float32_t, float32_t, float32_t)
@@ -599,7 +615,7 @@ events.playerDropItem.on(event => {
             const growDirection = daccess(thiz, int32_t, 42);
             const blockPos = MCAPI.BlockPos.relative(pos, growDirection, 1);
             const block = daccess(thiz, Block.ref(), 8);
-            const cancelled = LXL_Events.onPlaceBlock.fire(Player$newPlayer(entity), Block$newBlock(block, pos, entity.getDimensionId()));
+            const cancelled = LXL_Events.onPlaceBlock.fire(Player$newPlayer(entity), Block$newBlock(block, blockPos, entity.getDimensionId()));
             _tickCallback();
             if (cancelled) {
                 return false;
