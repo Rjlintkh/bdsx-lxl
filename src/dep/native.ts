@@ -206,6 +206,23 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?spawnProjectile@Spawner@@QEAAPEAVActor@@AEAVBlockSource@@AEBUActorDefinitionIdentifier@@PEAV2@AEBVVec3@@3@Z",
     // SuspiciousStewItem
     "?useTimeDepleted@SuspiciousStewItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    // VanillaBlocks
+    "?mWallSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mSpruceWallSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mSpruceSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mBirchWallSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mBirchSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mJungleWallSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mJungleSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mAcaciaWallSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mAcaciaSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mDarkOakWallSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mDarkOakSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mCrimsonWallSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mCrimsonStandingSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mWarpedWallSign@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mWarpedStandingSign@VanillaBlocks@@3PEBVBlock@@EB",
     // VanillaServerGameplayEventListener
     "?onBlockInteractedWith@VanillaServerGameplayEventListener@@UEAA?AW4EventResult@@AEAVPlayer@@AEBVBlockPos@@@Z",
     "?onPlayerOpenContainer@VanillaServerGameplayEventListener@@UEAA?AW4EventResult@@AEBUPlayerOpenContainerEvent@@@Z",
@@ -401,6 +418,36 @@ export namespace MCAPI {
     export namespace ServerScoreboard {
         export const clearDisplayObjective: (thiz: _Scoreboard, displaySlotName: DisplaySlot) => Objective | null = symcall("?clearDisplayObjective@ServerScoreboard@@UEAAPEAVObjective@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z", Objective, null, _Scoreboard, CxxString);
         export const createScoreboardId: (thiz: _Scoreboard, name: string) => _ScoreboardId = symcall("?createScoreboardId@ServerScoreboard@@UEAAAEBUScoreboardId@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z", _ScoreboardId, null, _Scoreboard, CxxString);
+    }
+    export namespace SignBlockActor {
+        export enum SignType {
+            Oak,
+            Spruce,
+            Birch,
+            Jungle,
+            Acacia,
+            DarkOak,
+            Crimson,
+            Warped,
+        }
+    }
+    export namespace VanillaBlocks {
+        export const mWallSign = dlsym("?mWallSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mSign = dlsym("?mSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mSpruceWallSign = dlsym("?mSpruceWallSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mSpruceSign = dlsym("?mSpruceSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mBirchWallSign = dlsym("?mBirchWallSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mBirchSign = dlsym("?mBirchSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mJungleWallSign = dlsym("?mJungleWallSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mJungleSign = dlsym("?mJungleSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mAcaciaWallSign = dlsym("?mAcaciaWallSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mAcaciaSign = dlsym("?mAcaciaSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mDarkOakWallSign = dlsym("?mDarkOakWallSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mDarkOakSign = dlsym("?mDarkOakSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mCrimsonWallSign = dlsym("?mCrimsonWallSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mCrimsonStandingSign = dlsym("?mCrimsonStandingSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mWarpedWallSign = dlsym("?mWarpedWallSign@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mWarpedStandingSign = dlsym("?mWarpedStandingSign@VanillaBlocks@@3PEBVBlock@@EB");
     }
     export namespace WeakEntityRef {
         export const tryUnwrap: (thiz: StaticPointer) => _Player | null = symcall("??$tryUnwrap@VPlayer@@$$V@WeakEntityRef@@QEBAPEAVPlayer@@XZ", _Player, null, StaticPointer);
