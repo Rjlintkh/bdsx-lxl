@@ -267,10 +267,12 @@ export function unlisten<E extends keyof typeof LXL_Events>(event: E, callback: 
     const original = symhook("?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
     bool_t, null, Player, Actor, Wrapper.make(int32_t))
     ((thiz, actor, cause: Wrapper<ActorDamageCause>) => {
-        const cancelled = LXL_Events.onAttackEntity.fire(Player$newPlayer(<ServerPlayer>thiz), Entity$newEntity(actor));
-        _tickCallback();
-        if (cancelled) {
-            return false;
+        if (actor) {
+            const cancelled = LXL_Events.onAttackEntity.fire(Player$newPlayer(<ServerPlayer>thiz), Entity$newEntity(actor));
+            _tickCallback();
+            if (cancelled) {
+                return false;
+            }
         }
         return original(thiz, actor, cause);
     });
