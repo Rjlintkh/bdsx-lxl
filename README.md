@@ -52,8 +52,7 @@ We aim to be consistent with the features of LXL, even with the bugs it has. How
     - System
         - [x] [📝 File](https://lxl.litebds.com/#/zh_CN/Development/SystemAPI/File)
         - [x] [📂 File System](https://lxl.litebds.com/#/zh_CN/Development/SystemAPI/FileSystem)
-        - [ ] [🌏 Network](https://lxl.litebds.com/#/zh_CN/Development/SystemAPI/Network)
-            -  `WSClient` is not yet implemented
+        - [x] [🌏 Network](https://lxl.litebds.com/#/zh_CN/Development/SystemAPI/Network)
         - [x] [📡 Shell](https://lxl.litebds.com/#/zh_CN/Development/SystemAPI/SystemCall)
             - `system.cmd` and `system.newProcess` perform differently here
             - They use PowerShell to execute commands to avoid issues from forwardslashes
@@ -86,6 +85,7 @@ We aim to be consistent with the features of LXL, even with the bugs it has. How
     - [x] [Origin-多功能拓展插件](https://www.minebbs.com/resources/origin.3315/)
     - [x] [ServerStopper - 游戏内停服插件](https://www.minebbs.com/resources/serverstopper.2729/)
     - [x] [Wooden_axe-创世神简易版](https://www.minebbs.com/resources/wooden_axe.2720/)
+    - [x] [WSClient-Syn —— 可跨主机的背包同步+玩家消息同步+进服欢迎（没卵用）](https://www.minebbs.com/resources/wsclient-syn.3334/)
     - [x] [多功能命令木牌-可以多行命令](https://www.minebbs.com/resources/2944/)
     - [x] [服务器状态查询](https://www.minebbs.com/resources/3509/)
     - [x] [锁箱子-全UI界面,高性能数据库,多类型](https://www.minebbs.com/resources/ui.2935/)

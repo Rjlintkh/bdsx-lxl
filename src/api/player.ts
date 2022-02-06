@@ -700,7 +700,7 @@ export class LXL_Player {
         const res = player.load(nbt[PrivateFields]);
         player.readAdditionalSaveData(nbt[PrivateFields]);
         MCAPI.Actor._sendDirtyActorData(player);
-        return res;
+        return true;
     }
 
     getNbt() {

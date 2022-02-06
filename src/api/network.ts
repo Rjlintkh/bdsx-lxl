@@ -1,7 +1,9 @@
 import { request as httpRequest } from "http";
 import { request as httpsRequest } from "https";
 import { URL } from "url";
-import { logger, TODO } from "./api_help";
+import { requestSync } from "../dep/sync";
+import { Buffer2ArrayBuffer, logger, PrivateFields } from "./api_help";
+import WebSocket = require("ws");
 
 export const network = {
     httpGet: (url: string, callback: (status: number, result: string) => any) => {
@@ -73,9 +75,120 @@ export const network = {
         return true;
     },
     /** @deprecated */
+    httpGetSync(url: string) {
+        return requestSync(url);
+    },
+    /** @deprecated */
     newWebSocket() {
         return new WSClient();
     }
 }
 
-export const WSClient = TODO("WSClient");
+export class WSClient {
+    static Open = 0;
+    static Closing = 1;
+    static Closed = 2;
+
+    [PrivateFields]: {
+        ws: WebSocket | null;
+        listeners: {
+            "onTextReceived": ((msg: string) => any)[];
+            "onBinaryReceived": ((data: ArrayBuffer) => any)[];
+            "onError": ((msg: string) => any)[];
+            "onLostConnection": ((code: number) => any)[];
+        }
+    }
+
+    constructor() {
+        this[PrivateFields] = {
+            ws: null,
+            listeners: {
+                "onTextReceived": [],
+                "onBinaryReceived": [],
+                "onError": [],
+                "onLostConnection": [],
+            }
+        }
+    }
+
+    connect(target: string) {
+        if (this[PrivateFields].ws) {
+            this[PrivateFields].ws!.close();
+        }
+
+        this[PrivateFields].ws = new WebSocket(target);
+        this[PrivateFields].ws!.on("message", (data: Buffer, isBinary: boolean) => {
+            if (isBinary) {
+                for (const listener of this[PrivateFields].listeners.onBinaryReceived) {
+                    try {
+                        listener(Buffer2ArrayBuffer(data as Buffer));
+                    } catch (err) {
+                        logger.error(err);
+                    }
+                }
+            } else {
+                for (const listener of this[PrivateFields].listeners.onTextReceived) {
+                    try {
+                        listener(data.toString());
+                    } catch (err) {
+                        logger.error(err);
+                    }
+                }
+            }
+        });
+        this[PrivateFields].ws!.on("error", (err: Error) => {
+            for (const listener of this[PrivateFields].listeners.onError) {
+                try {
+                    listener(err.message);
+                } catch (err) {
+                    logger.error(err);
+                }
+            }
+        });
+        this[PrivateFields].ws!.on("close", (code: number) => {
+            for (const listener of this[PrivateFields].listeners.onLostConnection) {
+                try {
+                    listener(code);
+                } catch (err) {
+                    logger.error(err);
+                }
+            }
+        });
+        return true;
+    }
+
+    send(data: string) {
+        if (!this[PrivateFields].ws) {
+            return false;
+        }
+
+        this[PrivateFields].ws!.send(data);
+        return true;
+    }
+
+    listen(event: string, callback: (...args: any[]) => any) {
+        (this[PrivateFields].listeners as any)[event].push(callback);
+    }
+
+    close() {
+        if (!this[PrivateFields].ws) {
+            return false;
+        }
+
+        this[PrivateFields].ws!.close();
+        return true;
+    }
+
+    shutdown() {
+        if (!this[PrivateFields].ws) {
+            return false;
+        }
+
+        this[PrivateFields].ws!.terminate();
+        return true;
+    }
+
+    errorCode() {
+        return 0;
+    }
+}

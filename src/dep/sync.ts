@@ -3,7 +3,7 @@ import { spawnSync } from "child_process";
 export function requestSync(url: string) {
     const output = {
         statusCode: -1,
-        body: "",
+        data: "",
     }
     const child = spawnSync(`
         try {
@@ -20,6 +20,6 @@ export function requestSync(url: string) {
     } else {
         output.statusCode = 200;
     }
-    output.body = child.stdout.toString();
+    output.data = child.stdout.toString();
     return output;
 }

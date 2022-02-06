@@ -115,3 +115,5 @@ But then when it came to saving a JSON, it saved as string, I tried to look into
 Again, it wasn't easy, I strived and strived to put a value using the base64 flag, but the flag did not apply at all.
 
 Eventually I learnt something new, I guess, you need to put the flags before the arguments, damn, that's it.
+
+After dinner I also implemented WSClient, but I am not sure if it will work.

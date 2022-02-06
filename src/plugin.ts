@@ -111,7 +111,7 @@ export class LXLPlugin {
                     }
                     try {
                         const downloadPath = path.join(process.cwd(), LXL_DEPENDS_DIR, filepath);
-                        fs.writeFileSync(downloadPath, result.body);
+                        fs.writeFileSync(downloadPath, result.data);
 
                         const plugin = new LXLPlugin(filepath);
                         plugin.load();
