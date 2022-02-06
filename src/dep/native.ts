@@ -277,7 +277,8 @@ export namespace MCAPI {
         export const removeBlockEntity: (thiz: _BlockSource, blockPos: _BlockPos) => StaticPointer = symcall("?removeBlockEntity@BlockSource@@QEAA?AV?$shared_ptr@VBlockActor@@@std@@AEBVBlockPos@@@Z", StaticPointer, null, _BlockSource, _BlockPos);
     }
     export namespace CommandOrigin {
-        export const getOriginType: (thiz: _CommandOrigin) => CommandOriginType = makefunc.js([0xC0], uint8_t, null, _CommandOrigin);
+        const $getOriginType = makefunc.js([0xB0], uint8_t, {this: _CommandOrigin});
+        export const getOriginType = (thiz: _CommandOrigin): CommandOriginType => $getOriginType.call(thiz);
     }
     export enum CommandOriginType {
         Player,
@@ -537,6 +538,17 @@ export namespace LIAPI {
                 return bl;
             }
             return thiz.getRenderBlock();
+        }
+    }
+    export namespace BlockPos {
+        export function bottomCenter(thiz: _BlockPos) {
+            return _BlockPos.create(thiz.x + 0.5, thiz.y, thiz.z + 0.5);
+        }
+        export function center(thiz: _BlockPos) {
+            return _BlockPos.create(thiz.x + 0.5, thiz.y + 0.5, thiz.z + 0.5);
+        }
+        export function toVec3(thiz: _BlockPos) {
+            return _Vec3.create(thiz.x, thiz.y, thiz.z);
         }
     }
     export namespace CompoundTag {
@@ -950,6 +962,9 @@ export namespace LIAPI {
         }
     }
     export namespace Vec3 {
+        export function length(thiz: _Vec3) {
+            return Math.sqrt(thiz.x * thiz.x + thiz.y * thiz.y + thiz.z * thiz.z);
+        }
         export function toBlockPos(thiz: _Vec3) {
             let px = ~~thiz.x;
             let py = ~~thiz.y;

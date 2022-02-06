@@ -92,6 +92,7 @@ export const LXL_Events = {
     onPlayerCmd: new LXL_Event<(player: LXL_Player, cmd: string) => void | false>(),
     /** Valid 03-02-2022 19:22:50 */
     onConsoleCmd: new LXL_Event<(cmd: string) => void | false>(),
+    /** Valid 06-02-2022 14:24:59 */
     onCmdBlockExecute: new LXL_Event<(cmd: string, pos: IntPos, isMinecart: boolean) => void | false>(),
     onBlockInteracted: new LXL_Event<(player: LXL_Player, block: LXL_Block) => void | false>(),
     onBlockChanged: new LXL_Event<(beforeBlock: LXL_Block, afterBlock: LXL_Block) => void | false>(),
@@ -303,18 +304,6 @@ events.playerPickupItem.on(event => {
 });
 
 /////////////////// PlayerDropItem ///////////////////
-{
-    const original = symhook("?drop@Player@@UEAA_NAEBVItemStack@@_N@Z",
-    bool_t, null, Player, ItemStack, bool_t)
-    ((thiz, item, randomly) => {
-        const cancelled = LXL_Events.onDropItem.fire(Player$newPlayer(<ServerPlayer>thiz), Item$newItem(item));
-        _tickCallback();
-        if (cancelled) {
-            return false;
-        }
-        return original(thiz, item, randomly);
-    });
-}
 events.playerDropItem.on(event => {
     const cancelled = LXL_Events.onDropItem.fire(Player$newPlayer(<ServerPlayer>event.player), Item$newItem(event.itemStack));
     _tickCallback();
@@ -751,12 +740,12 @@ events.playerDropItem.on(event => {
 /////////////////// CmdBlockExecute ///////////////////
 {
     const original = symhook("?_performCommand@BaseCommandBlock@@AEAA_NAEAVBlockSource@@AEBVCommandOrigin@@AEA_N@Z",
-    bool_t, null, StaticPointer, BlockSource, CommandOrigin.ref(), bool_t)
+    bool_t, null, StaticPointer, BlockSource, CommandOrigin.ref(), bool_t.ref())
     ((thiz, region, origin, markForSaving) => {
         const command = MCAPI.BaseCommandBlock.getCommand(thiz);
         const isMinecart = MCAPI.CommandOrigin.getOriginType(origin) === MCAPI.CommandOriginType.MinecartCommandBlock;
-        const pos = isMinecart ? origin.getEntity()!.getPosition() : origin.getBlockPosition();
-        const cancelled = LXL_Events.onCmdBlockExecute.fire(command, FloatPos$newPos(pos, MCAPI.BlockSource.getDimensionId(region)), isMinecart);
+        const pos = isMinecart ? origin.getEntity()!.getPosition() : LIAPI.BlockPos.toVec3(origin.getBlockPosition());
+        const cancelled = LXL_Events.onCmdBlockExecute.fire(command, FloatPos$newPos(pos, origin.getDimension().getDimensionId()), isMinecart);
         _tickCallback();
         if (cancelled) {
             return false;
@@ -1077,7 +1066,7 @@ events.farmlandDecay.on(event => {
     bool_t, null, Actor, ActorDamageSource, int32_t, bool_t, bool_t)
     ((thiz, source, dmg, knock, ignite) => {
         const src = serverInstance.minecraft.getLevel().fetchEntity(source.getDamagingEntityUniqueID(), true);
-        const cancelled = LXL_Events.onMobHurt.fire(Entity$newEntity(thiz), src ? Entity$newEntity(src) : src, dmg);
+        const cancelled = LXL_Events.onMobHurt.fire(Entity$newEntity(thiz), src ? Entity$newEntity(src) : null, dmg);
         _tickCallback();
         if (cancelled) {
             return false;
