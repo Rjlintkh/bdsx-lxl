@@ -124,6 +124,7 @@ export const LXL_Events = {
     onStepOnPressurePlate: new LXL_Event<(entity: LXL_Entity, pressurePlate: LXL_Block) => void | false>(),
     onSpawnProjectile: new LXL_Event<(shooter: LXL_Entity, type: string) => void | false>(),
     onNpcCmd: new LXL_Event<(npc: LXL_Entity, pl: LXL_Player, cmd: string) => void | false>(),
+    /** Valid 06-02-2022 14:37:44 */
     onChangeArmorStand: new LXL_Event<(as: LXL_Entity, pl: LXL_Player, slot: number) => void | false>(),
     onScoreChanged: new LXL_Event<(player: LXL_Player, num: number, name: string, disName: string) => void>(),
     /** 03-02-2022 19:23:42 */
@@ -1218,6 +1219,19 @@ events.entityDie.on(event => {
 // }
 
 ////////////// ArmorStandChange //////////////
+{
+    const original = symhook("?_trySwapItem@ArmorStand@@AEAA_NAEAVPlayer@@W4EquipmentSlot@@@Z",
+    bool_t, null, Actor, Player, int32_t)
+    ((thiz, player, slot) => {
+        const cancelled = LXL_Events.onChangeArmorStand.fire(Entity$newEntity(thiz), Player$newPlayer(<ServerPlayer>player), slot);
+        console.log(thiz, player, slot);
+        _tickCallback();
+        if (cancelled) {
+            return false;
+        }
+        return original(thiz, player, slot);
+    });
+}
 
 ////////////// PlayerScoreChangedEvent  //////////////
 {
