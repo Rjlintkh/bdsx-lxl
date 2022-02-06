@@ -68,7 +68,7 @@ export const LXL_Events = {
     onJump: new LXL_Event<(player: LXL_Player) => void>(),
     onSneak: new LXL_Event<(player: LXL_Player, isSneaking: boolean) => void>(),
     onAttackEntity: new LXL_Event<(player: LXL_Player, entity: LXL_Entity) => void | false>(),
-    onAttackBlock: new LXL_Event<(player: LXL_Player, block: LXL_Block, item: LXL_Item) => void | false>(),
+    onAttackBlock: new LXL_Event<(player: LXL_Player, block: LXL_Block, item: LXL_Item | null) => void | false>(),
     onTakeItem: new LXL_Event<(player: LXL_Player, entity: LXL_Entity, item: LXL_Item) => void | false>(),
     onDropItem: new LXL_Event<(player: LXL_Player, item: LXL_Item) => void | false>(),
     onEat: new LXL_Event<(player: LXL_Player, item: LXL_Item) => void | false>(),
@@ -281,7 +281,8 @@ export function unlisten<E extends keyof typeof LXL_Events>(event: E, callback: 
     const original = symhook("?attack@Block@@QEBA_NPEAVPlayer@@AEBVBlockPos@@@Z",
     bool_t, null, Block, Player, BlockPos)
     ((thiz, player, pos) => {
-        const cancelled = LXL_Events.onAttackBlock.fire(Player$newPlayer(<ServerPlayer>player), Block$newBlock(thiz, pos, player.getDimensionId()), Item$newItem(player.getMainhandSlot()));
+        const itemStack = player.getMainhandSlot();
+        const cancelled = LXL_Events.onAttackBlock.fire(Player$newPlayer(<ServerPlayer>player), Block$newBlock(thiz, pos, player.getDimensionId()), !itemStack.isNull() ? Item$newItem(itemStack) : null);
         _tickCallback();
         if (cancelled) {
             return false;
