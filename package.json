@@ -20,6 +20,6 @@
   "dependencies": {
     "ini": "^2.0.0",
     "sqlite-sync": "^0.3.9",
-    "ws": "5.x"
+    "ws": "^5.2.3"
   }
 }
