@@ -31,13 +31,15 @@ export class File {
         if (mode === File.AppendMode) {
             newMode += "a";
         }
-        this[PrivateFields].fd = fs.openSync(filepath, newMode);
+        this[PrivateFields] = {
+            fd: fs.openSync(filepath, newMode),
+            isBinary: isBinary,
+            pos: 0,
+        };
 
         if (this[PrivateFields].fd === undefined) {
             logger.error(`Fail to Open File ${this.path}!`);
         }
-        this[PrivateFields].isBinary = isBinary;
-        this[PrivateFields].pos = 0;
     }
 
     get size() {
