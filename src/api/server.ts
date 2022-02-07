@@ -1,6 +1,6 @@
 import { serverInstance } from "bdsx/bds/server";
 import { capi } from "bdsx/capi";
-import { StaticPointer } from "bdsx/core";
+import { AllocatedPointer } from "bdsx/core";
 import { bedrockServer } from "bdsx/launcher";
 
 export function setMotd(motd: string) {
@@ -11,7 +11,7 @@ export function setMotd(motd: string) {
 }
 
 export function crashBDS() {
-    const ptr = new StaticPointer();
+    const ptr = new AllocatedPointer(10);
     capi.free(ptr);
     capi.free(ptr);
     return true;

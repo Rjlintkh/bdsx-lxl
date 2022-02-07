@@ -146,6 +146,7 @@ export const LXL_Events = {
 };
 (LXL_Events as any).onAttack = LXL_Events.onAttackEntity;
 (LXL_Events as any).onExplode = LXL_Events.onEntityExplode;
+(LXL_Events as any).onFormSelected = new LXL_Event();
 
 export function listen<E extends keyof typeof LXL_Events>(event: E, callback: (typeof LXL_Events[E])["listeners"][number]) {
     if (!LXL_Events[event]) {
