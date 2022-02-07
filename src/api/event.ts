@@ -117,7 +117,7 @@ export const LXL_Events = {
     onUseItem: new LXL_Event<(player: LXL_Player, item: LXL_Item) => void | false>(),
     onMobDie: new LXL_Event<(mob: LXL_Entity, source: LXL_Entity | null) => void>(),
     onEntityExplode: new LXL_Event<(source: LXL_Entity, pos: FloatPos, radius: number, maxResistance: number, isDestroy: boolean, isFire: boolean) => void | false>(),
-    onBlockExplode: new LXL_Event<(source: LXL_Block, pos: FloatPos, radius: number, maxResistance: number, isDestroy: boolean, isFire: boolean) => void | false>(),
+    onBlockExplode: new LXL_Event<(source: LXL_Block, pos: IntPos, radius: number, maxResistance: number, isDestroy: boolean, isFire: boolean) => void | false>(),
     /** Valid 03-02-2022 18:54:11 */
     onProjectileHitEntity: new LXL_Event<(entity: LXL_Entity, source: LXL_Entity) => void>(),
     onWitherBossDestroy: new LXL_Event<(witherBoss: LXL_Entity, AAbb: IntPos, aaBB: IntPos) => void | false>(),
@@ -141,11 +141,11 @@ export const LXL_Events = {
     onMoneySet: new LXL_Event<(xuid: string, money: number) => void | false>(),
 
     onFireworkShootWithCrossbow: new LXL_Event<(player: LXL_Player) => void | false>(),
+    onRespawnAnchorExplode: new LXL_Event<(pos: IntPos) => void | false>(),
+    onBedExplode: new LXL_Event<(pos: IntPos) => void | false>(),
 };
 (LXL_Events as any).onAttack = LXL_Events.onAttackEntity;
 (LXL_Events as any).onExplode = LXL_Events.onEntityExplode;
-(LXL_Events as any).onRespawnAnchorExplode = new LXL_Event<() => void | false>();
-(LXL_Events as any).onBedExplode = new LXL_Event<() => void | false>();
 
 export function listen<E extends keyof typeof LXL_Events>(event: E, callback: (typeof LXL_Events[E])["listeners"][number]) {
     if (!LXL_Events[event]) {
@@ -1114,15 +1114,24 @@ events.entityDie.on(event => {
         const maxResistance = thiz.mMaxResistance;
         const genFire = thiz.mFire;
         const canBreaking = thiz.mBreaking;
-        if (actor.isNotNull()) {
+        if (actor?.isNotNull()) {
             const cancelled = LXL_Events.onEntityExplode.fire(Entity$newEntity(actor), FloatPos$newPos(pos, actor.getDimensionId()), maxResistance, radius, canBreaking, genFire);
             _tickCallback();
             if (cancelled) {
                 return;
             }
         } else {
+            let cancelled = false;
             const bp = LIAPI.Vec3.toBlockPos(pos);
-            const cancelled = LXL_Events.onBlockExplode.fire(Block$newBlock(bp, MCAPI.BlockSource.getDimensionId(bs)), FloatPos$newPos(pos, MCAPI.BlockSource.getDimensionId(bs)), maxResistance, radius, canBreaking, genFire);
+            const block = bs.getBlock(bp);
+            if (block.getName() === "minecraft:respawn_anchor") {
+                cancelled ||= LXL_Events.onRespawnAnchorExplode.fire(IntPos$newPos(bp, MCAPI.BlockSource.getDimensionId(bs)));
+                _tickCallback();
+            } else {
+                cancelled ||= LXL_Events.onBedExplode.fire(IntPos$newPos(bp, MCAPI.BlockSource.getDimensionId(bs)));
+                _tickCallback();
+            }
+            cancelled ||= LXL_Events.onBlockExplode.fire(Block$newBlock(bp, MCAPI.BlockSource.getDimensionId(bs)), IntPos$newPos(bp, MCAPI.BlockSource.getDimensionId(bs)), maxResistance, radius, canBreaking, genFire);
             _tickCallback();
             if (cancelled) {
                 return;
