@@ -18,6 +18,7 @@
     "bdsx": "file:../bdsx"
   },
   "dependencies": {
+    "ansi-regex": "^5.0.1",
     "ini": "^2.0.0",
     "sqlite-sync": "^0.3.9",
     "ws": "^5.2.3"
