@@ -7,6 +7,7 @@ import { LXLPlugin } from "./plugin";
 import fs = require("fs");
 import path = require("path");
 import INI = require("ini");
+// const { lua, lualib, lauxlib } = require("fengari");
 
 logger.info(`LXL for ${LXL_MODULE_TYPE} loaded`);
 logger.info(`Version ${LXL_VERSION}`);

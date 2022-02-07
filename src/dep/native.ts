@@ -276,7 +276,8 @@ export namespace MCAPI {
         export const relative: (thiz: _BlockPos, facing: Facing, steps: number) => _BlockPos = symcall("?relative@BlockPos@@QEBA?AV1@EH@Z", _BlockPos, null, _BlockPos, uint8_t, int32_t);
     }
     export namespace BlockSource {
-        export const getDimensionId: (thiz: _BlockSource) => DimensionId = symcall("?getDimensionId@BlockSource@@UEBA?AV?$AutomaticID@VDimension@@H@@XZ", int32_t.ref(), null, _BlockSource);
+        const $getDimensionId = symcall("?getDimensionId@BlockSource@@UEBA?AV?$AutomaticID@VDimension@@H@@XZ", int32_t, {structureReturn: true, this: _BlockSource});
+        export const getDimensionId = (thiz: _BlockSource): DimensionId => $getDimensionId.call(thiz);
         export const removeBlockEntity: (thiz: _BlockSource, blockPos: _BlockPos) => StaticPointer = symcall("?removeBlockEntity@BlockSource@@QEAA?AV?$shared_ptr@VBlockActor@@@std@@AEBVBlockPos@@@Z", StaticPointer, null, _BlockSource, _BlockPos);
     }
     export namespace CommandOrigin {
