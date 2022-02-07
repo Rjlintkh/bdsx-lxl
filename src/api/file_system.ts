@@ -427,4 +427,8 @@ export class File {
             return null;
         }
     }
+
+    static open(filepath: string, mode: 0|1|2, isBinary = false) {
+        return new File(filepath, mode, isBinary);
+    }
 }
