@@ -99,22 +99,30 @@ events.command.on((cmd, _, ctx) => {
             if (cancelled) {
                 return 0;
             }
+            let matchedPrefix = "";
+            let matchedCallback: Function | null = null;
             for (const [prefix, callback] of playerCmdCallbacks) {
-                if (cmd === prefix || cmd.startsWith(prefix + " ")) {
-                    const args = cmd.substring(prefix.length).match(/[^\s"]+|"[^"]+"/g, ) ?? [];
-                    for (let i = 0; i < args.length; i++) {
-                        const m = /^"(.+)"$/.exec(args[i]);
-                        if (m) {
-                            args[i] = m[1];
-                        }
+                if (cmd === prefix || (cmd.indexOf(prefix) === 0 && cmd[prefix.length] === " ")) {
+                    if (prefix.length > matchedPrefix.length) {
+                        matchedPrefix = prefix;
+                        matchedCallback = callback;
                     }
-                    try {
-                        callback(Player$newPlayer(player), args);
-                    } catch (err) {
-                        logger.error(err);
-                    }
-                    return 0;
                 }
+            }
+            if (matchedCallback) {
+                const args = cmd.substring(matchedPrefix.length).match(/[^\s"]+|"[^"]+"/g, ) ?? [];
+                for (let i = 0; i < args.length; i++) {
+                    const m = /^"(.+)"$/.exec(args[i]);
+                    if (m) {
+                        args[i] = m[1];
+                    }
+                }
+                try {
+                    matchedCallback(Player$newPlayer(player), args);
+                } catch (err) {
+                    logger.error(err);
+                }
+                return 0;
             }
         } else {
             const cancelled = LXL_Events.onConsoleCmd.fire(cmd);
@@ -122,22 +130,30 @@ events.command.on((cmd, _, ctx) => {
             if (cancelled) {
                 return 0;
             }
+            let matchedPrefix = "";
+            let matchedCallback: Function | null = null;
             for (const [prefix, callback] of consoleCmdCallbacks) {
-                if (cmd === prefix || cmd.startsWith(prefix + " ")) {
-                    const args = cmd.substring(prefix.length).match(/[^\s"]+|"[^"]+"/g, ) ?? [];
-                    for (let i = 0; i < args.length; i++) {
-                        const m = /^"(.+)"$/.exec(args[i]);
-                        if (m) {
-                            args[i] = m[1];
-                        }
+                if (cmd === prefix || (cmd.indexOf(prefix) === 0 && cmd[prefix.length] === " ")) {
+                    if (prefix.length > matchedPrefix.length) {
+                        matchedPrefix = prefix;
+                        matchedCallback = callback;
                     }
-                    try {
-                        callback(args);
-                    } catch (err) {
-                        logger.error(err);
-                    }
-                    return 0;
                 }
+            }
+            if (matchedCallback) {
+                const args = cmd.substring(matchedPrefix.length).match(/[^\s"]+|"[^"]+"/g, ) ?? [];
+                for (let i = 0; i < args.length; i++) {
+                    const m = /^"(.+)"$/.exec(args[i]);
+                    if (m) {
+                        args[i] = m[1];
+                    }
+                }
+                try {
+                    matchedCallback(args);
+                } catch (err) {
+                    logger.error(err);
+                }
+                return 0;
             }
         }
     }
