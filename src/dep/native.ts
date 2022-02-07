@@ -18,7 +18,7 @@ import { pdb, StaticPointer, VoidPointer } from "bdsx/core";
 import { CxxVector } from "bdsx/cxxvector";
 import { makefunc, ParamType } from "bdsx/makefunc";
 import { nativeClass, NativeClass, nativeField } from "bdsx/nativeclass";
-import { bool_t, CxxString, CxxStringWith8Bytes, float32_t, int16_t, int32_t, NativeType, uint16_t, uint32_t, uint64_as_float_t, uint8_t, void_t } from "bdsx/nativetype";
+import { bool_t, CxxString, float32_t, int16_t, int32_t, NativeType, uint16_t, uint32_t, uint64_as_float_t, uint8_t, void_t } from "bdsx/nativetype";
 import { ProcHacker } from "bdsx/prochacker";
 import { logger, TODO } from "../api/api_help";
 import path = require("path");
@@ -236,7 +236,17 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
 ], false);
 
 const hacker = new ProcHacker(RVAs);
-export const symcall = hacker.js.bind(hacker) as typeof hacker.js;
+export const symcall = ((...args: any[]) => {
+    if (!(symcall as any).cache) {
+        (symcall as any).cache = new Map();
+    }
+    if ((symcall as any).cache.has(args[0])) {
+        return (symcall as any).cache.get(args[0]);
+    }
+    const func = (hacker.js as any)(...args);
+    (symcall as any).cache.set(args[0], func);
+    return func;
+}) as typeof hacker.js;
 export const symhook = hacker.hooking.bind(hacker) as typeof hacker.hooking;
 export const dlsym = (name: keyof typeof RVAs) => RVAs[name];
 export const daccess = <T extends ParamType>(ptr: VoidPointer, type: T, offset = 0) => <T extends {prototype:infer V} ? V : never>type[NativeType.getter](ptr as any, offset);
@@ -254,8 +264,7 @@ export namespace MCAPI {
     export namespace Actor {
         export const _sendDirtyActorData: (thiz: _Actor) => void = symcall("?_sendDirtyActorData@Actor@@QEAAXXZ", void_t, null, _Actor);
         export const getArmorContainer: (thiz: _Actor) => SimpleContainer = symcall("?getArmorContainer@Actor@@QEAAAEAVSimpleContainer@@XZ", SimpleContainer, null, _Actor);
-        const $getBlockPosCurrentlyStandingOn = symcall("?getBlockPosCurrentlyStandingOn@Actor@@QEBA?AVBlockPos@@PEAV1@@Z", _BlockPos, null, _Actor, _BlockPos, _Actor.ref());
-        export const getBlockPosCurrentlyStandingOn = (thiz: _Actor) => $getBlockPosCurrentlyStandingOn(thiz, _BlockPos.create(0, 0, 0), thiz);
+        export const getBlockPosCurrentlyStandingOn = (thiz: _Actor) => symcall("?getBlockPosCurrentlyStandingOn@Actor@@QEBA?AVBlockPos@@PEAV1@@Z", _BlockPos, {this:_Actor, structureReturn:true}, _Actor).call(thiz, thiz);
         export const isInWater: (thiz: _Actor) => boolean = symcall("?isInWater@Actor@@UEBA_NXZ", bool_t, null, _Actor);
     }
     export namespace BaseCommandBlock {
@@ -273,11 +282,11 @@ export namespace MCAPI {
         export const getStateFromLegacyData: (thiz: _BlockLegacy, data: number) => _Block = symcall("?getStateFromLegacyData@BlockLegacy@@UEBAAEBVBlock@@G@Z", _Block.ref(), null, _BlockLegacy, uint16_t);
     }
     export namespace BlockPos {
-        export const relative: (thiz: _BlockPos, facing: Facing, steps: number) => _BlockPos = symcall("?relative@BlockPos@@QEBA?AV1@EH@Z", _BlockPos, null, _BlockPos, uint8_t, int32_t);
+        const $relative = symcall("?relative@BlockPos@@QEBA?AV1@EH@Z", _BlockPos, {this:_BlockPos, structureReturn:true}, uint8_t, int32_t);
+        export const relative = (thiz: _BlockPos, facing: Facing, steps: number): _BlockPos => $relative.call(thiz, facing, steps);
     }
     export namespace BlockSource {
-        const $getDimensionId = symcall("?getDimensionId@BlockSource@@UEBA?AV?$AutomaticID@VDimension@@H@@XZ", int32_t, {structureReturn: true, this: _BlockSource});
-        export const getDimensionId = (thiz: _BlockSource): DimensionId => $getDimensionId.call(thiz);
+        export const getDimensionId = (thiz: _BlockSource): DimensionId => symcall("?getDimensionId@BlockSource@@UEBA?AV?$AutomaticID@VDimension@@H@@XZ", int32_t, {this: _BlockSource, structureReturn: true,}).call(thiz);
         export const removeBlockEntity: (thiz: _BlockSource, blockPos: _BlockPos) => StaticPointer = symcall("?removeBlockEntity@BlockSource@@QEAA?AV?$shared_ptr@VBlockActor@@@std@@AEBVBlockPos@@@Z", StaticPointer, null, _BlockSource, _BlockPos);
     }
     export namespace CommandOrigin {
@@ -344,8 +353,7 @@ export namespace MCAPI {
         export const getEntity: (thiz: StaticPointer) => _Actor = symcall("?getEntity@HitResult@@QEBAPEAVActor@@XZ", _Actor.ref(), null, StaticPointer);
     }
     export namespace Item {
-        const $getSerializedName = symcall("?getSerializedName@Item@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", CxxStringWith8Bytes, null, _Item, CxxStringWith8Bytes);
-        export const getSerializedName = (thiz: _Item) => $getSerializedName(thiz, "");
+        export const getSerializedName = (thiz: _Item) => symcall("?getSerializedName@Item@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", CxxString, {this:_Item, structureReturn:true}).call(thiz);
     }
     export namespace ItemStackBase {
         export const setNull: (thiz: _ItemStack) => void = symcall("?setNull@ItemStackBase@@UEAAXXZ", void_t, null, _ItemStack);
