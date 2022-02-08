@@ -1,6 +1,6 @@
 {
   "name": "@bdsx/bdsx-lxl",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "LiteXLoader ported into BDSX",
   "main": "index.js",
   "keywords": [],

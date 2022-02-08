@@ -791,8 +791,10 @@ events.playerDropItem.on(event => {
     const original = symhook("?onExploded@Block@@QEBAXAEAVBlockSource@@AEBVBlockPos@@PEAVActor@@@Z",
     void_t, null, Block, BlockSource, BlockPos, Actor)
     ((thiz, region, pos, entitySource) => {
-        const cancelled = LXL_Events.onBlockExploded.fire(Block$newBlock(pos, entitySource.getDimensionId()), Entity$newEntity(entitySource));
-        _tickCallback();
+        if (entitySource) {
+            const cancelled = LXL_Events.onBlockExploded.fire(Block$newBlock(pos, entitySource.getDimensionId()), Entity$newEntity(entitySource));
+            _tickCallback();
+        }
         return original(thiz, region, pos, entitySource);
     });
 }
