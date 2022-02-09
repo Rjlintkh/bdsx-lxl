@@ -1,4 +1,4 @@
-import { Actor, Actor as _Actor, ActorDamageCause, ActorDamageSource, DimensionId } from "bdsx/bds/actor";
+import { Actor, Actor as _Actor, ActorDamageCause, ActorDamageSource, ActorUniqueID, DimensionId } from "bdsx/bds/actor";
 import { Block as _Block, BlockActor as _BlockActor, BlockLegacy as _BlockLegacy, BlockSource, BlockSource as _BlockSource } from "bdsx/bds/block";
 import { BlockPos as _BlockPos, Facing, Vec3, Vec3 as _Vec3 } from "bdsx/bds/blockpos";
 import { Command, CommandPermissionLevel } from "bdsx/bds/command";
@@ -40,7 +40,7 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     // BasePressurePlateBlock
     "?entityInside@BasePressurePlateBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@AEAVActor@@@Z",
     // BedItem
-    "?_tryUseOn@BedItem@@AEBA_NAEAVItemStackBase@@AEAVActor@@VBlockPos@@EMMM@Z",
+    "?_tryUseOn@BedItem@@AEBA_NAEAVItemStackBase@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
     // Block
     "?attack@Block@@QEBA_NPEAVPlayer@@AEBVBlockPos@@@Z",
     "?hasBlockEntity@Block@@QEBA_NXZ",
@@ -82,11 +82,11 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     // DiodeBlock
     "?onRedstoneUpdate@DiodeBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
     // DoorItem
-    "?_useOn@DoorItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EMMM@Z",
+    "?_useOn@DoorItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
     // DropperBlockActor
     "?_getContainerAt@DropperBlockActor@@AEAAPEAVContainer@@AEAVBlockSource@@AEBVVec3@@@Z",
     // DyePowderItem
-    "?_useOn@DyePowderItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EMMM@Z",
+    "?_useOn@DyePowderItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
     // Explosion
     "?explode@Explosion@@QEAAXXZ",
     // Facing
@@ -136,7 +136,7 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     // NpcActionsContainer
     "?getActionAt@NpcActionsContainer@@QEAAPEAVNpcAction@@_K@Z",
     // NpcComponent
-    "?executeCommandAction@NpcComponent@@QEAAXAEAVActor@@AEBVPlayer@@HAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+    "?executeCommandAction@NpcComponent@@QEAAXAEAVActor@@AEAVPlayer@@HAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     // NpcSceneDialogueData
     "??0NpcSceneDialogueData@@QEAA@AEAVNpcComponent@@AEAVActor@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     "?getActionsContainer@NpcSceneDialogueData@@UEAAAEAUNpcActionsContainer@@XZ",
@@ -171,7 +171,7 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     // ProjectileComponent
     "?onHit@ProjectileComponent@@QEAAXAEAVActor@@AEBVHitResult@@@Z",
     // RedStoneDustItem
-    "?_useOn@RedStoneDustItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EMMM@Z",
+    "?_useOn@RedStoneDustItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
     // RedstoneTorchBlock
     "?onRedstoneUpdate@RedstoneTorchBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
     // RedstoneWireBlock
@@ -228,7 +228,7 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?mWarpedStandingSign@VanillaBlocks@@3PEBVBlock@@EB",
     // VanillaServerGameplayEventListener
     "?onBlockInteractedWith@VanillaServerGameplayEventListener@@UEAA?AW4EventResult@@AEAVPlayer@@AEBVBlockPos@@@Z",
-    "?onPlayerOpenContainer@VanillaServerGameplayEventListener@@UEAA?AW4EventResult@@AEBUPlayerOpenContainerEvent@@@Z",
+    "?onEvent@VanillaServerGameplayEventListener@@UEAA?AW4EventResult@@AEBUPlayerOpenContainerEvent@@@Z",
     // WeakEntityRef
     "??$tryUnwrap@VPlayer@@$$V@WeakEntityRef@@QEBAPEAVPlayer@@XZ",
     // WitherBoss
@@ -337,14 +337,14 @@ export namespace MCAPI {
         mBreaking: bool_t;
         @nativeField(bool_t)
         mAllowUnderwater: bool_t;
-        @nativeField(_Actor.ref(), 0x58)
-        mSource: _Actor;
+        @nativeField(ActorUniqueID, 0x58)
+        mSourceID: ActorUniqueID;
         @nativeField(_BlockSource.ref())
         mRegion: _BlockSource;
         @nativeField(float32_t)
         mMaxResistance: float32_t;
         @nativeField(bool_t)
-        mOverrideInWater: bool_t;
+        mInOverrideWater: bool_t;
     }
     export namespace Facing {
         export const convertYRotationToFacingDirection: (yRotation: number) => number = symcall("?convertYRotationToFacingDirection@Facing@@SAEM@Z", uint8_t, null, float32_t);

@@ -483,9 +483,9 @@ events.playerDropItem.on(event => {
     });
 }
 {
-    const original = symhook("?_tryUseOn@BedItem@@AEBA_NAEAVItemStackBase@@AEAVActor@@VBlockPos@@EMMM@Z",
-    bool_t, null, StaticPointer, ItemStack, Actor, BlockPos, uint8_t, float32_t, float32_t, float32_t)
-    ((thiz, instance, entity, pos, face, clickX, clickY, clickZ) => {
+    const original = symhook("?_tryUseOn@BedItem@@AEBA_NAEAVItemStackBase@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
+    bool_t, null, StaticPointer, ItemStack, Actor, BlockPos, uint8_t, Vec3)
+    ((thiz, instance, entity, pos, face, clickPos) => {
         if (entity.isPlayer()) {
             const cancelled = LXL_Events.onPlaceBlock.fire(Player$newPlayer(entity), Block$newBlock(pos, entity.getDimensionId()));
             _tickCallback();
@@ -493,13 +493,13 @@ events.playerDropItem.on(event => {
                 return false;
             }
         }
-        return original(thiz, instance, entity, pos, face, clickX, clickY, clickZ);
+        return original(thiz, instance, entity, pos, face, clickPos);
     });
 }
 {
-    const original = symhook("?_useOn@DyePowderItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EMMM@Z",
-    bool_t, null, StaticPointer, ItemStack, Actor, BlockPos, uint8_t, float32_t, float32_t, float32_t)
-    ((thiz, instance, entity, pos, face, clickX, clickY, clickZ) => {
+    const original = symhook("?_useOn@DyePowderItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
+    bool_t, null, StaticPointer, ItemStack, Actor, BlockPos, uint8_t, Vec3)
+    ((thiz, instance, entity, pos, face, clickPos) => {
         if (entity.isPlayer()) {
             const cancelled = LXL_Events.onPlaceBlock.fire(Player$newPlayer(entity), Block$newBlock(pos, entity.getDimensionId()));
             _tickCallback();
@@ -507,13 +507,13 @@ events.playerDropItem.on(event => {
                 return false;
             }
         }
-        return original(thiz, instance, entity, pos, face, clickX, clickY, clickZ);
+        return original(thiz, instance, entity, pos, face, clickPos);
     });
 }
 {
-    const original = symhook("?_useOn@DoorItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EMMM@Z",
-    bool_t, null, StaticPointer, ItemStack, Actor, BlockPos, uint8_t, float32_t, float32_t, float32_t)
-    ((thiz, instance, entity, pos, face, clickX, clickY, clickZ) => {
+    const original = symhook("?_useOn@DoorItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
+    bool_t, null, StaticPointer, ItemStack, Actor, BlockPos, uint8_t, Vec3)
+    ((thiz, instance, entity, pos, face, clickPos) => {
         if (entity.isPlayer()) {
             let block!: Block;
             switch (daccess(thiz, int32_t, 552)) {
@@ -553,13 +553,13 @@ events.playerDropItem.on(event => {
                 return false;
             }
         }
-        return original(thiz, instance, entity, pos, face, clickX, clickY, clickZ);
+        return original(thiz, instance, entity, pos, face, clickPos);
     });
 }
 {
-    const original = symhook("?_useOn@RedStoneDustItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EMMM@Z",
-    bool_t, null, StaticPointer, ItemStack, Actor, BlockPos, uint8_t, float32_t, float32_t, float32_t)
-    ((thiz, instance, entity, pos, face, clickX, clickY, clickZ) => {
+    const original = symhook("?_useOn@RedStoneDustItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
+    bool_t, null, StaticPointer, ItemStack, Actor, BlockPos, uint8_t, Vec3)
+    ((thiz, instance, entity, pos, face, clickPos) => {
         if (entity.isPlayer()) {
             const cancelled = LXL_Events.onPlaceBlock.fire(Player$newPlayer(entity), Block$newBlock(pos, entity.getDimensionId()));
             _tickCallback();
@@ -567,7 +567,7 @@ events.playerDropItem.on(event => {
                 return false;
             }
         }
-        return original(thiz, instance, entity, pos, face, clickX, clickY, clickZ);
+        return original(thiz, instance, entity, pos, face, clickPos);
     });
 }
 {
@@ -622,7 +622,7 @@ events.playerDropItem.on(event => {
 
 /////////////////// PlayerOpenContainer ///////////////////
 {
-    const original = symhook("?onPlayerOpenContainer@VanillaServerGameplayEventListener@@UEAA?AW4EventResult@@AEBUPlayerOpenContainerEvent@@@Z",
+    const original = symhook("?onEvent@VanillaServerGameplayEventListener@@UEAA?AW4EventResult@@AEBUPlayerOpenContainerEvent@@@Z",
     uint16_t, null, StaticPointer, StaticPointer)
     ((thiz, event) => {
         const blockPos = daccess(event, BlockPos, 28);
@@ -1110,7 +1110,7 @@ events.entityDie.on(event => {
     const original = symhook("?explode@Explosion@@QEAAXXZ",
     void_t, null, MCAPI.Explosion)
     ((thiz) => {
-        const actor = thiz.mSource;
+        const actor = Actor.fromUniqueIdBin(thiz.mSourceID, true);
         const pos = thiz.mPos;
         const radius = thiz.mRadius;
         const bs = thiz.mRegion;
@@ -1221,7 +1221,7 @@ events.entityDie.on(event => {
 
 ////////////// NpcCmd //////////////
 {
-    const original = symhook("?executeCommandAction@NpcComponent@@QEAAXAEAVActor@@AEBVPlayer@@HAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+    const original = symhook("?executeCommandAction@NpcComponent@@QEAAXAEAVActor@@AEAVPlayer@@HAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     void_t, null, StaticPointer, Actor, Player, int32_t, CxxString)
     ((thiz, owner, player, actionIndex, sceneName) => {
         const data = MCAPI.NpcSceneDialogueData.allocate();
