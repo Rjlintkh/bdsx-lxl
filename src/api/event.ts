@@ -1,4 +1,4 @@
-import { Actor, ActorDamageCause, ActorDamageSource, ActorDefinitionIdentifier, ActorFlags } from "bdsx/bds/actor";
+import { Actor, ActorDamageCause, ActorDamageSource, ActorDefinitionIdentifier, ActorFlags, ActorUniqueID } from "bdsx/bds/actor";
 import { Block, BlockActor, BlockLegacy, BlockSource } from "bdsx/bds/block";
 import { BlockPos, Vec3 } from "bdsx/bds/blockpos";
 import { CommandOrigin } from "bdsx/bds/commandorigin";
@@ -13,6 +13,7 @@ import { RespawnPacket, TextPacket } from "bdsx/bds/packets";
 import { Player, ServerPlayer } from "bdsx/bds/player";
 import { Objective, Scoreboard, ScoreboardId } from "bdsx/bds/scoreboard";
 import { serverInstance } from "bdsx/bds/server";
+import { bin } from "bdsx/bin";
 import { capi } from "bdsx/capi";
 import { CANCEL } from "bdsx/common";
 import { StaticPointer } from "bdsx/core";
@@ -67,10 +68,11 @@ export const LXL_Events = {
     onChangeDim: new LXL_Event<(player: LXL_Player, dimid: number) => void>(),
     /** Valid 03-02-2022 19:22:22 */
     onJump: new LXL_Event<(player: LXL_Player) => void>(),
+    onEntityTransformation: new LXL_Event<(uniqueId: string, entity: LXL_Entity) => void>(),
     onSneak: new LXL_Event<(player: LXL_Player, isSneaking: boolean) => void>(),
     onAttackEntity: new LXL_Event<(player: LXL_Player, entity: LXL_Entity) => void | false>(),
     onAttackBlock: new LXL_Event<(player: LXL_Player, block: LXL_Block, item: LXL_Item | null) => void | false>(),
-    onTakeItem: new LXL_Event<(player: LXL_Player, entity: LXL_Entity, item: LXL_Item) => void | false>(),
+    onTakeItem: new LXL_Event<(player: LXL_Player, entity: LXL_Entity, item: LXL_Item | null) => void | false>(),
     onDropItem: new LXL_Event<(player: LXL_Player, item: LXL_Item) => void | false>(),
     onEat: new LXL_Event<(player: LXL_Player, item: LXL_Item) => void | false>(),
     onConsumeTotem: new LXL_Event<(player: LXL_Player) => void | false>(),
@@ -124,6 +126,7 @@ export const LXL_Events = {
     onRide: new LXL_Event<(entity1: LXL_Entity, entity2: LXL_Entity) => void | false>(),
     onStepOnPressurePlate: new LXL_Event<(entity: LXL_Entity, pressurePlate: LXL_Block) => void | false>(),
     onSpawnProjectile: new LXL_Event<(shooter: LXL_Entity, type: string) => void | false>(),
+    onProjectileCreated: new LXL_Event<(shooter: LXL_Entity, entity: LXL_Entity) => void>(),
     onNpcCmd: new LXL_Event<(npc: LXL_Entity, pl: LXL_Player, cmd: string) => void | false>(),
     /** Valid 06-02-2022 14:37:44 */
     onChangeArmorStand: new LXL_Event<(as: LXL_Entity, pl: LXL_Player, slot: number) => void | false>(),
@@ -255,6 +258,18 @@ export function unlisten<E extends keyof typeof LXL_Events>(event: E, callback: 
     });
 }
 
+////////////////// EntityTransform //////////////////
+{
+    const original = symhook("?maintainOldData@TransformationComponent@@QEAAXAEAVActor@@0AEBUTransformationDescription@@AEBUActorUniqueID@@AEBVLevel@@@Z",
+    void_t, null, StaticPointer, Actor, Actor, StaticPointer, ActorUniqueID.ref(), Level)
+    ((thiz, originalActor, transformed, transformation, ownerID, level) => {
+        const cancelled = LXL_Events.onEntityTransformation.fire(bin.toString(originalActor.getUniqueIdBin()), Entity$newEntity(transformed));
+        _tickCallback();
+        return original(thiz, originalActor, transformed, transformation, ownerID, level);
+    });
+}
+
+
 /////////////////// PlayerSneak ///////////////////
 {
     const original = symhook("?sendActorSneakChanged@ActorEventCoordinator@@QEAAXAEAVActor@@_N@Z",
@@ -299,7 +314,7 @@ export function unlisten<E extends keyof typeof LXL_Events>(event: E, callback: 
 
 /////////////////// PlayerTakeItem ///////////////////
 events.playerPickupItem.on(event => {
-    const cancelled = LXL_Events.onTakeItem.fire(Player$newPlayer(<ServerPlayer>event.player), Entity$newEntity(event.itemActor), Item$newItem(event.itemActor.itemStack));
+    const cancelled = LXL_Events.onTakeItem.fire(Player$newPlayer(<ServerPlayer>event.player), Entity$newEntity(event.itemActor), event.itemActor.itemStack ? Item$newItem(event.itemActor.itemStack) : null);
     _tickCallback();
     if (cancelled) {
         return CANCEL;
@@ -1204,18 +1219,46 @@ events.entityDie.on(event => {
 ////////////// ProjectileSpawn //////////////
 {
     const original = symhook("?spawnProjectile@Spawner@@QEAAPEAVActor@@AEAVBlockSource@@AEBUActorDefinitionIdentifier@@PEAV2@AEBVVec3@@3@Z",
-    void_t, null, Spawner, BlockSource, ActorDefinitionIdentifier, Actor, Vec3, Vec3)
+    Actor, null, Spawner, BlockSource, ActorDefinitionIdentifier, Actor, Vec3, Vec3)
     ((thiz, region, id, spawner, position, direction) => {
-        let fullName = id.fullName;
-        if (fullName.endsWith("<>")) {
-            fullName = fullName.substring(0, fullName.length - 2);
+        {
+            let fullName = id.fullName;
+            if (fullName.endsWith("<>")) {
+                fullName = fullName.substring(0, fullName.length - 2);
+            }
+            const cancelled = LXL_Events.onSpawnProjectile.fire(Entity$newEntity(spawner), fullName);
+            _tickCallback();
+            if (cancelled) {
+                return null as any;
+            }
         }
-        const cancelled = LXL_Events.onSpawnProjectile.fire(Entity$newEntity(spawner), fullName);
+        const projectile = original(thiz, region, id, spawner, position, direction);
+        const cancelled = LXL_Events.onProjectileCreated.fire(Entity$newEntity(spawner), Entity$newEntity(projectile));
+        return projectile;
+    });
+}
+{
+    const original = symhook("?_shootFirework@CrossbowItem@@AEBAXAEBVItemInstance@@AEAVPlayer@@@Z",
+    void_t, null, StaticPointer, ItemStack, Player)
+    ((thiz, projectileInstance, player) => {
+        const cancelled = LXL_Events.onSpawnProjectile.fire(Entity$newEntity(player), "minecraft:fireworks_rocket");
         _tickCallback();
         if (cancelled) {
             return;
         }
-        return original(thiz, region, id, spawner, position, direction);
+        return original(thiz, projectileInstance, player);
+    });
+}
+{
+    const original = symhook("?releaseUsing@TridentItem@@UEBAXAEAVItemStack@@PEAVPlayer@@H@Z",
+    void_t, null, StaticPointer, ItemStack, Player, int32_t)
+    ((thiz, itemStack, player, durationLeft) => {
+        const cancelled = LXL_Events.onSpawnProjectile.fire(Entity$newEntity(player), LIAPI.ItemStack.getTypeName(itemStack));
+        _tickCallback();
+        if (cancelled) {
+            return;
+        }
+        return original(thiz, itemStack, player, durationLeft);
     });
 }
 
@@ -1224,7 +1267,7 @@ events.entityDie.on(event => {
     const original = symhook("?executeCommandAction@NpcComponent@@QEAAXAEAVActor@@AEAVPlayer@@HAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     void_t, null, StaticPointer, Actor, Player, int32_t, CxxString)
     ((thiz, owner, player, actionIndex, sceneName) => {
-        const data = MCAPI.NpcSceneDialogueData.allocate();
+        let data = MCAPI.NpcSceneDialogueData.allocate();
         MCAPI.NpcSceneDialogueData.NpcSceneDialogueData(data, thiz, owner, sceneName);
         const container = MCAPI.NpcSceneDialogueData.getActionsContainer(data);
         const actionAt = MCAPI.NpcActionsContainer.getActionAt(container, actionIndex);
@@ -1250,7 +1293,6 @@ events.entityDie.on(event => {
     bool_t, null, Actor, Player, int32_t)
     ((thiz, player, slot) => {
         const cancelled = LXL_Events.onChangeArmorStand.fire(Entity$newEntity(thiz), Player$newPlayer(<ServerPlayer>player), slot);
-        console.log(thiz, player, slot);
         _tickCallback();
         if (cancelled) {
             return false;
@@ -1304,17 +1346,3 @@ events.levelTick.on(() => {
     LXL_Events.onTick.fire();
     _tickCallback();
 })
-
-// ===== onFireworkShootWithCrossbow =====
-{
-    const original = symhook("?_shootFirework@CrossbowItem@@AEBAXAEBVItemInstance@@AEAVPlayer@@@Z",
-    void_t, null, StaticPointer, ItemStack, Player)
-    ((thiz, projectileInstance, player) => {
-        const cancelled = LXL_Events.onFireworkShootWithCrossbow.fire(Player$newPlayer(<ServerPlayer>player));
-        _tickCallback();
-        if (cancelled) {
-            return;
-        }
-        return original(thiz, projectileInstance, player);
-    });
-}

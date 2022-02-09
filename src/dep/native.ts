@@ -162,6 +162,7 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?hasOpenContainer@Player@@QEBA_NXZ",
     "?inventoryChanged@Player@@UEAAXAEAVContainer@@HAEBVItemStack@@1_N@Z",
     "?jumpFromGround@Player@@UEAAXXZ",
+    "?resetPlayerLevel@Player@@QEAAXXZ",
     "?setArmor@Player@@UEAAXW4ArmorSlot@@AEBVItemStack@@@Z",
     "?take@Player@@QEAA_NAEAVActor@@HH@Z",
     // PlayerEventCoordinator
@@ -209,6 +210,10 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?spawnProjectile@Spawner@@QEAAPEAVActor@@AEAVBlockSource@@AEBUActorDefinitionIdentifier@@PEAV2@AEBVVec3@@3@Z",
     // SuspiciousStewItem
     "?useTimeDepleted@SuspiciousStewItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    // TransformationComponent
+    "?maintainOldData@TransformationComponent@@QEAAXAEAVActor@@0AEBUTransformationDescription@@AEBUActorUniqueID@@AEBVLevel@@@Z",
+    // TridentItem
+    "?releaseUsing@TridentItem@@UEBAXAEAVItemStack@@PEAVPlayer@@H@Z",
     // VanillaBlocks
     "?mWallSign@VanillaBlocks@@3PEBVBlock@@EB",
     "?mSign@VanillaBlocks@@3PEBVBlock@@EB",
@@ -247,7 +252,19 @@ export const symcall = ((...args: any[]) => {
     (symcall as any).cache.set(args[0], func);
     return func;
 }) as typeof hacker.js;
-export const symhook = hacker.hooking.bind(hacker) as typeof hacker.hooking;
+export const symhook = ((...args: any[]) => {
+    const hook = (hacker.hooking as any)(...args);
+    const func = (cb: any) => {
+        return hook((...args: any[]) => {
+            try {
+                return cb(...args);
+            } catch (e) {
+                console.error(e);
+            }
+        });
+    }
+    return func;
+}) as typeof hacker.hooking;
 export const dlsym = (name: keyof typeof RVAs) => RVAs[name];
 export const daccess = <T extends ParamType>(ptr: VoidPointer, type: T, offset = 0) => <T extends {prototype:infer V} ? V : never>type[NativeType.getter](ptr as any, offset);
 
@@ -457,6 +474,7 @@ export namespace MCAPI {
         const $getXuid = symcall("?getXuid@Player@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", CxxString, null, _Player, CxxString);
         export const getXuid = (thiz: _Player) => $getXuid(thiz, "");
         export const hasOpenContainer: (thiz: _Player) => boolean = symcall("?hasOpenContainer@Player@@QEBA_NXZ", bool_t, null, _Player);
+        export const resetPlayerLevel: (thiz: _Player) => void = symcall("?resetPlayerLevel@Player@@QEAAXXZ", void_t, null, _Player);
     }
     export namespace ScoreboardId {
         export const isValid: (thiz: _ScoreboardId) => boolean = symcall("?isValid@ScoreboardId@@QEBA_NXZ", bool_t, null, _ScoreboardId);

@@ -303,16 +303,6 @@ export class LXL_Player {
         return true;
     }
 
-    addLevel(level: number) {
-        const player = this[PrivateFields];
-        if (!player) {
-            return null;
-        }
-
-        MCAPI.Player.addLevels(player, level);
-        return true;
-    }
-
     setOnFire(time: number) {
         const player = this[PrivateFields];
         if (!player) {
@@ -482,6 +472,53 @@ export class LXL_Player {
         }
 
         return LIAPI.Player.refreshInventory(player);
+    }
+
+    addLevel(count: number) {
+        const player = this[PrivateFields];
+        if (!player) {
+            return null;
+        }
+
+        MCAPI.Player.addLevels(player, count);
+        return true;
+    }
+
+    getLevel() {
+        const player = this[PrivateFields];
+        if (!player) {
+            return null;
+        }
+
+        return player.getExperienceLevel();
+    }
+
+    resetLevel() {
+        const player = this[PrivateFields];
+        if (!player) {
+            return null;
+        }
+
+        return MCAPI.Player.resetPlayerLevel(player);
+    }
+
+    getXpNeededForNextLevel() {
+        const player = this[PrivateFields];
+        if (!player) {
+            return null;
+        }
+
+        return player.getXpNeededForNextLevel();
+    }
+
+    addExperience(count: number) {
+        const player = this[PrivateFields];
+        if (!player) {
+            return null;
+        }
+
+        player.addExperience(~~count);
+        return true;
     }
 
     getScore(obj: string) {
