@@ -215,6 +215,16 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     // TridentItem
     "?releaseUsing@TridentItem@@UEBAXAEAVItemStack@@PEAVPlayer@@H@Z",
     // VanillaBlocks
+    "?mWoodenDoor@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mWoodenDoorSpruce@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mWoodenDoorBirch@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mWoodenDoorJungle@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mWoodenDoorAcacia@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mWoodenDoorDarkOak@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mIronDoor@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mCrimsonDoor@VanillaBlocks@@3PEBVBlock@@EB",
+    "?mWarpedDoor@VanillaBlocks@@3PEBVBlock@@EB",
+
     "?mWallSign@VanillaBlocks@@3PEBVBlock@@EB",
     "?mSign@VanillaBlocks@@3PEBVBlock@@EB",
     "?mSpruceWallSign@VanillaBlocks@@3PEBVBlock@@EB",
@@ -513,6 +523,16 @@ export namespace MCAPI {
         }
     }
     export namespace VanillaBlocks {
+        export const mWoodenDoor = dlsym("?mWoodenDoor@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mWoodenDoorSpruce = dlsym("?mWoodenDoorSpruce@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mWoodenDoorBirch = dlsym("?mWoodenDoorBirch@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mWoodenDoorJungle = dlsym("?mWoodenDoorJungle@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mWoodenDoorAcacia = dlsym("?mWoodenDoorAcacia@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mWoodenDoorDarkOak = dlsym("?mWoodenDoorDarkOak@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mIronDoor = dlsym("?mIronDoor@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mCrimsonDoor = dlsym("?mCrimsonDoor@VanillaBlocks@@3PEBVBlock@@EB");
+        export const mWarpedDoor = dlsym("?mWarpedDoor@VanillaBlocks@@3PEBVBlock@@EB");
+
         export const mWallSign = dlsym("?mWallSign@VanillaBlocks@@3PEBVBlock@@EB");
         export const mSign = dlsym("?mSign@VanillaBlocks@@3PEBVBlock@@EB");
         export const mSpruceWallSign = dlsym("?mSpruceWallSign@VanillaBlocks@@3PEBVBlock@@EB");

@@ -526,39 +526,26 @@ events.playerDropItem.on(event => {
     });
 }
 {
+    let doors: Block[];
+    bedrockServer.afterOpen().then(()=> {
+        doors = [
+            daccess(MCAPI.VanillaBlocks.mWoodenDoor, Block.ref()),
+            daccess(MCAPI.VanillaBlocks.mWoodenDoorSpruce, Block.ref()),
+            daccess(MCAPI.VanillaBlocks.mWoodenDoorBirch, Block.ref()),
+            daccess(MCAPI.VanillaBlocks.mWoodenDoorJungle, Block.ref()),
+            daccess(MCAPI.VanillaBlocks.mWoodenDoorAcacia, Block.ref()),
+            daccess(MCAPI.VanillaBlocks.mWoodenDoorDarkOak, Block.ref()),
+            daccess(MCAPI.VanillaBlocks.mIronDoor, Block.ref()),
+            daccess(MCAPI.VanillaBlocks.mCrimsonDoor, Block.ref()),
+            daccess(MCAPI.VanillaBlocks.mWarpedDoor, Block.ref()),
+        ];
+    });
+
     const original = symhook("?_useOn@DoorItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
     bool_t, null, StaticPointer, ItemStack, Actor, BlockPos, uint8_t, Vec3)
     ((thiz, instance, entity, pos, face, clickPos) => {
         if (entity.isPlayer()) {
-            let block!: Block;
-            switch (daccess(thiz, int32_t, 552)) {
-                case 0:
-                    block = Block.constructWith("minecraft:wooden_door")!;
-                    break;
-                case 1:
-                    block = Block.constructWith("minecraft:spruce_door")!;
-                    break;
-                case 2:
-                    block = Block.constructWith("minecraft:birch_door")!;
-                    break;
-                case 3:
-                    block = Block.constructWith("minecraft:jungle_door")!;
-                    break;
-                case 4:
-                    block = Block.constructWith("minecraft:acacia_door")!;
-                    break;
-                case 5:
-                    block = Block.constructWith("minecraft:dark_oak_door")!;
-                    break;
-                case 6:
-                    block = Block.constructWith("minecraft:iron_door")!;
-                    break;
-                case 7:
-                    block = Block.constructWith("minecraft:crimson_door")!;
-                    break;
-                case 8:
-                    block = Block.constructWith("minecraft:warped_door")!;
-            }
+            const block = doors[daccess(thiz, int32_t, 552)];
             if (!block) {
                 return false;
             }
