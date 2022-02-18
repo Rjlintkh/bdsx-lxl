@@ -1,6 +1,6 @@
 import { DisplaySlot, Objective } from "bdsx/bds/scoreboard";
 import { serverInstance } from "bdsx/bds/server";
-import { LIAPI, MCAPI } from "../dep/native";
+import { LlAPI, MCAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 import { LXL_Player } from "./player";
 
@@ -23,23 +23,23 @@ export class LXL_Objective {
     }
 
     setScore(target: LXL_Player | string, value: number) {
-        return LIAPI.Scoreboard.setScore(serverInstance.minecraft.getLevel().getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name, value);
+        return LlAPI.Scoreboard.setScore(serverInstance.minecraft.getLevel().getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name, value);
     }
 
     addScore(target: LXL_Player | string, value: number) {
-        return LIAPI.Scoreboard.addScore(serverInstance.minecraft.getLevel().getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name, value);
+        return LlAPI.Scoreboard.addScore(serverInstance.minecraft.getLevel().getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name, value);
     }
 
     reduceScore(target: LXL_Player | string, value: number) {
-        return LIAPI.Scoreboard.reduceScore(serverInstance.minecraft.getLevel().getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name, value);
+        return LlAPI.Scoreboard.reduceScore(serverInstance.minecraft.getLevel().getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name, value);
     }
 
     deleteScore(target: LXL_Player | string) {
-        return LIAPI.Scoreboard.deleteScore(serverInstance.minecraft.getLevel().getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name);
+        return LlAPI.Scoreboard.deleteScore(serverInstance.minecraft.getLevel().getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name);
     }
 
     getScore(target: LXL_Player | string) {
-        return LIAPI.Scoreboard.getScore(serverInstance.minecraft.getLevel().getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name);
+        return LlAPI.Scoreboard.getScore(serverInstance.minecraft.getLevel().getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name);
     }
 }
 

@@ -5,7 +5,7 @@ import { CompoundTag } from "bdsx/bds/nbt";
 import { serverInstance } from "bdsx/bds/server";
 import { StaticPointer } from "bdsx/core";
 import { NativeType } from "bdsx/nativetype";
-import { daccess, LIAPI, MCAPI } from "../dep/native";
+import { daccess, LlAPI, MCAPI } from "../dep/native";
 import { PrivateFields, Tag2Value } from "./api_help";
 import { FloatPos, IntPos, IntPos$newPos } from "./base";
 import { BlockEntity$newBlockEntity } from "./block_entity";
@@ -24,7 +24,7 @@ export class LXL_Block {
     pos: IntPos;
 
     get tileData() {
-        return LIAPI.Block.getTileData(this[PrivateFields]);
+        return LlAPI.Block.getTileData(this[PrivateFields]);
     }
 
     setNbt(nbt: NbtCompound) {
@@ -153,7 +153,7 @@ export function setBlock(a0: any, a1: any, a2?: any, a3?: any, a4?: any, a5?: an
         CompoundTag[NativeType.setter](newBlock, block[PrivateFields], 96);
     }
     const region = serverInstance.minecraft.getLevel().getDimension(dimId)!.getBlockSource();
-    return region.setBlock(pos, LIAPI.BlockLegacy.toBlock(newBlock.blockLegacy, tileData));
+    return region.setBlock(pos, LlAPI.BlockLegacy.toBlock(newBlock.blockLegacy, tileData));
 }
 
 export function spawnParticle(pos: IntPos | FloatPos, type: MinecraftParticleEffect): boolean;

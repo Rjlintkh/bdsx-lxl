@@ -4,7 +4,7 @@ import { ServerPlayer } from "bdsx/bds/player";
 import { serverInstance } from "bdsx/bds/server";
 import { bin } from "bdsx/bin";
 import { StaticPointer, VoidPointer } from "bdsx/core";
-import { LIAPI, MCAPI } from "../dep/native";
+import { LlAPI, MCAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 import { DirectionAngle$newAngle, FloatPos, FloatPos$newPos, IntPos, IntPos$newPos } from "./base";
 import { Block$newBlock } from "./block";
@@ -35,7 +35,7 @@ export class LXL_Entity {
             return null;
         }
 
-        return LIAPI.Actor.getTypeName(entity);
+        return LlAPI.Actor.getTypeName(entity);
     }
 
     get id() {
@@ -53,7 +53,7 @@ export class LXL_Entity {
             return null;
         }
 
-        return FloatPos$newPos(LIAPI.Actor.getPosition(entity), entity.getDimensionId());
+        return FloatPos$newPos(LlAPI.Actor.getPosition(entity), entity.getDimensionId());
     }
 
     get blockPos() {
@@ -62,7 +62,7 @@ export class LXL_Entity {
             return null;
         }
 
-        return IntPos$newPos(LIAPI.Actor.getBlockPos(entity), entity.getDimensionId());
+        return IntPos$newPos(LlAPI.Actor.getBlockPos(entity), entity.getDimensionId());
     }
 
     get maxHealth() {
@@ -89,7 +89,7 @@ export class LXL_Entity {
             return null;
         }
 
-        return !LIAPI.Actor.isOnGround(entity) && !MCAPI.Actor.isInWater(entity);
+        return !LlAPI.Actor.isOnGround(entity) && !MCAPI.Actor.isInWater(entity);
     }
 
     get inWater() {
@@ -226,7 +226,7 @@ export class LXL_Entity {
             return null;
         }
 
-        return LIAPI.Mob.refreshInventory(entity);
+        return LlAPI.Mob.refreshInventory(entity);
     }
 
     hasContainer() {
@@ -257,7 +257,7 @@ export class LXL_Entity {
             return null;
         }
 
-        return LIAPI.Actor.hurtEntity(entity, damage);
+        return LlAPI.Actor.hurtEntity(entity, damage);
     }
 
     setOnFire(time: number) {
@@ -266,7 +266,7 @@ export class LXL_Entity {
             return null;
         }
 
-        return LIAPI.Actor.setOnFire(entity, time, true);
+        return LlAPI.Actor.setOnFire(entity, time, true);
     }
 
     getNbt() {
@@ -325,7 +325,7 @@ export class LXL_Entity {
             return null;
         }
 
-        return LIAPI.Actor.getAllTags(entity);
+        return LlAPI.Actor.getAllTags(entity);
     }
 
     /** @deprecated */

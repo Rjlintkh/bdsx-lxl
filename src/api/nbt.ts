@@ -1,6 +1,6 @@
 import { ByteArrayTag, ByteTag, CompoundTag, DoubleTag, EndTag, FloatTag, Int64Tag, IntTag, ListTag, ShortTag, StringTag, Tag } from "bdsx/bds/nbt";
 import { decay } from "bdsx/decay";
-import { LIAPI } from "../dep/native";
+import { LlAPI } from "../dep/native";
 import { SNBT } from "../dep/snbt";
 import { logger, PrivateFields, Tag2Value, TODO } from "./api_help";
 
@@ -77,7 +77,7 @@ export class NbtEnd {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     set(data: any) {
@@ -101,7 +101,7 @@ export class NbtByte {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     set(data: number) {
@@ -126,7 +126,7 @@ export class NbtShort {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     set(data: number) {
@@ -152,7 +152,7 @@ export class NbtInt {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     set(data: number) {
@@ -177,7 +177,7 @@ export class NbtLong {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     set(data: number | string) {
@@ -202,7 +202,7 @@ export class NbtFloat {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     set(data: number) {
@@ -227,7 +227,7 @@ export class NbtDouble {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     set(data: number) {
@@ -254,7 +254,7 @@ export class NbtByteArray {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     set(data: ArrayBufferView) {
@@ -280,7 +280,7 @@ export class NbtString {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     set(data: string) {
@@ -315,7 +315,7 @@ export class NbtList {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     getSize() {
@@ -437,7 +437,7 @@ export class NbtCompound {
     }
 
     toString(space = 0) {
-        return LIAPI.Tag.toJson(this[PrivateFields], space);
+        return LlAPI.Tag.toJson(this[PrivateFields], space);
     }
 
     getKeys() {
@@ -537,7 +537,7 @@ export class NbtCompound {
     }
 
     toBinaryNBT() {
-        return LIAPI.CompoundTag.toBinaryNBT(this[PrivateFields]);
+        return LlAPI.CompoundTag.toBinaryNBT(this[PrivateFields]);
     }
 
     destroy() {

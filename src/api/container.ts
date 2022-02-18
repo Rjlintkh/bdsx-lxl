@@ -1,5 +1,5 @@
 import { Container as _Container } from "bdsx/bds/inventory";
-import { LIAPI, MCAPI } from "../dep/native";
+import { LlAPI, MCAPI } from "../dep/native";
 import { logger, PrivateFields } from "./api_help";
 import { Item$newItem, LXL_Item } from "./item";
 
@@ -11,11 +11,11 @@ export class LXL_Container {
     }
 
     get size() {
-        return LIAPI.Container.getSize(this[PrivateFields]);
+        return LlAPI.Container.getSize(this[PrivateFields]);
     }
 
     get type() {
-        return LIAPI.Container.getTypeName(this[PrivateFields]);
+        return LlAPI.Container.getTypeName(this[PrivateFields]);
     }
 
     addItem(item: LXL_Item) {
@@ -23,7 +23,7 @@ export class LXL_Container {
             logger.error("Wrong type of argument in addItem!");
             return null;
         }
-        return LIAPI.Container.addItemSafe(this[PrivateFields], item[PrivateFields]);
+        return LlAPI.Container.addItemSafe(this[PrivateFields], item[PrivateFields]);
     }
 
     addItemToFirstEmptySlot(item: LXL_Item) {
@@ -31,7 +31,7 @@ export class LXL_Container {
             logger.error("Wrong type of argument in addItemToFirstEmptySlot!");
             return null;
         }
-        return LIAPI.Container.addItemToFirstEmptySlotSafe(this[PrivateFields], item[PrivateFields]);
+        return LlAPI.Container.addItemToFirstEmptySlotSafe(this[PrivateFields], item[PrivateFields]);
     }
 
     hasRoomFor(item: LXL_Item) {
@@ -65,7 +65,7 @@ export class LXL_Container {
         if (!itemOld) {
             return false;
         }
-        return LIAPI.ItemStack.setItem(itemOld, item[PrivateFields]);
+        return LlAPI.ItemStack.setItem(itemOld, item[PrivateFields]);
     }
 
     getAllItems() {

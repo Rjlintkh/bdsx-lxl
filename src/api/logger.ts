@@ -1,4 +1,4 @@
-import { LIAPI } from "../dep/native";
+import { LlAPI } from "../dep/native";
 import { Logger } from "../utils/logger";
 import { PrivateFields, StringifyValue, TimeNow } from "./api_help";
 import { LXL_Player } from "./player";
@@ -22,7 +22,7 @@ export const logger = {
             if (this.player && this.playerLevel >= (Logger.Level as any)[mode]) {
                 const player = this.player[PrivateFields];
                 if (player) {
-                    LIAPI.Player.sendText(player, `${(Logger.ColorCode as any)[mode]}[${mode}]${this.title ? "[" + this.title + "]" : ""} ${message}`, 0);
+                    LlAPI.Player.sendText(player, `${(Logger.ColorCode as any)[mode]}[${mode}]${this.title ? "[" + this.title + "]" : ""} ${message}`, 0);
                 }
             }
             return true;

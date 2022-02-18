@@ -555,7 +555,7 @@ export namespace MCAPI {
     }
 }
 
-export namespace LIAPI {
+export namespace LlAPI {
     export namespace Actor {
         export function getAllTags(thiz: _Actor) {
             let nbt = thiz.allocateAndSave();

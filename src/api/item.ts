@@ -2,7 +2,7 @@ import { DimensionId } from "bdsx/bds/actor";
 import { Vec3 } from "bdsx/bds/blockpos";
 import { ItemStack } from "bdsx/bds/inventory";
 import { serverInstance } from "bdsx/bds/server";
-import { LIAPI, MCAPI } from "../dep/native";
+import { LlAPI, MCAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 import { FloatPos, IntPos } from "./base";
 import { Entity$newEntity, LXL_Entity } from "./entity";
@@ -30,7 +30,7 @@ export class LXL_Item {
         if (!itemNew) {
             return null;
         }
-        return LIAPI.ItemStack.setItem(this[PrivateFields], itemNew);
+        return LlAPI.ItemStack.setItem(this[PrivateFields], itemNew);
     }
 
     clone() {
@@ -80,10 +80,10 @@ export function Item$newItem(p: ItemStack) {
     const newp = new LXL_Item();
     newp[PrivateFields] = p;
     Object.defineProperty(newp, "name", { value: p.getCustomName() });
-    Object.defineProperty(newp, "type", { value: LIAPI.ItemStack.getTypeName(p) });
+    Object.defineProperty(newp, "type", { value: LlAPI.ItemStack.getTypeName(p) });
     Object.defineProperty(newp, "id", { value: p.getId() });
-    Object.defineProperty(newp, "count", { value: LIAPI.ItemStack.getCount(p) });
-    Object.defineProperty(newp, "aux", { value: LIAPI.ItemStack.getAux(p) });
+    Object.defineProperty(newp, "count", { value: LlAPI.ItemStack.getCount(p) });
+    Object.defineProperty(newp, "aux", { value: LlAPI.ItemStack.getAux(p) });
     return newp;
 }
 

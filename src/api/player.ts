@@ -7,7 +7,7 @@ import { ObjectiveSortOrder } from "bdsx/bds/scoreboard";
 import { serverInstance } from "bdsx/bds/server";
 import { bin } from "bdsx/bin";
 import { bedrockServer } from "bdsx/launcher";
-import { LIAPI, MCAPI } from "../dep/native";
+import { LlAPI, MCAPI } from "../dep/native";
 import { logger, playerDataDB, PrivateFields, Tag2Value } from "./api_help";
 import { DirectionAngle$newAngle, FloatPos, FloatPos$newPos, IntPos, IntPos$newPos } from "./base";
 import { Block$newBlock } from "./block";
@@ -39,7 +39,7 @@ export class LXL_Player {
             return null;
         }
 
-        return FloatPos$newPos(LIAPI.Actor.getPosition(player), player.getDimensionId());
+        return FloatPos$newPos(LlAPI.Actor.getPosition(player), player.getDimensionId());
     }
 
     get blockPos() {
@@ -48,7 +48,7 @@ export class LXL_Player {
             return null;
         }
 
-        return IntPos$newPos(LIAPI.Actor.getBlockPos(player), player.getDimensionId());
+        return IntPos$newPos(LlAPI.Actor.getBlockPos(player), player.getDimensionId());
     }
 
     get realName() {
@@ -57,7 +57,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Player.getRealName(player);
+        return LlAPI.Player.getRealName(player);
     }
 
     get xuid() {
@@ -75,7 +75,7 @@ export class LXL_Player {
             return null;
         }
 
-        if (LIAPI.Actor.isSimulatedPlayer(player)) {
+        if (LlAPI.Actor.isSimulatedPlayer(player)) {
             // const id = player.getUniqueIdBin();
             // return bin.toString(id).replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5");
             return "";
@@ -126,7 +126,7 @@ export class LXL_Player {
             return null;
         }
 
-        return !LIAPI.Actor.isOnGround(player) && !MCAPI.Actor.isInWater(player);
+        return !LlAPI.Actor.isOnGround(player) && !MCAPI.Actor.isInWater(player);
     }
 
     get inWater() {
@@ -182,7 +182,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Player.isOP(player);
+        return LlAPI.Player.isOP(player);
     }
 
     setPermLevel(level: number) {
@@ -222,7 +222,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Player.runcmd(player, cmd);
+        return LlAPI.Player.runcmd(player, cmd);
     }
 
     teleport(pos: IntPos | FloatPos): boolean;
@@ -259,11 +259,11 @@ export class LXL_Player {
             return null;
         }
 
-        if (LIAPI.Actor.isSimulatedPlayer(player)) {
+        if (LlAPI.Actor.isSimulatedPlayer(player)) {
             return false;
         }
 
-        return LIAPI.Player.kick(player, msg);
+        return LlAPI.Player.kick(player, msg);
     }
 
     disconnect = this.kick;
@@ -278,7 +278,7 @@ export class LXL_Player {
         if (newType >= 0 && newType <= 9) {
             type = newType;
         }
-        LIAPI.Player.sendText(player, msg, type);
+        LlAPI.Player.sendText(player, msg, type);
         return true;
     }
 
@@ -288,7 +288,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Player.talkAs(player, text);
+        return LlAPI.Player.talkAs(player, text);
     }
 
     sendText = this.tell;
@@ -309,7 +309,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Actor.setOnFire(player, time, true);
+        return LlAPI.Actor.setOnFire(player, time, true);
     }
 
     transServer(server: string, port: number) {
@@ -318,11 +318,11 @@ export class LXL_Player {
             return null;
         }
 
-        if (LIAPI.Actor.isSimulatedPlayer(player)) {
+        if (LlAPI.Actor.isSimulatedPlayer(player)) {
             return false;
         }
 
-        return LIAPI.Player.transferServer(player, server, port);
+        return LlAPI.Player.transferServer(player, server, port);
     }
 
     crash() {
@@ -331,11 +331,11 @@ export class LXL_Player {
             return null;
         }
 
-        if (LIAPI.Actor.isSimulatedPlayer(player)) {
+        if (LlAPI.Actor.isSimulatedPlayer(player)) {
             return false;
         }
 
-        return LIAPI.Player.crashClient(player);
+        return LlAPI.Player.crashClient(player);
     }
 
     hurt(damage: number) {
@@ -344,7 +344,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Actor.hurtEntity(player, damage);
+        return LlAPI.Actor.hurtEntity(player, damage);
     }
 
     refreshChunks() {
@@ -362,7 +362,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Player.giveItem(player, item[PrivateFields]);
+        return LlAPI.Player.giveItem(player, item[PrivateFields]);
     }
 
     clearItem(type: string) {
@@ -371,7 +371,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Player.clearItem(player, type);
+        return LlAPI.Player.clearItem(player, type);
     }
 
     isSprinting() {
@@ -453,7 +453,7 @@ export class LXL_Player {
             return null;
         }
 
-        return Container$newContainer(LIAPI.Player.getEnderChestContainer(player));
+        return Container$newContainer(LlAPI.Player.getEnderChestContainer(player));
     }
 
     getRespawnPosition() {
@@ -471,7 +471,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Player.refreshInventory(player);
+        return LlAPI.Player.refreshInventory(player);
     }
 
     addLevel(count: number) {
@@ -527,7 +527,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Scoreboard.getScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj);
+        return LlAPI.Scoreboard.getScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj);
     }
 
     setScore(obj: string, score: number) {
@@ -536,7 +536,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Scoreboard.setScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj, score);
+        return LlAPI.Scoreboard.setScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj, score);
     }
 
     addScore(obj: string, score: number) {
@@ -545,7 +545,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Scoreboard.addScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj, score);
+        return LlAPI.Scoreboard.addScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj, score);
     }
 
     reduceScore(obj: string, score: number) {
@@ -554,7 +554,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Scoreboard.reduceScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj, score);
+        return LlAPI.Scoreboard.reduceScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj, score);
     }
 
     deleteScore(obj: string) {
@@ -563,7 +563,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Scoreboard.deleteScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj);
+        return LlAPI.Scoreboard.deleteScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj);
     }
 
     setSidebar(title: string, data: Record<string, number>, sortOrder: ObjectiveSortOrder = 1) {
@@ -572,7 +572,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Player.setSidebar(player, title, Object.entries(data), sortOrder);
+        return LlAPI.Player.setSidebar(player, title, Object.entries(data), sortOrder);
     }
 
     removeSidebar() {
@@ -581,7 +581,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Player.removeSidebar(player);
+        return LlAPI.Player.removeSidebar(player);
     }
 
     setBossBar(title: string, percent: number) {
@@ -699,7 +699,7 @@ export class LXL_Player {
         if (name === "") {
             return false;
         }
-        playerDataDB.set(`${LIAPI.Player.getRealName(player)}-${name}`, data);
+        playerDataDB.set(`${LlAPI.Player.getRealName(player)}-${name}`, data);
         return true;
     }
 
@@ -712,7 +712,7 @@ export class LXL_Player {
         if (name === "") {
             return null;
         }
-        return playerDataDB.get(`${LIAPI.Player.getRealName(player)}-${name}`);
+        return playerDataDB.get(`${LlAPI.Player.getRealName(player)}-${name}`);
     }
 
     delExtraData(name: string, data: any) {
@@ -724,7 +724,7 @@ export class LXL_Player {
         if (name === "") {
             return false;
         }
-        playerDataDB.delete(`${LIAPI.Player.getRealName(player)}-${name}`);
+        playerDataDB.delete(`${LlAPI.Player.getRealName(player)}-${name}`);
         return true;
     }
 
@@ -784,7 +784,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.Actor.getAllTags(player);
+        return LlAPI.Actor.getAllTags(player);
     }
 
     getAbilities() {
@@ -821,7 +821,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LIAPI.NetworkIdentifier.getIP(player.getNetworkIdentifier());
+        return LlAPI.NetworkIdentifier.getIP(player.getNetworkIdentifier());
     }
 
     /** @deprecated */
@@ -839,7 +839,7 @@ export class LXL_Player {
 
         index = ~~index;
         const container = player.getInventory().container;
-        if (index > LIAPI.Container.getSize(container)) {
+        if (index > LlAPI.Container.getSize(container)) {
             return false;
         }
         MCAPI.Container.removeItem(container, index, count);
@@ -874,7 +874,7 @@ export class LXL_Player {
         }
 
         result.endChestArr = [];
-        const endChest = LIAPI.Player.getEnderChestContainer(player).getSlots();
+        const endChest = LlAPI.Player.getEnderChestContainer(player).getSlots();
         for (const item of endChest) {
             result.endChestArr.push(Item$newItem(item));
         }
@@ -938,6 +938,6 @@ export function broadcast(msg: string, type = 0) {
     if (newType >= 0 && newType <= 9) {
         type = newType;
     }
-    LIAPI.Level.broadcastText(serverInstance.minecraft.getLevel(), msg, type);
+    LlAPI.Level.broadcastText(serverInstance.minecraft.getLevel(), msg, type);
     return true;
 }

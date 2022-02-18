@@ -22,7 +22,7 @@ import { bedrockServer } from "bdsx/launcher";
 import { bool_t, CxxString, float32_t, int32_t, uint16_t, uint32_t, uint8_t, void_t } from "bdsx/nativetype";
 import { Wrapper } from "bdsx/pointer";
 import { _tickCallback } from "bdsx/util";
-import { daccess, LIAPI, MCAPI, symhook } from "../dep/native";
+import { daccess, LlAPI, MCAPI, symhook } from "../dep/native";
 import { logger } from "./api_help";
 import { FloatPos, FloatPos$newPos, IntPos, IntPos$newPos } from "./base";
 import { Block$newBlock, LXL_Block } from "./block";
@@ -336,7 +336,7 @@ events.playerDropItem.on(event => {
     const original = symhook("?useTimeDepleted@FoodItemComponentLegacy@@UEAAPEBVItem@@AEAVItemStack@@AEAVPlayer@@AEAVLevel@@@Z",
     int32_t, null, StaticPointer, ItemStack, Player, Level)
     ((thiz, instance, player, level): MCAPI.ItemUseMethod => {
-        if (LIAPI.ItemStack.getTypeName(instance) !== "minecraft:suspicious_stew") {
+        if (LlAPI.ItemStack.getTypeName(instance) !== "minecraft:suspicious_stew") {
             const cancelled = LXL_Events.onEat.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(instance));
             _tickCallback();
             if (cancelled) {
@@ -749,7 +749,7 @@ events.playerDropItem.on(event => {
     ((thiz, region, origin, markForSaving) => {
         const command = MCAPI.BaseCommandBlock.getCommand(thiz);
         const isMinecart = MCAPI.CommandOrigin.getOriginType(origin) === MCAPI.CommandOriginType.MinecartCommandBlock;
-        const pos = isMinecart ? origin.getEntity()!.getPosition() : LIAPI.BlockPos.toVec3(origin.getBlockPosition());
+        const pos = isMinecart ? origin.getEntity()!.getPosition() : LlAPI.BlockPos.toVec3(origin.getBlockPosition());
         const cancelled = LXL_Events.onCmdBlockExecute.fire(command, FloatPos$newPos(pos, origin.getDimension().getDimensionId()), isMinecart);
         _tickCallback();
         if (cancelled) {
@@ -917,7 +917,7 @@ let onFireSpread_OnPlace = false;
     bool_t, null, StaticPointer, BlockSource, Container, Vec3)
     ((thiz, region, toContainer, pos) => {
         const isMinecart = daccess(thiz, bool_t, 5);
-        const cancelled = LXL_Events.onHopperSearchItem.fire(FloatPos$newPos(isMinecart ? pos : LIAPI.Vec3.toBlockPos(pos), MCAPI.BlockSource.getDimensionId(region)), isMinecart);
+        const cancelled = LXL_Events.onHopperSearchItem.fire(FloatPos$newPos(isMinecart ? pos : LlAPI.Vec3.toBlockPos(pos), MCAPI.BlockSource.getDimensionId(region)), isMinecart);
         _tickCallback();
         if (cancelled) {
             return false;
@@ -1119,7 +1119,7 @@ events.entityDie.on(event => {
         const maxResistance = thiz.mMaxResistance;
         const genFire = thiz.mFire;
         const canBreaking = thiz.mBreaking;
-        if (actor?.isNotNull()) {
+        if (actor) {
             const cancelled = LXL_Events.onEntityExplode.fire(Entity$newEntity(actor), FloatPos$newPos(pos, actor.getDimensionId()), maxResistance, radius, canBreaking, genFire);
             _tickCallback();
             if (cancelled) {
@@ -1127,7 +1127,7 @@ events.entityDie.on(event => {
             }
         } else {
             let cancelled = false;
-            const bp = LIAPI.Vec3.toBlockPos(pos);
+            const bp = LlAPI.Vec3.toBlockPos(pos);
             const block = bs.getBlock(bp);
             if (block.getName() === "minecraft:respawn_anchor") {
                 cancelled ||= LXL_Events.onRespawnAnchorExplode.fire(IntPos$newPos(bp, MCAPI.BlockSource.getDimensionId(bs)));
@@ -1152,7 +1152,7 @@ events.entityDie.on(event => {
     void_t, null, ProjectileComponent, Actor, StaticPointer)
     ((thiz, owner, res) => {
         const to = MCAPI.HitResult.getEntity(res);
-        if (to?.isNotNull()) {
+        if (to) {
             const cancelled = LXL_Events.onProjectileHitEntity.fire(Entity$newEntity(to), Entity$newEntity(owner));
             _tickCallback();
         }
@@ -1165,7 +1165,7 @@ events.entityDie.on(event => {
     const original = symhook("?_destroyBlocks@WitherBoss@@AEAAXAEAVLevel@@AEBVAABB@@AEAVBlockSource@@H@Z",
     void_t, null, Actor, Level, MCAPI.AABB, BlockSource, int32_t)
     ((thiz, level, areaofeffect, region, a5) => {
-        const cancelled = LXL_Events.onWitherBossDestroy.fire(Entity$newEntity(thiz), IntPos$newPos(LIAPI.Vec3.toBlockPos(areaofeffect.min), thiz.getDimensionId()), IntPos$newPos(LIAPI.Vec3.toBlockPos(areaofeffect.max), thiz.getDimensionId()));
+        const cancelled = LXL_Events.onWitherBossDestroy.fire(Entity$newEntity(thiz), IntPos$newPos(LlAPI.Vec3.toBlockPos(areaofeffect.min), thiz.getDimensionId()), IntPos$newPos(LlAPI.Vec3.toBlockPos(areaofeffect.max), thiz.getDimensionId()));
         _tickCallback();
         if (cancelled) {
             return;
@@ -1240,7 +1240,7 @@ events.entityDie.on(event => {
     const original = symhook("?releaseUsing@TridentItem@@UEBAXAEAVItemStack@@PEAVPlayer@@H@Z",
     void_t, null, StaticPointer, ItemStack, Player, int32_t)
     ((thiz, itemStack, player, durationLeft) => {
-        const cancelled = LXL_Events.onSpawnProjectile.fire(Entity$newEntity(player), LIAPI.ItemStack.getTypeName(itemStack));
+        const cancelled = LXL_Events.onSpawnProjectile.fire(Entity$newEntity(player), LlAPI.ItemStack.getTypeName(itemStack));
         _tickCallback();
         if (cancelled) {
             return;
@@ -1258,7 +1258,7 @@ events.entityDie.on(event => {
         MCAPI.NpcSceneDialogueData.NpcSceneDialogueData(data, thiz, owner, sceneName);
         const container = MCAPI.NpcSceneDialogueData.getActionsContainer(data);
         const actionAt = MCAPI.NpcActionsContainer.getActionAt(container, actionIndex);
-        if (actionAt?.isNotNull() && actionAt.mType === MCAPI.NpcActionType.CommandAction) {
+        if (actionAt && actionAt.mType === MCAPI.NpcActionType.CommandAction) {
             const str = actionAt.as(MCAPI.NpcCommandAction).mCommands.get(0)?.mCommandLine;
             if (str) {
                 const cancelled = LXL_Events.onNpcCmd.fire(Entity$newEntity(owner), Player$newPlayer(<ServerPlayer>player), str);

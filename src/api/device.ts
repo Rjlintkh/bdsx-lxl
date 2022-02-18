@@ -1,16 +1,16 @@
 import { ServerPlayer as _ServerPlayer } from "bdsx/bds/player";
-import { LIAPI } from "../dep/native";
+import { LlAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 
 export class LXL_Device {
     [PrivateFields]: _ServerPlayer;
 
     get ip() {
-        return LIAPI.NetworkIdentifier.getIP(this[PrivateFields].getNetworkIdentifier());
+        return LlAPI.NetworkIdentifier.getIP(this[PrivateFields].getNetworkIdentifier());
     }
 
     get avgPing() {
-        return LIAPI.Player.getAvgPing(this[PrivateFields]);
+        return LlAPI.Player.getAvgPing(this[PrivateFields]);
     }
 
     get avgPacketLoss() {
@@ -18,7 +18,7 @@ export class LXL_Device {
     }
 
     get os() {
-        return LIAPI.Player.getDeviceName(this[PrivateFields]);
+        return LlAPI.Player.getDeviceName(this[PrivateFields]);
     }
 
     get clientId()  {
