@@ -1,4 +1,5 @@
 import { Actor, ActorDamageCause, ActorDamageSource, ActorDefinitionIdentifier, ActorFlags, ActorUniqueID } from "bdsx/bds/actor";
+import { AttributeId } from "bdsx/bds/attribute";
 import { Block, BlockActor, BlockLegacy, BlockSource } from "bdsx/bds/block";
 import { BlockPos, Vec3 } from "bdsx/bds/blockpos";
 import { CommandOrigin } from "bdsx/bds/commandorigin";
@@ -9,7 +10,8 @@ import { GameMode } from "bdsx/bds/gamemode";
 import { ArmorSlot, Container, ItemStack } from "bdsx/bds/inventory";
 import { Level, Spawner } from "bdsx/bds/level";
 import { NetworkIdentifier, ServerNetworkHandler } from "bdsx/bds/networkidentifier";
-import { RespawnPacket, TextPacket } from "bdsx/bds/packets";
+import { MinecraftPacketIds } from "bdsx/bds/packetids";
+import { PlayerActionPacket, TextPacket } from "bdsx/bds/packets";
 import { Player, ServerPlayer } from "bdsx/bds/player";
 import { Objective, Scoreboard, ScoreboardId } from "bdsx/bds/scoreboard";
 import { serverInstance } from "bdsx/bds/server";
@@ -206,12 +208,11 @@ export function unlisten<E extends keyof typeof LXL_Events>(event: E, callback: 
 
 /////////////////// PlayerRespawn ///////////////////
 {
-    const original = symhook("?handle@?$PacketHandlerDispatcherInstance@VRespawnPacket@@$0A@@@UEBAXAEBVNetworkIdentifier@@AEAVNetEventCallback@@AEAV?$shared_ptr@VPacket@@@std@@@Z",
-    void_t, null, StaticPointer, NetworkIdentifier.ref(), StaticPointer, RespawnPacket.ref())
-    ((thiz, source, callback, packet) => {
-        const cancelled = LXL_Events.onRespawn.fire(Player$newPlayer(source.getActor()!));
-        _tickCallback();
-        return original(thiz, source, callback, packet);
+    events.packetSend(MinecraftPacketIds.PlayerAction).on((pk, ni) => {
+        if (pk.action === PlayerActionPacket.Actions.Respawn) {
+            LXL_Events.onRespawn.fire(Player$newPlayer(ni.getActor()!));
+            _tickCallback();
+        }
     });
 }
 
@@ -329,88 +330,6 @@ events.playerDropItem.on(event => {
         return CANCEL;
     }
 });
-
-/////////////////// PlayerEat ///////////////////
-// Food Item Component Legacy
-{
-    const original = symhook("?useTimeDepleted@FoodItemComponentLegacy@@UEAAPEBVItem@@AEAVItemStack@@AEAVPlayer@@AEAVLevel@@@Z",
-    int32_t, null, StaticPointer, ItemStack, Player, Level)
-    ((thiz, instance, player, level): MCAPI.ItemUseMethod => {
-        if (LlAPI.ItemStack.getTypeName(instance) !== "minecraft:suspicious_stew") {
-            const cancelled = LXL_Events.onEat.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(instance));
-            _tickCallback();
-            if (cancelled) {
-                return MCAPI.ItemUseMethod.Unknown;
-            }
-        }
-        return original(thiz, instance, player, level);
-    });
-}
-// Food Item Component
-{
-    const original = symhook("?useTimeDepleted@FoodItemComponent@@UEAAPEBVItem@@AEAVItemStack@@AEAVPlayer@@AEAVLevel@@@Z",
-    int32_t, null, StaticPointer, ItemStack, Player, Level)
-    ((thiz, inoutInstance, player, level): MCAPI.ItemUseMethod => {
-        const cancelled = LXL_Events.onEat.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(inoutInstance));
-        _tickCallback();
-        if (cancelled) {
-            return MCAPI.ItemUseMethod.Unknown;
-        }
-        return original(thiz, inoutInstance, player, level);
-    });
-}
-// SuspiciousStew
-{
-    const original = symhook("?useTimeDepleted@SuspiciousStewItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
-    int32_t, null, StaticPointer, ItemStack, Level, Player)
-    ((thiz, inoutInstance, level, player): MCAPI.ItemUseMethod => {
-        const cancelled = LXL_Events.onEat.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(inoutInstance));
-        _tickCallback();
-        if (cancelled) {
-            return MCAPI.ItemUseMethod.Unknown;
-        }
-        return original(thiz, inoutInstance, level, player);
-    });
-}
-// Potion
-{
-    const original = symhook("?useTimeDepleted@PotionItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
-    int32_t, null, StaticPointer, ItemStack, Level, Player)
-    ((thiz, inoutInstance, level, player): MCAPI.ItemUseMethod => {
-        const cancelled = LXL_Events.onEat.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(inoutInstance));
-        _tickCallback();
-        if (cancelled) {
-            return MCAPI.ItemUseMethod.Unknown;
-        }
-        return original(thiz, inoutInstance, level, player);
-    });
-}
-// Medicine
-{
-    const original = symhook("?useTimeDepleted@MedicineItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
-    int32_t, null, StaticPointer, ItemStack, Level, Player)
-    ((thiz, inoutInstance, level, player): MCAPI.ItemUseMethod => {
-        const cancelled = LXL_Events.onEat.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(inoutInstance));
-        _tickCallback();
-        if (cancelled) {
-            return MCAPI.ItemUseMethod.Unknown;
-        }
-        return original(thiz, inoutInstance, level, player);
-    });
-}
-// milk
-{
-    const original = symhook("?useTimeDepleted@BucketItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
-    int32_t, null, StaticPointer, ItemStack, Level, Player)
-    ((thiz, inoutInstance, level, player): MCAPI.ItemUseMethod => {
-        const cancelled = LXL_Events.onEat.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(inoutInstance));
-        _tickCallback();
-        if (cancelled) {
-            return MCAPI.ItemUseMethod.Unknown;
-        }
-        return original(thiz, inoutInstance, level, player);
-    });
-}
 
 /////////////////// PlayerConsumeTotem ///////////////////
 {
@@ -1082,16 +1001,28 @@ events.farmlandDecay.on(event => {
     });
 }
 
-/////////////////// PlayerUseItem ///////////////////
+//////////////// PlayerUseItem & PlayerEat ////////////////
 {
     const original = symhook("?baseUseItem@GameMode@@QEAA_NAEAVItemStack@@@Z",
     bool_t, null, GameMode, ItemStack)
     ((thiz, item) => {
-        const player = thiz.actor;
-        const cancelled = LXL_Events.onUseItem.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(item));
-        _tickCallback();
-        if (cancelled) {
-            return false;
+        const player = <Player>thiz.actor;
+        {
+            const cancelled = LXL_Events.onUseItem.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(item));
+            _tickCallback();
+            if (cancelled) {
+                return false;
+            }
+        }
+        {
+            if (item.item.isFood() && (MCAPI.Player.isHungry(player) || MCAPI.Player.forceAllowEating(player))) {
+                const cancelled = LXL_Events.onEat.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(item));
+                _tickCallback();
+                if (cancelled) {
+                    player.setAttribute(AttributeId.PlayerHunger, player.getAttribute(AttributeId.PlayerHunger));
+                    return false;
+                }
+            }
         }
         return original(thiz, item);
     });

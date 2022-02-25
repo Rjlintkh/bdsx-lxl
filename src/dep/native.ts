@@ -156,11 +156,13 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?consumeTotem@Player@@UEAA_NXZ",
     "?die@Player@@UEAAXAEBVActorDamageSource@@@Z",
     "?drop@Player@@UEAA_NAEBVItemStack@@_N@Z",
+    "?forceAllowEating@Player@@QEBA_NXZ",
     "?getPlatform@Player@@QEBA?AW4BuildPlatform@@XZ",
     "?getSpeed@Player@@UEBAMXZ",
     "?getXuid@Player@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
     "?hasOpenContainer@Player@@QEBA_NXZ",
     "?inventoryChanged@Player@@UEAAXAEAVContainer@@HAEBVItemStack@@1_N@Z",
+    "?isHungry@Player@@QEBA_NXZ",
     "?jumpFromGround@Player@@UEAAXXZ",
     "?resetPlayerLevel@Player@@QEAAXXZ",
     "?setArmor@Player@@UEAAXW4ArmorSlot@@AEBVItemStack@@@Z",
@@ -479,11 +481,13 @@ export namespace MCAPI {
     }
     export namespace Player {
         export const addLevels: (thiz: _Player, levels: number) => void = symcall("?addLevels@Player@@UEAAXH@Z", void_t, null, _Player, int32_t);
+        export const forceAllowEating: (thiz: _Player) => boolean = symcall("?forceAllowEating@Player@@QEBA_NXZ", bool_t, null, _Player);
         export const getPlatform: (thiz: _Player) => number = symcall("?getPlatform@Player@@QEBA?AW4BuildPlatform@@XZ", int32_t, null, _Player);
         export const getSpeed: (thiz: _Player) => number = symcall("?getSpeed@Player@@UEBAMXZ", float32_t, null, _Player);
         const $getXuid = symcall("?getXuid@Player@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", CxxString, null, _Player, CxxString);
         export const getXuid = (thiz: _Player) => $getXuid(thiz, "");
         export const hasOpenContainer: (thiz: _Player) => boolean = symcall("?hasOpenContainer@Player@@QEBA_NXZ", bool_t, null, _Player);
+        export const isHungry: (thiz: _Player) => boolean = symcall("?isHungry@Player@@QEBA_NXZ", bool_t, null, _Player);
         export const resetPlayerLevel: (thiz: _Player) => void = symcall("?resetPlayerLevel@Player@@QEAAXXZ", void_t, null, _Player);
     }
     export namespace ScoreboardId {
