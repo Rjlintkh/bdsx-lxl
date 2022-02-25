@@ -96,7 +96,7 @@ export class LXL_Player {
         try {
             uuid = player.getCertificate().getIdentityString();
         } catch {
-            logger.debug("Fail in getXuid!");
+            logger.debug("Fail in getUuid!");
             const res = playerDB.run(`SELECT UUID FROM player WHERE NAME = ?`, [LlAPI.Player.getRealName(player)]);
             if (res.length) {
                 uuid = res[0].UUID;
