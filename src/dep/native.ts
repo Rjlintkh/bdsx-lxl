@@ -828,7 +828,7 @@ export namespace LlAPI {
             }
         }
         export function getEnderChestContainer(thiz: _Player) {
-            return daccess(thiz, FillingContainer.ref(), 4200);
+            return daccess(thiz, FillingContainer.ref(), 4184);
         }
         export function getRealName(thiz: _Player) {
             if (Actor.isSimulatedPlayer(thiz)) {
