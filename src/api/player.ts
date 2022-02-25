@@ -8,6 +8,7 @@ import { serverInstance } from "bdsx/bds/server";
 import { bin } from "bdsx/bin";
 import { bedrockServer } from "bdsx/launcher";
 import { LlAPI, MCAPI } from "../dep/native";
+import { playerDB } from "../utils/playerDB";
 import { logger, playerDataDB, PrivateFields, Tag2Value } from "./api_help";
 import { DirectionAngle$newAngle, FloatPos, FloatPos$newPos, IntPos, IntPos$newPos } from "./base";
 import { Block$newBlock } from "./block";
@@ -66,7 +67,17 @@ export class LXL_Player {
             return null;
         }
 
-        return MCAPI.Player.getXuid(player);
+        let xuid!: string;
+        try {
+            xuid = MCAPI.Player.getXuid(player);
+        } catch {
+            logger.debug("Fail in getXuid!");
+            const res = playerDB.run(`SELECT XUID FROM player WHERE NAME = ?`, [LlAPI.Player.getRealName(player)]);
+            if (res.length) {
+                xuid = res[0].XUID;
+            }
+        }
+        return xuid;
     }
 
     get uuid() {
@@ -81,7 +92,18 @@ export class LXL_Player {
             return "";
         }
 
-        return player.getCertificate().getIdentityString();
+        let uuid!: string;
+        try {
+            uuid = player.getCertificate().getIdentityString();
+        } catch {
+            logger.debug("Fail in getXuid!");
+            const res = playerDB.run(`SELECT UUID FROM player WHERE NAME = ?`, [LlAPI.Player.getRealName(player)]);
+            if (res.length) {
+                uuid = res[0].UUID;
+            }
+        }
+
+        return uuid;
     }
 
     get permLevel() {

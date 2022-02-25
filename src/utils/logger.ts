@@ -18,6 +18,9 @@ export class Logger {
     info(message: string) {
         console.info(`\x1b[97m[${this.time()} Info][${this.prefix}] ${message}\x1b[0m`);
     }
+    debug(message: string) {
+        console.info(`\x1b[3m${this.time()} Warn][${this.prefix}] ${message}\x1b[0m`);
+    }
     warn(message: string) {
         console.info(`\x1b[93m[${this.time()} Warn][${this.prefix}] ${message}\x1b[0m`);
     }
