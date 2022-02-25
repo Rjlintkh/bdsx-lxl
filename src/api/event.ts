@@ -1107,7 +1107,7 @@ events.entityDie.on(event => {
 
 ////////////// EntityRide //////////////
 {
-    const original = symhook("?_destroyBlocks@WitherBoss@@AEAAXAEAVLevel@@AEBVAABB@@AEAVBlockSource@@H@Z",
+    const original = symhook("?canAddPassenger@Actor@@UEBA_NAEAV1@@Z",
     bool_t, null, Actor, Actor)
     ((thiz, passenger) => {
         const rtn = original(thiz, passenger);
