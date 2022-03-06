@@ -56,7 +56,7 @@ export class LXL_Block {
     }
 
     hasBlockEntity() {
-        return MCAPI.Block.hasBlockEntity(this[PrivateFields]);
+        return this[PrivateFields].hasBlockEntity();
     }
 
     getBlockEntity() {
@@ -67,7 +67,7 @@ export class LXL_Block {
 
     removeBlockEntity() {
         const region = serverInstance.minecraft.getLevel().getDimension(this.pos.dimid)!.getBlockSource();
-        MCAPI.BlockSource.removeBlockEntity(region, BlockPos.create(this.pos.x, this.pos.y, this.pos.z));
+        region.removeBlockEntity(BlockPos.create(this.pos.x, this.pos.y, this.pos.z));
         return true;
     }
 }
@@ -85,7 +85,7 @@ export function Block$newBlock(a0: any, a1: any, a2?: any): LXL_Block {
         p = a0;
         pos = a1;
         if (a2 instanceof BlockSource) {
-            dim = MCAPI.BlockSource.getDimensionId(a2);
+            dim = a2.getDimensionId();
         } else {
             dim = ~~a2;
         }
@@ -98,7 +98,7 @@ export function Block$newBlock(a0: any, a1: any, a2?: any): LXL_Block {
     newp[PrivateFields] = p;
     Object.defineProperty(newp, "name", { value: p.getName() });
     Object.defineProperty(newp, "type", { value: p.getName() });
-    Object.defineProperty(newp, "id", { value: MCAPI.BlockLegacy.getBlockItemId(p.blockLegacy) });
+    Object.defineProperty(newp, "id", { value: p.blockLegacy.getBlockItemId() });
     Object.defineProperty(newp, "pos", { value: IntPos$newPos(pos!, dim) });
     return newp;
 }
@@ -172,6 +172,6 @@ export function spawnParticle(a0: any, a1: any, a2?: any, a3?: any, a4?: any) {
         type = a4;
     }
     const level = serverInstance.minecraft.getLevel();
-    MCAPI.Level.spawnParticleEffect(level, type, pos, level.getDimension(dimId)!);
+    level.spawnParticleEffect(type, pos, level.getDimension(dimId)!);
     return true;
 }

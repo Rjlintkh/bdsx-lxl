@@ -69,7 +69,7 @@ export class LXL_Player {
 
         let xuid!: string;
         try {
-            xuid = MCAPI.Player.getXuid(player);
+            xuid = player.getXuid();
         } catch {
             logger.debug("Fail in getXuid!");
             const res = playerDB.run(`SELECT XUID FROM player WHERE NAME = ?`, [LlAPI.Player.getRealName(player)]);
@@ -148,7 +148,7 @@ export class LXL_Player {
             return null;
         }
 
-        return !LlAPI.Actor.isOnGround(player) && !MCAPI.Actor.isInWater(player);
+        return !LlAPI.Actor.isOnGround(player) && !player.isInWater();
     }
 
     get inWater() {
@@ -157,7 +157,7 @@ export class LXL_Player {
             return null;
         }
 
-        return MCAPI.Actor.isInWater(player);
+        return player.isInWater();
     }
 
     get sneaking() {
@@ -175,7 +175,7 @@ export class LXL_Player {
             return null;
         }
 
-        return MCAPI.Player.getSpeed(player);
+        return player.getSpeed();
     }
 
     get direction() {
@@ -271,7 +271,7 @@ export class LXL_Player {
             return null;
         }
 
-        MCAPI.Mob.kill(player);
+        player.kill();
         return true;
     }
 
@@ -375,7 +375,7 @@ export class LXL_Player {
             return null;
         }
 
-        return MCAPI.ServerPlayer.resendAllChunks(player);
+        return player.resendAllChunks();
     }
 
     giveItem(item: LXL_Item) {
@@ -402,7 +402,7 @@ export class LXL_Player {
             return null;
         }
 
-        return MCAPI.Mob.isSprinting(player);
+        return player.isSprinting();
     }
 
     setSprinting(sprinting: boolean) {
@@ -411,7 +411,7 @@ export class LXL_Player {
             return null;
         }
 
-        MCAPI.Mob.setSprinting(player, sprinting);
+        player.setSprinting(sprinting);
         return true;
     }
 
@@ -466,7 +466,7 @@ export class LXL_Player {
             return null;
         }
 
-        return Container$newContainer(MCAPI.Actor.getArmorContainer(player));
+        return Container$newContainer(player.getArmorContainer());
     }
 
     getEnderChest() {
@@ -502,7 +502,7 @@ export class LXL_Player {
             return null;
         }
 
-        MCAPI.Player.addLevels(player, count);
+        player.addExperienceLevels(count);
         return true;
     }
 
@@ -521,7 +521,8 @@ export class LXL_Player {
             return null;
         }
 
-        return MCAPI.Player.resetPlayerLevel(player);
+        player.resetExperienceLevels();
+        return true;
     }
 
     getXpNeededForNextLevel() {
@@ -864,7 +865,7 @@ export class LXL_Player {
         if (index > LlAPI.Container.getSize(container)) {
             return false;
         }
-        MCAPI.Container.removeItem(container, index, count);
+        container.removeItem(index, count);
         return true;
     }
 
@@ -890,7 +891,7 @@ export class LXL_Player {
         }
 
         result.armorArr = [];
-        const armor = MCAPI.Actor.getArmorContainer(player).getSlots();
+        const armor = player.getArmorContainer().getSlots();
         for (const item of armor) {
             result.armorArr.push(Item$newItem(item));
         }
@@ -923,7 +924,7 @@ export function getPlayer(info: string): LXL_Player | null {
         let found: ServerPlayer | null = null;
 
         for (const p of playerList) {
-            if (MCAPI.Player.getXuid(p) === target) {
+            if (p.getXuid() === target) {
                 return Player$newPlayer(p);
             }
 

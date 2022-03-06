@@ -1,24 +1,21 @@
-import { Actor, Actor as _Actor, ActorDamageCause, ActorDamageSource, ActorUniqueID, DimensionId } from "bdsx/bds/actor";
-import { Block as _Block, BlockActor as _BlockActor, BlockLegacy as _BlockLegacy, BlockSource, BlockSource as _BlockSource } from "bdsx/bds/block";
-import { BlockPos as _BlockPos, Facing, Vec3, Vec3 as _Vec3 } from "bdsx/bds/blockpos";
-import { Command, CommandPermissionLevel } from "bdsx/bds/command";
-import { CommandOrigin as _CommandOrigin, ServerCommandOrigin as _ServerCommandOrigin } from "bdsx/bds/commandorigin";
-import { Dimension } from "bdsx/bds/dimension";
-import { MobEffectInstance as _MobEffectInstance } from "bdsx/bds/effects";
+import { Actor, Actor as _Actor, ActorDamageCause, ActorDamageSource, ActorUniqueID, Mob as _Mob } from "bdsx/bds/actor";
+import { Block as _Block, BlockLegacy as _BlockLegacy, BlockSource as _BlockSource } from "bdsx/bds/block";
+import { BlockPos as _BlockPos, Vec3, Vec3 as _Vec3 } from "bdsx/bds/blockpos";
+import { Command } from "bdsx/bds/command";
 import { HashedString } from "bdsx/bds/hashedstring";
-import { ArmorSlot, Container as _Container, FillingContainer, Item as _Item, ItemStack, ItemStack as _ItemStack, SimpleContainer } from "bdsx/bds/inventory";
-import { Level as _Level, ServerLevel } from "bdsx/bds/level";
+import { ArmorSlot, Container as _Container, FillingContainer, ItemStack, ItemStack as _ItemStack } from "bdsx/bds/inventory";
+import { Level as _Level } from "bdsx/bds/level";
 import { ByteArrayTag, ByteTag, CompoundTag as _CompoundTag, FloatTag, Int64Tag, ListTag, StringTag, Tag as _Tag } from "bdsx/bds/nbt";
 import { NetworkIdentifier as _NetworkIdentifier, ServerNetworkHandler as _ServerNetworkHandler } from "bdsx/bds/networkidentifier";
 import { CommandRequestPacket, LevelChunkPacket, ScorePacketInfo, SetDisplayObjectivePacket, SetScorePacket, TextPacket, TransferPacket } from "bdsx/bds/packets";
-import { Player as _Player, ServerPlayer, ServerPlayer as _ServerPlayer } from "bdsx/bds/player";
-import { DisplaySlot, Objective, ObjectiveSortOrder, Scoreboard as _Scoreboard, ScoreboardId as _ScoreboardId } from "bdsx/bds/scoreboard";
+import { Player as _Player, ServerPlayer } from "bdsx/bds/player";
+import { ObjectiveSortOrder, Scoreboard as _Scoreboard, ScoreboardId as _ScoreboardId } from "bdsx/bds/scoreboard";
 import { serverInstance } from "bdsx/bds/server";
 import { pdb, StaticPointer, VoidPointer } from "bdsx/core";
 import { CxxVector } from "bdsx/cxxvector";
-import { makefunc, ParamType } from "bdsx/makefunc";
+import { ParamType } from "bdsx/makefunc";
 import { nativeClass, NativeClass, nativeField } from "bdsx/nativeclass";
-import { bool_t, CxxString, float32_t, int16_t, int32_t, NativeType, uint16_t, uint32_t, uint64_as_float_t, uint8_t, void_t } from "bdsx/nativetype";
+import { bool_t, CxxString, float32_t, int32_t, NativeType, uint64_as_float_t, uint8_t, void_t } from "bdsx/nativetype";
 import { ProcHacker } from "bdsx/prochacker";
 import { logger, TODO } from "../api/api_help";
 import path = require("path");
@@ -27,9 +24,7 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     // Actor
     "?_sendDirtyActorData@Actor@@QEAAXXZ",
     "?canAddPassenger@Actor@@UEBA_NAEAV1@@Z",
-    "?getArmorContainer@Actor@@QEAAAEAVSimpleContainer@@XZ",
     "?getBlockPosCurrentlyStandingOn@Actor@@QEBA?AVBlockPos@@PEAV1@@Z",
-    "?isInWater@Actor@@UEBA_NXZ",
     // ActorEventCoordinator
     "?sendActorSneakChanged@ActorEventCoordinator@@QEAAXAEAVActor@@_N@Z",
     // BarrelBlockActor
@@ -43,40 +38,21 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?_tryUseOn@BedItem@@AEBA_NAEAVItemStackBase@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
     // Block
     "?attack@Block@@QEBA_NPEAVPlayer@@AEBVBlockPos@@@Z",
-    "?hasBlockEntity@Block@@QEBA_NXZ",
     "?onExploded@Block@@QEBAXAEAVBlockSource@@AEBVBlockPos@@PEAVActor@@@Z",
     "?onProjectileHit@Block@@QEBAXAEAVBlockSource@@AEBVBlockPos@@AEBVActor@@@Z",
-    // BlockActor
-    "?getPosition@BlockActor@@QEBAAEBVBlockPos@@XZ",
-    "?getType@BlockActor@@QEBAAEBW4BlockActorType@@XZ",
     // BlockEventCoordinator
     "?sendBlockDestructionStarted@BlockEventCoordinator@@QEAAXAEAVPlayer@@AEBVBlockPos@@@Z",
-    // BlockLegacy
-    "?getBlockItemId@BlockLegacy@@QEBAFXZ",
-    "?getStateFromLegacyData@BlockLegacy@@UEBAAEBVBlock@@G@Z",
-    // BlockPos
-    "?relative@BlockPos@@QEBA?AV1@EH@Z",
     // BlockSource
     "?_blockChanged@BlockSource@@IEAAXAEBVBlockPos@@IAEBVBlock@@1HPEBUActorBlockSyncMessage@@@Z",
     "?checkBlockDestroyPermissions@BlockSource@@QEAA_NAEAVActor@@AEBVBlockPos@@AEBVItemStackBase@@_N@Z",
     "?getDimensionId@BlockSource@@UEBA?AV?$AutomaticID@VDimension@@H@@XZ",
     "?mayPlace@BlockSource@@QEAA_NAEBVBlock@@AEBVBlockPos@@EPEAVActor@@_N@Z",
-    "?removeBlockEntity@BlockSource@@QEAA?AV?$shared_ptr@VBlockActor@@@std@@AEBVBlockPos@@@Z",
     // BucketItem
     "?useTimeDepleted@BucketItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
     // ChestBlockActor
     "?stopOpen@ChestBlockActor@@UEAAXAEAVPlayer@@@Z",
     // ComparatorBlock
     "?onRedstoneUpdate@ComparatorBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
-    // CommandUtils
-    "?getFeetPos@CommandUtils@@YA?AVVec3@@PEBVActor@@@Z",
-    // Container
-    "?addItem@Container@@UEAAXAEAVItemStack@@@Z",
-    "?addItemToFirstEmptySlot@Container@@UEAA_NAEBVItemStack@@@Z",
-    "?hasRoomForItem@Container@@UEAA_NAEBVItemStack@@@Z",
-    "?isEmpty@Container@@UEBA_NXZ",
-    "?removeAllItems@Container@@UEAAXXZ",
-    "?removeItem@Container@@UEAAXHH@Z",
     // CrossbowItem
     "?_shootFirework@CrossbowItem@@AEBAXAEBVItemInstance@@AEAVPlayer@@@Z",
     // DiodeBlock
@@ -89,8 +65,6 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?_useOn@DyePowderItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
     // Explosion
     "?explode@Explosion@@QEAAXXZ",
-    // Facing
-    "?convertYRotationToFacingDirection@Facing@@SAEM@Z",
     // FireBlock
     "?mayPlace@FireBlock@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@@Z",
     "?onPlace@FireBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@@Z",
@@ -106,16 +80,9 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     // Hopper
     "?_pushOutItems@Hopper@@IEAA_NAEAVBlockSource@@AEAVContainer@@AEBVVec3@@H@Z",
     "?_tryPullInItemsFromAboveContainer@Hopper@@IEAA_NAEAVBlockSource@@AEAVContainer@@AEBVVec3@@@Z",
-    // Item
-    "?getSerializedName@Item@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
     // ItemFrameBlock
     "?attack@ItemFrameBlock@@UEBA_NPEAVPlayer@@AEBVBlockPos@@@Z",
     "?use@ItemFrameBlock@@UEBA_NAEAVPlayer@@AEBVBlockPos@@E@Z",
-    // ItemStackBase
-    "?setNull@ItemStackBase@@UEAAXXZ",
-    // Level
-    "?explode@Level@@UEAAXAEAVBlockSource@@PEAVActor@@AEBVVec3@@M_N3M3@Z",
-    "?spawnParticleEffect@Level@@UEAAXAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVVec3@@PEAVDimension@@@Z",
     // LevelContainerModel
     "?_onItemChanged@LevelContainerModel@@MEAAXHAEBVItemStack@@0@Z",
     "?_playerChangeDimension@Level@@AEAA_NPEAVPlayer@@AEAVChangeDimensionRequest@@@Z",
@@ -125,12 +92,7 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?useTimeDepleted@MedicineItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
     // Mob
     "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
-    "?getSpeed@Mob@@UEBAMXZ",
-    "?isSprinting@Mob@@QEBA_NXZ",
-    "?sendArmorSlot@Mob@@QEAAXW4ArmorSlot@@@Z",
-    "?sendInventory@Mob@@UEAAX_N@Z",
     "?setSprinting@Mob@@UEAAX_N@Z",
-    "?kill@Mob@@UEAAXXZ",
     // MobEffectInstance
     "?getComponentName@MobEffectInstance@@QEBAAEBVHashedString@@XZ",
     // NpcActionsContainer
@@ -140,31 +102,19 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     // NpcSceneDialogueData
     "??0NpcSceneDialogueData@@QEAA@AEAVNpcComponent@@AEAVActor@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     "?getActionsContainer@NpcSceneDialogueData@@UEAAAEAUNpcActionsContainer@@XZ",
-    // OnFireSystem
-    "?setOnFire@OnFireSystem@@SAXAEAVActor@@H@Z",
-    "?setOnFireNoEffects@OnFireSystem@@SAXAEAVActor@@H@Z",
     // PacketHandlerDispatcherInstance
     "?handle@?$PacketHandlerDispatcherInstance@VRespawnPacket@@$0A@@@UEBAXAEBVNetworkIdentifier@@AEAVNetEventCallback@@AEAV?$shared_ptr@VPacket@@@std@@@Z",
     // PistonBlockActor
     "?_attachedBlockWalker@PistonBlockActor@@AEAA_NAEAVBlockSource@@AEBVBlockPos@@EE@Z",
     // Player
     "?_trySwapItem@ArmorStand@@AEAA_NAEAVPlayer@@W4EquipmentSlot@@@Z",
-    "?addExperience@Player@@UEAAXH@Z",
-    "?addLevels@Player@@UEAAXH@Z",
     "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
     "?canOpenContainerScreen@Player@@UEAA_NXZ",
     "?consumeTotem@Player@@UEAA_NXZ",
     "?die@Player@@UEAAXAEBVActorDamageSource@@@Z",
     "?drop@Player@@UEAA_NAEBVItemStack@@_N@Z",
-    "?forceAllowEating@Player@@QEBA_NXZ",
-    "?getPlatform@Player@@QEBA?AW4BuildPlatform@@XZ",
-    "?getSpeed@Player@@UEBAMXZ",
-    "?getXuid@Player@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
-    "?hasOpenContainer@Player@@QEBA_NXZ",
     "?inventoryChanged@Player@@UEAAXAEAVContainer@@HAEBVItemStack@@1_N@Z",
-    "?isHungry@Player@@QEBA_NXZ",
     "?jumpFromGround@Player@@UEAAXXZ",
-    "?resetPlayerLevel@Player@@QEAAXXZ",
     "?setArmor@Player@@UEAAXW4ArmorSlot@@AEBVItemStack@@@Z",
     "?take@Player@@QEAA_NAEAVActor@@HH@Z",
     // PlayerEventCoordinator
@@ -197,17 +147,12 @@ const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
     "?onEffectRemoved@ServerPlayer@@MEAAXAEAVMobEffectInstance@@@Z",
     "?onEffectUpdated@ServerPlayer@@MEAAXAEAVMobEffectInstance@@@Z",
     "?setLocalPlayerAsInitialized@ServerPlayer@@QEAAXXZ",
-    "?resendAllChunks@ServerPlayer@@UEAAXXZ",
     // ServerScoreboard
-    "?clearDisplayObjective@ServerScoreboard@@UEAAPEAVObjective@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
-    "?createScoreboardId@ServerScoreboard@@UEAAAEBUScoreboardId@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     "?onScoreChanged@ServerScoreboard@@UEAAXAEBUScoreboardId@@AEBVObjective@@@Z",
     // SignItem
     "?_calculatePlacePos@SignItem@@EEBA_NAEAVItemStackBase@@AEAVActor@@AEAEAEAVBlockPos@@@Z",
     // SimulatedPlayer
     "??_7SimulatedPlayer@@6B@",
-    // SimpleContainer
-    "?getItem@SimpleContainer@@UEBAAEBVItemStack@@H@Z",
     // Spawner
     "?spawnProjectile@Spawner@@QEAAPEAVActor@@AEAVBlockSource@@AEBUActorDefinitionIdentifier@@PEAV2@AEBVVec3@@3@Z",
     // SuspiciousStewItem
@@ -292,64 +237,10 @@ export namespace MCAPI {
     }
     export namespace Actor {
         export const _sendDirtyActorData: (thiz: _Actor) => void = symcall("?_sendDirtyActorData@Actor@@QEAAXXZ", void_t, null, _Actor);
-        export const getArmorContainer: (thiz: _Actor) => SimpleContainer = symcall("?getArmorContainer@Actor@@QEAAAEAVSimpleContainer@@XZ", SimpleContainer, null, _Actor);
         export const getBlockPosCurrentlyStandingOn = (thiz: _Actor) => symcall("?getBlockPosCurrentlyStandingOn@Actor@@QEBA?AVBlockPos@@PEAV1@@Z", _BlockPos, {this:_Actor, structureReturn:true}, _Actor).call(thiz, thiz);
-        export const isInWater: (thiz: _Actor) => boolean = symcall("?isInWater@Actor@@UEBA_NXZ", bool_t, null, _Actor);
     }
     export namespace BaseCommandBlock {
         export const getCommand: (thiz: StaticPointer) => string = symcall("?getCommand@BaseCommandBlock@@QEBAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", CxxString, null, StaticPointer);
-    }
-    export namespace Block {
-        export const hasBlockEntity: (thiz: _Block) => boolean = symcall("?hasBlockEntity@Block@@QEBA_NXZ", bool_t, null, _Block);
-    }
-    export namespace BlockActor {
-        export const getPosition: (thiz: _BlockActor) => _BlockPos = symcall("?getPosition@BlockActor@@QEBAAEBVBlockPos@@XZ", _BlockPos, null, _BlockActor);
-        export const getType: (thiz: _BlockActor) => number = symcall("?getType@BlockActor@@QEBAAEBW4BlockActorType@@XZ", uint32_t, null, _BlockActor);
-    }
-    export namespace BlockLegacy {
-        export const getBlockItemId: (thiz: _BlockLegacy) => number = symcall("?getBlockItemId@BlockLegacy@@QEBAFXZ", int16_t, null, _BlockLegacy);
-        export const getStateFromLegacyData: (thiz: _BlockLegacy, data: number) => _Block = symcall("?getStateFromLegacyData@BlockLegacy@@UEBAAEBVBlock@@G@Z", _Block.ref(), null, _BlockLegacy, uint16_t);
-    }
-    export namespace BlockPos {
-        const $relative = symcall("?relative@BlockPos@@QEBA?AV1@EH@Z", _BlockPos, {this:_BlockPos, structureReturn:true}, uint8_t, int32_t);
-        export const relative = (thiz: _BlockPos, facing: Facing, steps: number): _BlockPos => $relative.call(thiz, facing, steps);
-    }
-    export namespace BlockSource {
-        export const getDimensionId = (thiz: _BlockSource): DimensionId => symcall("?getDimensionId@BlockSource@@UEBA?AV?$AutomaticID@VDimension@@H@@XZ", int32_t, {this: _BlockSource, structureReturn: true,}).call(thiz);
-        export const removeBlockEntity: (thiz: _BlockSource, blockPos: _BlockPos) => StaticPointer = symcall("?removeBlockEntity@BlockSource@@QEAA?AV?$shared_ptr@VBlockActor@@@std@@AEBVBlockPos@@@Z", StaticPointer, null, _BlockSource, _BlockPos);
-    }
-    export namespace CommandOrigin {
-        const $getOriginType = makefunc.js([0xB0], uint8_t, {this: _CommandOrigin});
-        export const getOriginType = (thiz: _CommandOrigin): CommandOriginType => $getOriginType.call(thiz);
-    }
-    export enum CommandOriginType {
-        Player,
-        CommandBlock,
-        MinecartCommandBlock,
-        DevConsole,
-        Test,
-        AutomationPlayer,
-        ClientAutomation,
-        Server,
-        Entity,
-        Virtual,
-        GameArgument,
-        EntityServer,
-        Precompiled,
-        GameMasterEntityServer,
-        Scripting,
-    }
-    export namespace CommandUtils {
-        export const getFeetPos: (entity: _Actor) => _Vec3 = symcall("?getFeetPos@CommandUtils@@YA?AVVec3@@PEBVActor@@@Z", _Vec3, {structureReturn: true}, _Actor);
-    }
-    export namespace Container {
-        export const addItem: (thiz: _Container, item: _ItemStack) => void = symcall("?addItem@Container@@UEAAXAEAVItemStack@@@Z", void_t, null, _Container, _ItemStack);
-        export const addItemToFirstEmptySlot: (thiz: _Container, item: _ItemStack) => boolean = symcall("?addItemToFirstEmptySlot@Container@@UEAA_NAEBVItemStack@@@Z", bool_t, null, _Container, _ItemStack);
-        export const getItem: (thiz: _Container, slot: number) => _ItemStack = symcall("?getItem@SimpleContainer@@UEBAAEBVItemStack@@H@Z", _ItemStack, null, _Container, uint8_t);
-        export const hasRoomForItem: (thiz: _Container, item: _ItemStack) => boolean = symcall("?hasRoomForItem@Container@@UEAA_NAEBVItemStack@@@Z", bool_t, null, _Container, _ItemStack);
-        export const isEmpty: (thiz: _Container) => boolean = symcall("?isEmpty@Container@@UEBA_NXZ", bool_t, null, _Container);
-        export const removeAllItems: (thiz: _Container) => void = symcall("?removeAllItems@Container@@UEAAXXZ", void_t, null, _Container);
-        export const removeItem: (thiz: _Container, slot: number, count: number) => void = symcall("?removeItem@Container@@UEAAXHH@Z", void_t, null, _Container, int32_t, int32_t);
     }
     export namespace DropperBlockActor {
         export const _getContainerAt: (thiz: StaticPointer, region: _BlockSource, pos: Vec3) => _Container = symcall("?_getContainerAt@DropperBlockActor@@AEAAPEAVContainer@@AEAVBlockSource@@AEBVVec3@@@Z", _Container, null, StaticPointer, _BlockSource, Vec3);
@@ -375,17 +266,8 @@ export namespace MCAPI {
         @nativeField(bool_t)
         mInOverrideWater: bool_t;
     }
-    export namespace Facing {
-        export const convertYRotationToFacingDirection: (yRotation: number) => number = symcall("?convertYRotationToFacingDirection@Facing@@SAEM@Z", uint8_t, null, float32_t);
-    }
     export namespace HitResult {
         export const getEntity: (thiz: StaticPointer) => _Actor = symcall("?getEntity@HitResult@@QEBAPEAVActor@@XZ", _Actor.ref(), null, StaticPointer);
-    }
-    export namespace Item {
-        export const getSerializedName = (thiz: _Item) => symcall("?getSerializedName@Item@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", CxxString, {this:_Item, structureReturn:true}).call(thiz);
-    }
-    export namespace ItemStackBase {
-        export const setNull: (thiz: _ItemStack) => void = symcall("?setNull@ItemStackBase@@UEAAXXZ", void_t, null, _ItemStack);
     }
     export enum ItemUseMethod {
         EquipArmor,
@@ -405,21 +287,8 @@ export namespace MCAPI {
         Traded,
         Unknown = -1,
     }
-    export namespace Level {
-        export const explode: (thiz: _Level, region: BlockSource, source: _Actor | VoidPointer, pos: Vec3, explosionRadius: number, fire: boolean, breaksBlocks: boolean, maxResistance: number, allowUnderwater: boolean) => void = symcall("?explode@Level@@UEAAXAEAVBlockSource@@PEAVActor@@AEBVVec3@@M_N3M3@Z", void_t, null, _Level, _BlockSource, VoidPointer, Vec3, float32_t, bool_t, bool_t, float32_t, bool_t);
-        export const spawnParticleEffect: (thiz: _Level, effectName: string, spawnLocation: Vec3, dimension: Dimension) => void = symcall("?spawnParticleEffect@Level@@UEAAXAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVVec3@@PEAVDimension@@@Z", void_t, null, _Level, CxxString, Vec3, Dimension);
-    }
     export namespace Mob {
         export const _hurt: (thiz: _Actor, source: ActorDamageSource, damage: number, knock: boolean, ignite: boolean) => boolean = symcall("?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z", bool_t, null, _Actor, ActorDamageSource, int32_t, bool_t, bool_t);
-        export const getSpeed: (thiz: _Actor) => number = symcall("?getSpeed@Mob@@UEBAMXZ", float32_t, null, _Actor);
-        export const isSprinting: (thiz: _Actor) => boolean = symcall("?isSprinting@Mob@@QEBA_NXZ", bool_t, null, _Actor);
-        export const sendArmorSlot: (thiz: _Actor, slot: ArmorSlot) => void = symcall("?sendArmorSlot@Mob@@QEAAXW4ArmorSlot@@@Z", void_t, null, _Actor, uint32_t);
-        export const sendInventory: (thiz: _Actor, shouldSelectSlow: bool_t) => void = symcall("?sendInventory@Mob@@UEAAX_N@Z", void_t, null, _Actor, bool_t);
-        export const setSprinting: (thiz: _Actor, shouldSprint: boolean) => void = symcall("?setSprinting@Mob@@UEAAX_N@Z", void_t, null, _Actor, bool_t);
-        export const kill: (thiz: _Actor) => void = symcall("?kill@Mob@@UEAAXXZ", void_t, null, _Actor);
-    }
-    export namespace MobEffectInstance {
-        export const getComponentName: (thiz: _MobEffectInstance) => HashedString = symcall("?getComponentName@MobEffectInstance@@QEBAAEBVHashedString@@XZ", HashedString, null, _MobEffectInstance);
     }
     @nativeClass(null)
     export class NpcAction extends NativeClass {
@@ -475,27 +344,6 @@ export namespace MCAPI {
         export const NpcSceneDialogueData: (thiz: NpcSceneDialogueData, component: StaticPointer, npc: Actor, data: string) => void = symcall("??0NpcSceneDialogueData@@QEAA@AEAVNpcComponent@@AEAVActor@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z", void_t, null, MCAPI.NpcSceneDialogueData, StaticPointer, _Actor, CxxString);
         export const getActionsContainer: (thiz: NpcSceneDialogueData) => StaticPointer = symcall("?getActionsContainer@NpcSceneDialogueData@@UEAAAEAUNpcActionsContainer@@XZ", StaticPointer, null, MCAPI.NpcSceneDialogueData);
     }
-    export namespace OnFireSystem {
-        export const setOnFire: (target: _Actor, seconds: number) => void = symcall("?setOnFire@OnFireSystem@@SAXAEAVActor@@H@Z", void_t, null, _Actor, int32_t);
-        export const setOnFireNoEffects: (target: _Actor, seconds: number) => void = symcall("?setOnFireNoEffects@OnFireSystem@@SAXAEAVActor@@H@Z", void_t, null, _Actor, int32_t);
-    }
-    export namespace Player {
-        export const addLevels: (thiz: _Player, levels: number) => void = symcall("?addLevels@Player@@UEAAXH@Z", void_t, null, _Player, int32_t);
-        export const forceAllowEating: (thiz: _Player) => boolean = symcall("?forceAllowEating@Player@@QEBA_NXZ", bool_t, null, _Player);
-        export const getPlatform: (thiz: _Player) => number = symcall("?getPlatform@Player@@QEBA?AW4BuildPlatform@@XZ", int32_t, null, _Player);
-        export const getSpeed: (thiz: _Player) => number = symcall("?getSpeed@Player@@UEBAMXZ", float32_t, null, _Player);
-        const $getXuid = symcall("?getXuid@Player@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", CxxString, null, _Player, CxxString);
-        export const getXuid = (thiz: _Player) => $getXuid(thiz, "");
-        export const hasOpenContainer: (thiz: _Player) => boolean = symcall("?hasOpenContainer@Player@@QEBA_NXZ", bool_t, null, _Player);
-        export const isHungry: (thiz: _Player) => boolean = symcall("?isHungry@Player@@QEBA_NXZ", bool_t, null, _Player);
-        export const resetPlayerLevel: (thiz: _Player) => void = symcall("?resetPlayerLevel@Player@@QEAAXXZ", void_t, null, _Player);
-    }
-    export namespace ScoreboardId {
-        export const isValid: (thiz: _ScoreboardId) => boolean = symcall("?isValid@ScoreboardId@@QEBA_NXZ", bool_t, null, _ScoreboardId);
-    }
-    export namespace ServerCommandOrigin {
-        export const ServerCommandOrigin: (thiz: _ServerCommandOrigin, requestId: string, level: ServerLevel, permission: CommandPermissionLevel) => void = symcall("??0ServerCommandOrigin@@QEAA@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAVServerLevel@@W4CommandPermissionLevel@@V?$AutomaticID@VDimension@@H@@@Z", void_t, null, _ServerCommandOrigin, CxxString, ServerLevel, int32_t);
-    }
     export namespace ServerNetworkHandler {
         const $handle$CommandRequestPacket = symcall("?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@AEBVCommandRequestPacket@@@Z", void_t, null, _ServerNetworkHandler, _NetworkIdentifier.ref(), CommandRequestPacket.ref());
         const $handle$TextPacket = symcall("?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@AEBVTextPacket@@@Z", void_t, null, _ServerNetworkHandler, _NetworkIdentifier.ref(), TextPacket.ref());
@@ -506,13 +354,6 @@ export namespace MCAPI {
                 return $handle$TextPacket(thiz, source, packet);
             }
         }
-    }
-    export namespace ServerPlayer {
-        export const resendAllChunks: (thiz: _ServerPlayer) => void = symcall("?resendAllChunks@ServerPlayer@@UEAAXXZ", void_t, null, _ServerPlayer);
-    }
-    export namespace ServerScoreboard {
-        export const clearDisplayObjective: (thiz: _Scoreboard, displaySlotName: DisplaySlot) => Objective | null = symcall("?clearDisplayObjective@ServerScoreboard@@UEAAPEAVObjective@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z", Objective, null, _Scoreboard, CxxString);
-        export const createScoreboardId: (thiz: _Scoreboard, name: string) => _ScoreboardId = symcall("?createScoreboardId@ServerScoreboard@@UEAAAEBUScoreboardId@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z", _ScoreboardId, null, _Scoreboard, CxxString);
     }
     export namespace SignBlockActor {
         export enum SignType {
@@ -576,7 +417,7 @@ export namespace LlAPI {
             return Vec3.toBlockPos(pos);
         }
         export function getPosition(thiz: _Actor) {
-            return MCAPI.CommandUtils.getFeetPos(thiz);
+            return thiz.getFeetPos();
         }
         export function getTypeName(thiz: _Actor) {
             if (thiz.isPlayer()) {
@@ -606,9 +447,9 @@ export namespace LlAPI {
         }
         export function setOnFire(thiz: _Actor, num: number, isEffect: boolean) {
             if (isEffect) {
-                MCAPI.OnFireSystem.setOnFire(thiz, num);
+                thiz.setOnFire(num);
             } else {
-                MCAPI.OnFireSystem.setOnFireNoEffects(thiz, num);
+                thiz.setOnFireNoEffects(num);
             }
             return true;
         }
@@ -637,7 +478,7 @@ export namespace LlAPI {
     }
     export namespace BlockLegacy {
         export function toBlock(thiz: _BlockLegacy, tileData: number) {
-            const bl = MCAPI.BlockLegacy.getStateFromLegacyData(thiz, tileData);
+            const bl = thiz.getStateFromLegacyData(tileData);
             if (bl && bl.blockLegacy.equals(thiz)) {
                 return bl;
             }
@@ -662,14 +503,14 @@ export namespace LlAPI {
     }
     export namespace Container {
         export function addItemSafe(thiz: _Container, item: _ItemStack) {
-            if (!MCAPI.Container.hasRoomForItem(thiz, item)) {
+            if (!thiz.hasRoomForItem(item)) {
                 return false;
             }
-            MCAPI.Container.addItem(thiz, item.cloneItem());
+            thiz.addItem(item.clone());
             return true;
         }
         export function addItemToFirstEmptySlotSafe(thiz: _Container, item: _ItemStack) {
-            return MCAPI.Container.addItemToFirstEmptySlot(thiz, item.cloneItem());
+            return thiz.addItemToFirstEmptySlot(item.clone());
         }
         export function getSize(thiz: _Container) {
             let slots = thiz.getSlots();
@@ -698,7 +539,7 @@ export namespace LlAPI {
             if (thiz.isNull()) {
                 return "";
             }
-            return MCAPI.Item.getSerializedName(thiz.getItem()!);
+            return thiz.getItem()!.getSerializedName();
         }
         export function setItem(thiz: _ItemStack, newItem: ItemStack) {
             let nbt = newItem.allocateAndSave();
@@ -723,12 +564,12 @@ export namespace LlAPI {
         }
     }
     export namespace Mob {
-        export function refreshInventory(thiz: _Actor) {
-            MCAPI.Mob.sendInventory(thiz, true);
-            MCAPI.Mob.sendArmorSlot(thiz, ArmorSlot.Head);
-            MCAPI.Mob.sendArmorSlot(thiz, ArmorSlot.Torso);
-            MCAPI.Mob.sendArmorSlot(thiz, ArmorSlot.Legs);
-            MCAPI.Mob.sendArmorSlot(thiz, ArmorSlot.Feet);
+        export function refreshInventory(thiz: _Mob) {
+            thiz.sendInventory(true);
+            thiz.sendArmorSlot(ArmorSlot.Head);
+            thiz.sendArmorSlot(ArmorSlot.Torso);
+            thiz.sendArmorSlot(ArmorSlot.Legs);
+            thiz.sendArmorSlot(ArmorSlot.Feet);
             return true;
         }
     }
@@ -743,14 +584,14 @@ export namespace LlAPI {
             {
                 const item = thiz.getMainhandSlot();
                 if (ItemStack.getTypeName(item) === typeName) {
-                    MCAPI.ItemStackBase.setNull(item);
+                    item.setNull();
                     res++;
                 }
             }
             {
                 const item = thiz.getOffhandSlot();
                 if (ItemStack.getTypeName(item) === typeName) {
-                    MCAPI.ItemStackBase.setNull(item);
+                    item.setNull();
                     res++;
                 }
             }
@@ -760,19 +601,19 @@ export namespace LlAPI {
                 for (let i = 0; i < items.size(); i++) {
                     if (ItemStack.getTypeName(items.get(i)) === typeName) {
                         const cnt = ItemStack.getCount(items.get(i));
-                        MCAPI.Container.removeItem(container, i, cnt);
+                        container.removeItem(i, cnt);
                         res += cnt;
                     }
                 }
                 items.destruct();
             }
             {
-                const armor = MCAPI.Actor.getArmorContainer(thiz);
+                const armor = thiz.getArmorContainer();
                 let items = armor.getSlots();
                 for (let i = 0; i < items.size(); i++) {
                     if (ItemStack.getTypeName(items.get(i)) === typeName) {
                         const cnt = ItemStack.getCount(items.get(i));
-                        MCAPI.Container.removeItem(armor, i, cnt);
+                        armor.removeItem(i, cnt);
                         res += cnt;
                     }
                 }
@@ -792,7 +633,7 @@ export namespace LlAPI {
             return serverInstance.minecraft.getNetworkHandler().instance.peer.GetAveragePing(thiz.getNetworkIdentifier().address);
         }
         export function getDeviceName(thiz: _Player) {
-            switch (MCAPI.Player.getPlatform(thiz)) {
+            switch (thiz.getPlatform()) {
                 case -1:
                     return "Unknown";
                 case 1:
@@ -858,7 +699,7 @@ export namespace LlAPI {
             return true;
         }
         export function refreshInventory(thiz: _Player) {
-            (thiz as ServerPlayer).sendInventory();
+            (<ServerPlayer>thiz).sendInventory();
             return true;
         }
         export function removeSidebar(thiz: _Player) {
@@ -975,7 +816,7 @@ export namespace LlAPI {
         export function getOrCreateScoreboardId(thiz: _Scoreboard, id: string) {
             let identity = thiz.getFakePlayerScoreboardId(id);
             if (!scoreboardIdIsValid(thiz, identity)) {
-                identity = MCAPI.ServerScoreboard.createScoreboardId(thiz, id);
+                identity = thiz.createScoreboardId(id);
             }
             return identity;
         }
@@ -1005,7 +846,7 @@ export namespace LlAPI {
             return true;
         }
         export function scoreboardIdIsValid(thiz: _Scoreboard, identity: _ScoreboardId) {
-            return MCAPI.ScoreboardId.isValid(identity);
+            return identity.isValid();
         }
         export function setScore(thiz: _Scoreboard, player: _Player, key: string, value: number) {
             const obj = thiz.getObjective(key);
@@ -1025,20 +866,20 @@ export namespace LlAPI {
                 case _Tag.Type.Byte:
                 case _Tag.Type.Short:
                 case _Tag.Type.Int:
-                    return (thiz as ByteTag).data.toString();
+                    return (<ByteTag>thiz).data.toString();
                 case _Tag.Type.Int64:
-                        return (thiz as Int64Tag).dataAsString;
+                        return (<Int64Tag>thiz).dataAsString;
                 case _Tag.Type.Float:
                 case _Tag.Type.Double:
-                    return (thiz as FloatTag).data.toFixed(6);
+                    return (<FloatTag>thiz).data.toFixed(6);
                 case _Tag.Type.ByteArray:
                     return Buffer.from(String.fromCharCode(...(<ByteArrayTag>thiz).toUint8Array())).toString("base64");
                 case _Tag.Type.String:
-                    return (thiz as StringTag).data;
+                    return (<StringTag>thiz).data;
                 case _Tag.Type.List:
                 {
                     const result: any[] = [];
-                    for (const tag of (thiz as ListTag<_Tag>).data) {
+                    for (const tag of (<ListTag<_Tag>>thiz).data) {
                         if (tag.getId() === _Tag.Type.End) {
                             result.push(null);
                         } else {

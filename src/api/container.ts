@@ -1,5 +1,5 @@
 import { Container as _Container } from "bdsx/bds/inventory";
-import { LlAPI, MCAPI } from "../dep/native";
+import { LlAPI } from "../dep/native";
 import { logger, PrivateFields } from "./api_help";
 import { Item$newItem, LXL_Item } from "./item";
 
@@ -39,15 +39,15 @@ export class LXL_Container {
             logger.error("Wrong type of argument in hasRoomFor!");
             return null;
         }
-        return MCAPI.Container.hasRoomForItem(this[PrivateFields], item[PrivateFields]);
+        return this[PrivateFields].hasRoomForItem(item[PrivateFields]);
     }
 
     removeItem(index: number, count: number) {
-        return MCAPI.Container.removeItem(this[PrivateFields], index, count);
+        return this[PrivateFields].removeItem(index, count);
     }
 
     getItem(index: number) {
-        const item = MCAPI.Container.getItem(this[PrivateFields], index);
+        const item = this[PrivateFields].getItem(index);
         if (!item) {
 			logger.error("Fail to get slot from container!");
             return null;
@@ -61,7 +61,7 @@ export class LXL_Container {
             return null;
         }
 
-        const itemOld = MCAPI.Container.getItem(this[PrivateFields], index);
+        const itemOld = this[PrivateFields].getItem(index);
         if (!itemOld) {
             return false;
         }
@@ -79,12 +79,12 @@ export class LXL_Container {
     }
 
     removeAllItems() {
-        MCAPI.Container.removeAllItems(this[PrivateFields]);
+        this[PrivateFields].removeAllItems();
         return true;
     }
 
     isEmpty() {
-        return MCAPI.Container.isEmpty(this[PrivateFields]);
+        return this[PrivateFields].isEmpty();
     }
 
     /** @deprecated */

@@ -1,6 +1,6 @@
 import { DisplaySlot, Objective } from "bdsx/bds/scoreboard";
 import { serverInstance } from "bdsx/bds/server";
-import { LlAPI, MCAPI } from "../dep/native";
+import { LlAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 import { LXL_Player } from "./player";
 
@@ -57,9 +57,9 @@ export function getDisplayObjective(slot: DisplaySlot) {
     return Objective$Objective(res.objective);
 }
 
-export function clearDisplayObjective(slot: DisplaySlot) {
+export function clearDisplayObjective(slot: "sidebar"|"belowName"|"list") {
     const sb = serverInstance.minecraft.getLevel().getScoreboard();
-    const res = MCAPI.ServerScoreboard.clearDisplayObjective(sb, slot);
+    const res = sb.clearDisplayObjective(slot);
     if (!res) return null;
     return Objective$Objective(res);
 }

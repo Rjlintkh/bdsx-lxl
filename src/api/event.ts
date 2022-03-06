@@ -2,7 +2,7 @@ import { Actor, ActorDamageCause, ActorDamageSource, ActorDefinitionIdentifier, 
 import { AttributeId } from "bdsx/bds/attribute";
 import { Block, BlockActor, BlockLegacy, BlockSource } from "bdsx/bds/block";
 import { BlockPos, Vec3 } from "bdsx/bds/blockpos";
-import { CommandOrigin } from "bdsx/bds/commandorigin";
+import { CommandOrigin, CommandOriginType } from "bdsx/bds/commandorigin";
 import { ProjectileComponent } from "bdsx/bds/components";
 import { ConnectionRequest } from "bdsx/bds/connreq";
 import { MobEffectInstance } from "bdsx/bds/effects";
@@ -351,7 +351,7 @@ events.playerDropItem.on(event => {
     const original = symhook("?onEffectAdded@ServerPlayer@@MEAAXAEAVMobEffectInstance@@@Z",
     bool_t, null, ServerPlayer, MobEffectInstance)
     ((thiz, effect) => {
-        const cancelled = LXL_Events.onEffectAdded.fire(Player$newPlayer(thiz), MCAPI.MobEffectInstance.getComponentName(effect).str);
+        const cancelled = LXL_Events.onEffectAdded.fire(Player$newPlayer(thiz), effect.getComponentName());
         _tickCallback();
         if (cancelled) {
             return false;
@@ -364,7 +364,7 @@ events.playerDropItem.on(event => {
     const original = symhook("?onEffectRemoved@ServerPlayer@@MEAAXAEAVMobEffectInstance@@@Z",
     bool_t, null, ServerPlayer, MobEffectInstance)
     ((thiz, effect) => {
-        const cancelled = LXL_Events.onEffectRemoved.fire(Player$newPlayer(thiz), MCAPI.MobEffectInstance.getComponentName(effect).str);
+        const cancelled = LXL_Events.onEffectRemoved.fire(Player$newPlayer(thiz), effect.getComponentName());
         _tickCallback();
         if (cancelled) {
             return false;
@@ -377,7 +377,7 @@ events.playerDropItem.on(event => {
     const original = symhook("?onEffectUpdated@ServerPlayer@@MEAAXAEAVMobEffectInstance@@@Z",
     bool_t, null, ServerPlayer, MobEffectInstance)
     ((thiz, effect) => {
-        const cancelled = LXL_Events.onEffectUpdated.fire(Player$newPlayer(thiz), MCAPI.MobEffectInstance.getComponentName(effect).str);
+        const cancelled = LXL_Events.onEffectUpdated.fire(Player$newPlayer(thiz), effect.getComponentName());
         _tickCallback();
         if (cancelled) {
             return false;
@@ -529,7 +529,7 @@ events.playerDropItem.on(event => {
     ((thiz, instance, entity, pos, face, clickX, clickY, clickZ) => {
         if (entity.isPlayer()) {
             const growDirection = daccess(thiz, int32_t, 42);
-            const blockPos = MCAPI.BlockPos.relative(pos, growDirection, 1);
+            const blockPos = pos.relative(growDirection, 1);
             const block = daccess(thiz, Block.ref(), 8);
             const cancelled = LXL_Events.onPlaceBlock.fire(Player$newPlayer(entity), Block$newBlock(block, blockPos, entity.getDimensionId()));
             _tickCallback();
@@ -562,7 +562,7 @@ events.playerDropItem.on(event => {
     const original = symhook("?stopOpen@ChestBlockActor@@UEAAXAEAVPlayer@@@Z",
     bool_t, null, BlockActor, Player)
     ((thiz, player) => {
-        const bp = MCAPI.BlockActor.getPosition(thiz);
+        const bp = thiz.getPosition();
         const cancelled = LXL_Events.onCloseContainer.fire(Player$newPlayer(<ServerPlayer>player), Block$newBlock(bp, player.getDimensionId()));
         _tickCallback();
         return original(thiz, player);
@@ -572,7 +572,7 @@ events.playerDropItem.on(event => {
     const original = symhook("?stopOpen@BarrelBlockActor@@UEAAXAEAVPlayer@@@Z",
     bool_t, null, BlockActor, Player)
     ((thiz, player) => {
-        const bp = MCAPI.BlockActor.getPosition(thiz);
+        const bp = thiz.getPosition();
         const cancelled = LXL_Events.onCloseContainer.fire(Player$newPlayer(<ServerPlayer>player), Block$newBlock(bp, player.getDimensionId()));
         _tickCallback();
         return original(thiz, player);
@@ -610,7 +610,7 @@ events.playerDropItem.on(event => {
     const original = symhook("?setSprinting@Mob@@UEAAX_N@Z",
     void_t, null, Actor, bool_t)
     ((thiz, shouldSprint) => {
-        if (thiz.isPlayer() && MCAPI.Mob.isSprinting(thiz) !== shouldSprint) {
+        if (thiz.isPlayer() && thiz.isSprinting() !== shouldSprint) {
             const cancelled = LXL_Events.onChangeSprinting.fire(Player$newPlayer(thiz), shouldSprint);
             _tickCallback();
         }
@@ -636,7 +636,7 @@ events.playerDropItem.on(event => {
     const original = symhook("?trySetSpawn@RespawnAnchorBlock@@CA_NAEAVPlayer@@AEBVBlockPos@@AEAVBlockSource@@AEAVLevel@@@Z",
     bool_t, null, Player, BlockPos, BlockSource, Level)
     ((player, blockPos, region, level) => {
-        const cancelled = LXL_Events.onUseRespawnAnchor.fire(Player$newPlayer(<ServerPlayer>player), IntPos$newPos(blockPos, MCAPI.BlockSource.getDimensionId(region)));
+        const cancelled = LXL_Events.onUseRespawnAnchor.fire(Player$newPlayer(<ServerPlayer>player), IntPos$newPos(blockPos, region.getDimensionId()));
         _tickCallback();
         if (cancelled) {
             return false;
@@ -667,7 +667,8 @@ events.playerDropItem.on(event => {
     bool_t, null, StaticPointer, BlockSource, CommandOrigin.ref(), bool_t.ref())
     ((thiz, region, origin, markForSaving) => {
         const command = MCAPI.BaseCommandBlock.getCommand(thiz);
-        const isMinecart = MCAPI.CommandOrigin.getOriginType(origin) === MCAPI.CommandOriginType.MinecartCommandBlock;
+        console.log(origin.getOriginType());
+        const isMinecart = origin.getOriginType() === CommandOriginType.MinecartCommandBlock;
         const pos = isMinecart ? origin.getEntity()!.getPosition() : LlAPI.BlockPos.toVec3(origin.getBlockPosition());
         const cancelled = LXL_Events.onCmdBlockExecute.fire(command, FloatPos$newPos(pos, origin.getDimension().getDimensionId()), isMinecart);
         _tickCallback();
@@ -697,7 +698,7 @@ events.playerDropItem.on(event => {
     const original = symhook("?_blockChanged@BlockSource@@IEAAXAEBVBlockPos@@IAEBVBlock@@1HPEBUActorBlockSyncMessage@@@Z",
     void_t, null, BlockSource, BlockPos, uint32_t, Block, Block, int32_t, StaticPointer)
     ((thiz, pos, layer, block, previousBlock, updateFlags, syncMsg) => {
-        const dimId = MCAPI.BlockSource.getDimensionId(thiz);
+        const dimId = thiz.getDimensionId();
         const cancelled = LXL_Events.onBlockChanged.fire(Block$newBlock(previousBlock, pos, dimId), Block$newBlock(block, pos, dimId));
         _tickCallback();
         if (cancelled) {
@@ -740,7 +741,7 @@ let onFireSpread_OnPlace = false;
             return rtn;
         }
 
-        const cancelled = LXL_Events.onFireSpread.fire(IntPos$newPos(pos, MCAPI.BlockSource.getDimensionId(region)));
+        const cancelled = LXL_Events.onFireSpread.fire(IntPos$newPos(pos, region.getDimensionId()));
         _tickCallback();
         if (cancelled) {
             return false;
@@ -755,7 +756,7 @@ let onFireSpread_OnPlace = false;
     void_t, null, StaticPointer, int32_t, ItemStack, ItemStack)
     ((thiz, slot, oldItem, newItem) => {
         const pl = daccess(thiz, Player.ref(), 208);
-        if (MCAPI.Player.hasOpenContainer(pl)) {
+        if (pl.hasOpenContainer()) {
             const bp = daccess(thiz, BlockPos, 216);
             const cancelled = LXL_Events.onContainerChange.fire(Player$newPlayer(<ServerPlayer>pl), Block$newBlock(bp, pl.getDimensionId()), slot, Item$newItem(oldItem), Item$newItem(newItem));
             _tickCallback();
@@ -773,7 +774,7 @@ let onFireSpread_OnPlace = false;
             return original(thiz, region, pos, projectile);
         }
         if (thiz.getName() !== "minecraft:air") {
-            const cancelled = LXL_Events.onProjectileHitBlock.fire(Block$newBlock(pos, MCAPI.BlockSource.getDimensionId(region)), Entity$newEntity(projectile));
+            const cancelled = LXL_Events.onProjectileHitBlock.fire(Block$newBlock(pos, region.getDimensionId()), Entity$newEntity(projectile));
             _tickCallback();
         }
         return original(thiz, region, pos, projectile);
@@ -785,7 +786,7 @@ let onFireSpread_OnPlace = false;
     const original = symhook("?onRedstoneUpdate@RedStoneWireBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
     void_t, null, BlockLegacy, BlockSource, BlockPos, int32_t, bool_t)
     ((thiz, region, pos, strength, isFirstTime) => {
-        const cancelled = LXL_Events.onRedStoneUpdate.fire(Block$newBlock(pos, MCAPI.BlockSource.getDimensionId(region)), strength, isFirstTime);
+        const cancelled = LXL_Events.onRedStoneUpdate.fire(Block$newBlock(pos, region.getDimensionId()), strength, isFirstTime);
         _tickCallback();
         if (cancelled) {
             return;
@@ -797,7 +798,7 @@ let onFireSpread_OnPlace = false;
     const original = symhook("?onRedstoneUpdate@RedstoneTorchBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
     void_t, null, BlockLegacy, BlockSource, BlockPos, int32_t, bool_t)
     ((thiz, region, pos, strength, isFirstTime) => {
-        const cancelled = LXL_Events.onRedStoneUpdate.fire(Block$newBlock(pos, MCAPI.BlockSource.getDimensionId(region)), strength, isFirstTime);
+        const cancelled = LXL_Events.onRedStoneUpdate.fire(Block$newBlock(pos, region.getDimensionId()), strength, isFirstTime);
         _tickCallback();
         if (cancelled) {
             return;
@@ -809,7 +810,7 @@ let onFireSpread_OnPlace = false;
     const original = symhook("?onRedstoneUpdate@DiodeBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
     void_t, null, BlockLegacy, BlockSource, BlockPos, int32_t, bool_t)
     ((thiz, region, pos, strength, isFirstTime) => {
-        const cancelled = LXL_Events.onRedStoneUpdate.fire(Block$newBlock(pos, MCAPI.BlockSource.getDimensionId(region)), strength, isFirstTime);
+        const cancelled = LXL_Events.onRedStoneUpdate.fire(Block$newBlock(pos, region.getDimensionId()), strength, isFirstTime);
         _tickCallback();
         if (cancelled) {
             return;
@@ -821,7 +822,7 @@ let onFireSpread_OnPlace = false;
     const original = symhook("?onRedstoneUpdate@ComparatorBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
     void_t, null, BlockLegacy, BlockSource, BlockPos, int32_t, bool_t)
     ((thiz, region, pos, strength, isFirstTime) => {
-        const cancelled = LXL_Events.onRedStoneUpdate.fire(Block$newBlock(pos, MCAPI.BlockSource.getDimensionId(region)), strength, isFirstTime);
+        const cancelled = LXL_Events.onRedStoneUpdate.fire(Block$newBlock(pos, region.getDimensionId()), strength, isFirstTime);
         _tickCallback();
         if (cancelled) {
             return;
@@ -836,7 +837,7 @@ let onFireSpread_OnPlace = false;
     bool_t, null, StaticPointer, BlockSource, Container, Vec3)
     ((thiz, region, toContainer, pos) => {
         const isMinecart = daccess(thiz, bool_t, 5);
-        const cancelled = LXL_Events.onHopperSearchItem.fire(FloatPos$newPos(isMinecart ? pos : LlAPI.Vec3.toBlockPos(pos), MCAPI.BlockSource.getDimensionId(region)), isMinecart);
+        const cancelled = LXL_Events.onHopperSearchItem.fire(FloatPos$newPos(isMinecart ? pos : LlAPI.Vec3.toBlockPos(pos), region.getDimensionId()), isMinecart);
         _tickCallback();
         if (cancelled) {
             return false;
@@ -850,7 +851,7 @@ let onFireSpread_OnPlace = false;
     const original = symhook("?_pushOutItems@Hopper@@IEAA_NAEAVBlockSource@@AEAVContainer@@AEBVVec3@@H@Z",
     bool_t, null, StaticPointer, BlockSource, Container, Vec3, int32_t)
     ((thiz, region, fromContainer, position, attachedFace) => {
-        const cancelled = LXL_Events.onHopperPushOut.fire(FloatPos$newPos(position, MCAPI.BlockSource.getDimensionId(region)));
+        const cancelled = LXL_Events.onHopperPushOut.fire(FloatPos$newPos(position, region.getDimensionId()));
         _tickCallback();
         if (cancelled) {
             return false;
@@ -869,7 +870,7 @@ let onFireSpread_OnPlace = false;
             if (targetBlock.getName() === "minecraft:air") {
                 return original(thiz, region, curPos, curBranchFacing, pistonMoveFacing);
             }
-            const cancelled = LXL_Events.onPistonTryPush.fire(IntPos$newPos(curPos, MCAPI.BlockSource.getDimensionId(region)), Block$newBlock(MCAPI.BlockActor.getPosition(thiz), MCAPI.BlockSource.getDimensionId(region)));
+            const cancelled = LXL_Events.onPistonTryPush.fire(IntPos$newPos(curPos, region.getDimensionId()), Block$newBlock(thiz.getPosition(), region.getDimensionId()));
             _tickCallback();
             if (cancelled) {
                 return false;
@@ -884,7 +885,7 @@ let onFireSpread_OnPlace = false;
             if (targetBlock.getName() === "minecraft:air") {
                 return true;
             }
-            const cancelled = LXL_Events.onPistonPush.fire(IntPos$newPos(curPos, MCAPI.BlockSource.getDimensionId(region)), Block$newBlock(MCAPI.BlockActor.getPosition(thiz), MCAPI.BlockSource.getDimensionId(region)));
+            const cancelled = LXL_Events.onPistonPush.fire(IntPos$newPos(curPos, region.getDimensionId()), Block$newBlock(thiz.getPosition(), region.getDimensionId()));
         }
         return true;
     });
@@ -892,7 +893,7 @@ let onFireSpread_OnPlace = false;
 
 /////////////////// FarmLandDecay ///////////////////
 events.farmlandDecay.on(event => {
-    const cancelled = LXL_Events.onFarmLandDecay.fire(IntPos$newPos(event.blockPos, MCAPI.BlockSource.getDimensionId(event.blockSource)), Entity$newEntity(event.culprit));
+    const cancelled = LXL_Events.onFarmLandDecay.fire(IntPos$newPos(event.blockPos, event.blockSource.getDimensionId()), Entity$newEntity(event.culprit));
     _tickCallback();
     if (cancelled) {
         return CANCEL;
@@ -934,7 +935,7 @@ events.farmlandDecay.on(event => {
         if (!rtn) {
             return rtn;
         }
-        const cancelled = LXL_Events.onLiquidFlow.fire(Block$newBlock(thiz.getRenderBlock(), pos, MCAPI.BlockSource.getDimensionId(region)), IntPos$newPos(pos, MCAPI.BlockSource.getDimensionId(region)));
+        const cancelled = LXL_Events.onLiquidFlow.fire(Block$newBlock(thiz.getRenderBlock(), pos, region.getDimensionId()), IntPos$newPos(pos, region.getDimensionId()));
         _tickCallback();
         if (cancelled) {
             return false;
@@ -1015,7 +1016,7 @@ events.farmlandDecay.on(event => {
             }
         }
         {
-            if (item.item.isFood() && (MCAPI.Player.isHungry(player) || MCAPI.Player.forceAllowEating(player))) {
+            if (item.item.isFood() && (player.isHungry() || player.forceAllowEating())) {
                 const cancelled = LXL_Events.onEat.fire(Player$newPlayer(<ServerPlayer>player), Item$newItem(item));
                 _tickCallback();
                 if (cancelled) {
@@ -1061,13 +1062,13 @@ events.entityDie.on(event => {
             const bp = LlAPI.Vec3.toBlockPos(pos);
             const block = bs.getBlock(bp);
             if (block.getName() === "minecraft:respawn_anchor") {
-                cancelled ||= LXL_Events.onRespawnAnchorExplode.fire(IntPos$newPos(bp, MCAPI.BlockSource.getDimensionId(bs)));
+                cancelled ||= LXL_Events.onRespawnAnchorExplode.fire(IntPos$newPos(bp, bs.getDimensionId()));
                 _tickCallback();
             } else {
-                cancelled ||= LXL_Events.onBedExplode.fire(IntPos$newPos(bp, MCAPI.BlockSource.getDimensionId(bs)));
+                cancelled ||= LXL_Events.onBedExplode.fire(IntPos$newPos(bp, bs.getDimensionId()));
                 _tickCallback();
             }
-            cancelled ||= LXL_Events.onBlockExplode.fire(Block$newBlock(bp, MCAPI.BlockSource.getDimensionId(bs)), IntPos$newPos(bp, MCAPI.BlockSource.getDimensionId(bs)), maxResistance, radius, canBreaking, genFire);
+            cancelled ||= LXL_Events.onBlockExplode.fire(Block$newBlock(bp, bs.getDimensionId()), IntPos$newPos(bp, bs.getDimensionId()), maxResistance, radius, canBreaking, genFire);
             _tickCallback();
             if (cancelled) {
                 return;
@@ -1235,7 +1236,7 @@ events.entityDie.on(event => {
                 break;
             }
         }
-        if (player.isPlayer()) {
+        if (player?.isPlayer()) {
             const cancelled = LXL_Events.onScoreChanged.fire(Player$newPlayer(player), obj.getPlayerScore(id).value, obj.name, obj.displayName);
             _tickCallback();
         }

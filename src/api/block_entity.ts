@@ -1,6 +1,5 @@
 import { DimensionId } from "bdsx/bds/actor";
 import { BlockActor } from "bdsx/bds/block";
-import { MCAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 import { IntPos, IntPos$newPos } from "./base";
 import { Block$newBlock } from "./block";
@@ -28,14 +27,14 @@ export class LXL_BlockEntity {
     }
 
     getBlock() {
-        return Block$newBlock(MCAPI.BlockActor.getPosition(this[PrivateFields]), this.pos.dimid);
+        return Block$newBlock(this[PrivateFields].getPosition(), this.pos.dimid);
     }
 }
 
 export function BlockEntity$newBlockEntity(be: BlockActor, dim: DimensionId): LXL_BlockEntity {
     const newp = new LXL_BlockEntity();
     newp[PrivateFields] = be;
-    Object.defineProperty(newp, "type", { value: MCAPI.BlockActor.getType(be) });
-    Object.defineProperty(newp, "pos", { value: IntPos$newPos(MCAPI.BlockActor.getPosition(be), dim) });
+    Object.defineProperty(newp, "type", { value: be.getType() });
+    Object.defineProperty(newp, "pos", { value: IntPos$newPos(be.getPosition(), dim) });
     return newp;
 }

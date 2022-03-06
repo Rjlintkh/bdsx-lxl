@@ -1,9 +1,9 @@
-import { Actor, ActorDefinitionIdentifier, DimensionId, ItemActor } from "bdsx/bds/actor";
+import { Actor, ActorDefinitionIdentifier, DimensionId, ItemActor, Mob } from "bdsx/bds/actor";
 import { Vec3 } from "bdsx/bds/blockpos";
 import { ServerPlayer } from "bdsx/bds/player";
 import { serverInstance } from "bdsx/bds/server";
 import { bin } from "bdsx/bin";
-import { StaticPointer, VoidPointer } from "bdsx/core";
+import { StaticPointer } from "bdsx/core";
 import { LlAPI, MCAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 import { DirectionAngle$newAngle, FloatPos, FloatPos$newPos, IntPos, IntPos$newPos } from "./base";
@@ -89,7 +89,7 @@ export class LXL_Entity {
             return null;
         }
 
-        return !LlAPI.Actor.isOnGround(entity) && !MCAPI.Actor.isInWater(entity);
+        return !LlAPI.Actor.isOnGround(entity) && !entity.isInWater();
     }
 
     get inWater() {
@@ -98,16 +98,16 @@ export class LXL_Entity {
             return null;
         }
 
-        return MCAPI.Actor.isInWater(entity);
+        return entity.isInWater();
     }
 
     get speed() {
-        const entity = this[PrivateFields];
+        const entity = <Mob>this[PrivateFields];
         if (!entity) {
             return null;
         }
 
-        return MCAPI.Mob.getSpeed(entity);
+        return entity.getSpeed();
     }
 
     get direction() {
@@ -154,7 +154,7 @@ export class LXL_Entity {
             return null;
         }
 
-        MCAPI.Mob.kill(entity);
+        entity.kill();
         return true;
     }
 
@@ -217,11 +217,11 @@ export class LXL_Entity {
             return null;
         }
 
-        return Container$newContainer(MCAPI.Actor.getArmorContainer(entity));
+        return Container$newContainer(entity.getArmorContainer());
     }
 
     refreshItems() {
-        const entity = this[PrivateFields];
+        const entity = <Mob>this[PrivateFields];
         if (!entity) {
             return null;
         }
@@ -401,6 +401,6 @@ export function explode(a0: any, a1?: any, a2?: any, a3?: any, a4?: any, a5?: an
     }
     const level = serverInstance.minecraft.getLevel();
     const region = level.getDimension(dimId)!.getBlockSource();
-    MCAPI.Level.explode(level, region, source?.[PrivateFields] ? source[PrivateFields]! : new VoidPointer(), pos, range, isDestroy, isFire, power, false);
+    level.explode(region, source?.[PrivateFields] ? source[PrivateFields]! : null, pos, range, isDestroy, isFire, power, false);
     return true;
 }

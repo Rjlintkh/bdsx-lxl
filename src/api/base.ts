@@ -1,7 +1,6 @@
-import { BlockPos, Vec3 } from "bdsx/bds/blockpos";
+import { BlockPos, Facing, Vec3 } from "bdsx/bds/blockpos";
 import { SemVersion } from "bdsx/bds/server";
 import { proc } from "bdsx/bds/symbols";
-import { MCAPI } from "../dep/native";
 import { DimId2Name, PrivateFields } from "./api_help";
 
 export class IntPos {
@@ -145,7 +144,7 @@ export class DirectionAngle {
 
     toFacing(): number {
         let facing = -1;
-        switch (MCAPI.Facing.convertYRotationToFacingDirection(this.yaw)) {
+        switch (Facing.convertYRotationToFacingDirection(this.yaw)) {
             case 2:
                 facing = 0;
                 break;

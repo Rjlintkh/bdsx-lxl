@@ -2,7 +2,7 @@ import { DimensionId } from "bdsx/bds/actor";
 import { Vec3 } from "bdsx/bds/blockpos";
 import { ItemStack } from "bdsx/bds/inventory";
 import { serverInstance } from "bdsx/bds/server";
-import { LlAPI, MCAPI } from "../dep/native";
+import { LlAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 import { FloatPos, IntPos } from "./base";
 import { Entity$newEntity, LXL_Entity } from "./entity";
@@ -42,7 +42,7 @@ export class LXL_Item {
     }
 
     setNull() {
-        MCAPI.ItemStackBase.setNull(this[PrivateFields]);
+        this[PrivateFields].setNull();
         return true;
     }
 
