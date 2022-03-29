@@ -55,6 +55,10 @@ export class IntPos {
     get dim(): string {
         return DimId2Name(this[PrivateFields].dimid);
     }
+
+    toString() {
+        return `${DimId2Name(this[PrivateFields].dimid)}(${this[PrivateFields].x},${this[PrivateFields].y},${this[PrivateFields].z})`;
+    }
 }
 
 export function IntPos$newPos(x: number, y: number, z: number, dimid: number): IntPos;
@@ -120,6 +124,10 @@ export class FloatPos {
     get dim(): string {
         return DimId2Name(this[PrivateFields].dimid);
     }
+
+    toString() {
+        return `${DimId2Name(this[PrivateFields].dimid)}(${this[PrivateFields].x.toPrecision(2)},${this[PrivateFields].y.toPrecision(2)},${this[PrivateFields].z.toPrecision(2)})`
+    }
 }
 
 export function FloatPos$newPos(x: number, y: number, z: number, dimid: number): FloatPos;
@@ -163,6 +171,10 @@ export class DirectionAngle {
 
     valueOf() {
         return this.toFacing();
+    }
+
+    toString() {
+        return `(${this.pitch.toPrecision(2)}, ${this.yaw.toPrecision(2)})`;
     }
 }
 

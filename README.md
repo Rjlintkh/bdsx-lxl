@@ -1,8 +1,8 @@
 
-## BDSX-LXL: Load LiteXLoader JS plugins in BDSX!
+## BDSX-LLSE: Load LiteLoader ScriptingEngine JS plugins in BDSX!
 
 #### Background
-Both LiteXLoader (LXL) and Bedrock Dedicated Server eXtended (BDSX) are popular options of loading different kinds of plugins currently. However, JS plugins designed for LXL cannot be loaded in BDSX and they need a lot of extra work to port to BDSX. This plugin aims to reduce the work and allow users to load some of the LXL JS plugins with BDSX.
+Both LiteLoader ScriptingEngine (LLSE) and Bedrock Dedicated Server eXtended (BDSX) are popular options of loading different kinds of plugins currently. However, JS plugins designed for LXL cannot be loaded in BDSX and they need a lot of extra work to port to BDSX. This plugin aims to reduce the work and allow users to load some of the LXL JS plugins with BDSX.
 
 #### Features
 We aim to be consistent with the features of LXL, even with the bugs it has. However, there are some features that we could not implement at the time.

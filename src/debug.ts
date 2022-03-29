@@ -1,11 +1,11 @@
 import { events } from "bdsx/event";
 import { logger } from "./api/api_help";
 import { log } from "./api/script";
-import { LXLPlugin } from "./plugin";
+import { LLSEPlugin } from "./plugin";
 
 let jsdebug = false;
 let locked = false;
-const env = new LXLPlugin();
+const env = new LLSEPlugin();
 env.load();
 export function IsInDebugMode() {
     return jsdebug;

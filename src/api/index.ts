@@ -2,7 +2,7 @@ import { ClearInterval, SetInterval, SetTimeout } from "./api_help";
 import { DirectionAngle, FloatPos, getBDSVersion, IntPos, newFloatPos, newIntPos } from "./base";
 import { getBlock, LXL_Block, setBlock, spawnParticle } from "./block";
 import { LXL_BlockEntity } from "./block_entity";
-import { regConsoleCmd, regPlayerCmd, runcmd, runcmdEx, sendCmdOutput } from "./command";
+import { LLSE_Command, LLSE_CommandOrigin, LLSE_CommandOutput, newCommand, OriginType, ParamOption, ParamType, PermType, regConsoleCmd, regPlayerCmd, runcmd, runcmdEx, sendCmdOutput } from "./command";
 import { LXL_Container } from "./container";
 import { data, IniConfigFile, JsonConfigFile, KVDatabase, money } from "./data";
 import { LXL_Device } from "./device";
@@ -12,8 +12,8 @@ import { File } from "./file_system";
 import { Format } from "./game_utils";
 import { LXL_CustomForm, LXL_SimpleForm, newCustomForm, newSimpleForm } from "./gui";
 import { LXL_Item, newItem, spawnItem } from "./item";
+import { ll } from "./ll";
 import { logger } from "./logger";
-import { lxl } from "./lxl";
 import { NBT, NbtByte, NbtByteArray, NbtCompound, NbtDouble, NbtEnd, NbtFloat, NbtInt, NbtList, NbtLong, NbtShort, NbtString } from "./nbt";
 import { network, WSClient } from "./network";
 import { broadcast, getOnlinePlayers, getPlayer, LXL_Player } from "./player";
@@ -29,12 +29,14 @@ const bindings = {
     // require: (id: string) => {
     //     return require(path.join(process.cwd(), "./plugins", id));
     // },
+    //////////////// 全局函数 ////////////////
     log,
     colorLog,
     fastLog,
     setTimeout: SetTimeout,
     setInterval: SetInterval,
     clearInterval: ClearInterval,
+    //////////////// 静态类 ////////////////
     mc: {
         getBDSVersion,
         runcmd,
@@ -65,6 +67,7 @@ const bindings = {
         newScoreObjective,
         removeScoreObjective,
         getAllScoreObjectives,
+        newCommand,
 
         /** @deprecated */
         getAllScoreObjective: getAllScoreObjectives,
@@ -78,9 +81,14 @@ const bindings = {
     data,
     money,
     network,
-    lxl,
+    ll,
     NBT,
     Format,
+    PermType,
+    ParamType,
+    ParamOption,
+    OriginType,
+    //////////////// 实例类 ////////////////
     IntPos,
     FloatPos,
     DirectionAngle,
@@ -110,6 +118,9 @@ const bindings = {
     NbtByteArray,
     NbtList,
     NbtCompound,
+    LLSE_Command,
+    LLSE_CommandOrigin,
+    LLSE_CommandOutput,
 
     /** @deprecated */
     file: File,

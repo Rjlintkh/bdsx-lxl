@@ -1,16 +1,16 @@
-export const LXL_SCRIPT_LANG_TYPE = "Js";
-export const LXL_MODULE_TYPE = "Js";
+export const LL_SCRIPT_LANG_TYPE = "Js";
+export const LL_MODULE_TYPE = "Js";
 
-export const LXL_VERSION_MAJOR = 0;
-export const LXL_VERSION_MINOR = 5;
-export const LXL_VERSION_REVISION = 12;
+export const LL_VERSION_MAJOR = 2;
+export const LL_VERSION_MINOR = 1;
+export const LL_VERSION_REVISION = 3;
 
-export const LXL_VERSION_STATUS = "Beta";
-export const LXL_VERSION_STATUS_STRING = "Release";
+export let LL_VERSION_STATUS = "Release";
+export const LL_VERSION_STATUS_STRING = "Release";
 
-export const LXL_VERSION = `${LXL_VERSION_MAJOR}.${LXL_VERSION_MINOR}.${LXL_VERSION_REVISION} ${LXL_VERSION_STATUS}`;
+export const LL_VERSION = `${LL_VERSION_MAJOR}.${LL_VERSION_MINOR}.${LL_VERSION_REVISION} ${LL_VERSION_STATUS}`;
 
-export const LXL_DIR = "./plugins/LiteXLoader/";
-export const LXL_DEPENDS_DIR = "./plugins/lib/";
-export const LXL_LANGPACK_DIR = "./plugins/LiteXLoader/LangPack/";
-export const LXL_CONFIG_PATH = "./plugins/LiteXLoader/config.ini";
+export const LL_DIR = "./plugins/LiteXLoader/";
+export const LL_DEPENDS_DIR = "./plugins/lib/";
+export const LL_LANGPACK_DIR = "./plugins/LiteXLoader/LangPack/";
+export const LL_CONFIG_PATH = "./plugins/LiteXLoader/config.ini";

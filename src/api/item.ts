@@ -34,7 +34,7 @@ export class LXL_Item {
     }
 
     clone() {
-        return Item$newItem(this[PrivateFields].cloneItem());
+        return Item$newItem(this[PrivateFields].clone());
     }
 
     isNull() {

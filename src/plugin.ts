@@ -5,7 +5,7 @@ import { logger, pluginList } from "./api/api_help";
 import { regConsoleCmd, regPlayerCmd, unregConsoleCmd, unregPlayerCmd } from "./api/command";
 import { listen } from "./api/event";
 import { Player$newPlayer } from "./api/player";
-import { LXL_DEPENDS_DIR } from "./constants";
+import { LL_DEPENDS_DIR } from "./constants";
 import { LevelDB } from "./dep/leveldb";
 import { requestSync } from "./dep/sync";
 import { iniConf } from "./loader";
@@ -14,11 +14,11 @@ import path = require("path");
 import vm = require("vm");
 import ts = require("typescript");
 
-export class LXLPlugin {
+export class LLSEPlugin {
     isLoaded = false;
     isHot = false;
 
-    sessionId = 0;
+    protected sessionId = 0;
 
     lastCode = "";
 
@@ -30,7 +30,12 @@ export class LXLPlugin {
         console: new Array<string>(),
     }
 
-    constructor(public pluginName = "", public lang = "js") {}
+    constructor(public pluginFilePath = "", public lang = "js") {}
+
+    pluginName = this.pluginFilePath;
+    pluginIntroduction = this.pluginFilePath;
+    pluginVersion = [1, 0, 0];
+    pluginOtherInformation = {};
 
     load(virtual = false) {
         if (!this.isLoaded) {
@@ -38,11 +43,11 @@ export class LXLPlugin {
             this.sessionId = sessionId;
             this.ctx = vm.createContext({...context}) as typeof context;
             {
-                this.ctx.lxl.require = (filepath: string, remotePath?: string) => {
+                this.ctx.ll.require = (filepath: string, remotePath?: string) => {
                     let existing = false;
-                    const thisName = this.pluginName;
+                    const thisName = this.pluginFilePath;
 
-                    for (const { pluginName } of pluginList) {
+                    for (const { pluginFilePath: pluginName } of pluginList) {
                         if (pluginName === filepath) {
                             existing = true;
                             break;
@@ -62,7 +67,7 @@ export class LXLPlugin {
                             }
                         }
                         if (existing) {
-                            const plugin = new LXLPlugin(filepath);
+                            const plugin = new LLSEPlugin(filepath);
                             plugin.load();
                             const res = plugin.run(fs.readFileSync(path.join(process.cwd(), iniConf.Main.PluginsDir, filepath), "utf-8"));
                             if (res.success) {
@@ -76,7 +81,7 @@ export class LXLPlugin {
                     } catch { }
                     existing = false;
                     try {
-                        const list = fs.readdirSync(path.join(process.cwd(), LXL_DEPENDS_DIR));
+                        const list = fs.readdirSync(path.join(process.cwd(), LL_DEPENDS_DIR));
                         for (const fileName of list) {
                             if (fileName === filepath) {
                                 existing = true;
@@ -84,9 +89,9 @@ export class LXLPlugin {
                             }
                         }
                         if (existing) {
-                            const plugin = new LXLPlugin(filepath);
+                            const plugin = new LLSEPlugin(filepath);
                             plugin.load();
-                            const res = plugin.run(fs.readFileSync(path.join(process.cwd(), LXL_DEPENDS_DIR, filepath), "utf-8"));
+                            const res = plugin.run(fs.readFileSync(path.join(process.cwd(), LL_DEPENDS_DIR, filepath), "utf-8"));
                             if (res.success) {
                                 logger.info(`${thisName} - 插件依赖包加载成功。已加载：${filepath}`);
                                 return true;
@@ -110,10 +115,10 @@ export class LXLPlugin {
                         return false;
                     }
                     try {
-                        const downloadPath = path.join(process.cwd(), LXL_DEPENDS_DIR, filepath);
+                        const downloadPath = path.join(process.cwd(), LL_DEPENDS_DIR, filepath);
                         fs.writeFileSync(downloadPath, result.data);
 
-                        const plugin = new LXLPlugin(filepath);
+                        const plugin = new LLSEPlugin(filepath);
                         plugin.load();
                         const res = plugin.run(fs.readFileSync(downloadPath, "utf-8"));
                         if (res.success) {
@@ -126,6 +131,15 @@ export class LXLPlugin {
                     } catch { }
                     logger.error(`${thisName} - 插件依赖包加载失败！`);
                     return false;
+                }
+            }
+            {
+                this.ctx.ll.registerPlugin = (name: string, Introduction = "", version: [number, number, number] = [1, 0, 0], otherInfomation: Record<string, string> = {}) => {
+                    this.pluginName = name;
+                    this.pluginIntroduction = Introduction;
+                    this.pluginVersion = version;
+                    this.pluginOtherInformation = {...otherInfomation};
+                    return true;
                 }
             }
             {
@@ -162,7 +176,7 @@ export class LXLPlugin {
             (this.ctx as any).LevelDB = LevelDB;
             vm.runInContext(fs.readFileSync(path.join(__dirname, "./dep/polyfill.js"), "utf8"), this.ctx);
             this.isLoaded = true;
-            if (this.pluginName !== "" && !virtual) {
+            if (this.pluginFilePath !== "" && !virtual) {
                 pluginList.push(this);
             }
         }
@@ -196,8 +210,8 @@ export class LXLPlugin {
                 unregConsoleCmd(e);
             }
             this.isLoaded = false;
-            if (this.pluginName !== "" && !virtual) {
-                const index = pluginList.findIndex(e => e.pluginName === this.pluginName);
+            if (this.pluginFilePath !== "" && !virtual) {
+                const index = pluginList.findIndex(e => e.pluginFilePath === this.pluginFilePath);
                 if (index !== -1) {
                     pluginList.splice(index, 1);
                 }
@@ -222,7 +236,7 @@ export class LXLPlugin {
                     }
                 });
                 try {
-                    result.output = vm.runInContext(outputText, this.ctx, { filename: this.pluginName });
+                    result.output = vm.runInContext(outputText, this.ctx, { filename: this.pluginFilePath });
                     result.success = true;
                 } catch (err) {
                     logger.error(err);

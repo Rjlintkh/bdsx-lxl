@@ -1,6 +1,6 @@
 import { ByteArrayTag, ByteTag, CompoundTag, Int64Tag, ListTag, Tag } from "bdsx/bds/nbt";
 import { bin } from "bdsx/bin";
-import { LXLPlugin } from "../plugin";
+import { LLSEPlugin } from "../plugin";
 import { Logger } from "../utils/logger";
 import { NbtCompound, NbtList } from "./nbt";
 
@@ -317,7 +317,7 @@ export const playerDataDB = new Map<string, any>();
 
 export const logger = new Logger("LiteXLoader");
 
-export const pluginList = new Array<LXLPlugin>();
+export const pluginList = new Array<LLSEPlugin>();
 
 export const PrivateFields = Symbol();
 
