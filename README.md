@@ -59,7 +59,7 @@ We aim to be consistent with the features of LXL, even with the bugs it has. How
         - [x] [📜 Info](https://lxl.litebds.com/#/zh_CN/Development/SystemAPI/SystemInfo)
                   
 - In-game commands:
-    - [x] LXL Hot Manage: `/lxl`
+    - [x] LL Hot Manage: `/ll`
     - [x] Debug: `/jsdebug`
     - [ ] Economy: `/money`
 

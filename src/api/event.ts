@@ -14,7 +14,6 @@ import { MinecraftPacketIds } from "bdsx/bds/packetids";
 import { PlayerActionPacket, TextPacket } from "bdsx/bds/packets";
 import { Player, ServerPlayer } from "bdsx/bds/player";
 import { Objective, Scoreboard, ScoreboardId } from "bdsx/bds/scoreboard";
-import { serverInstance } from "bdsx/bds/server";
 import { bin } from "bdsx/bin";
 import { capi } from "bdsx/capi";
 import { CANCEL } from "bdsx/common";
@@ -949,7 +948,7 @@ events.farmlandDecay.on(event => {
     const original = symhook("?die@Player@@UEAAXAEBVActorDamageSource@@@Z",
     bool_t, null, Player, ActorDamageSource)
     ((thiz, source) => {
-        const src = serverInstance.minecraft.getLevel().fetchEntity(source.getDamagingEntityUniqueID(), true);
+        const src = bedrockServer.level.fetchEntity(source.getDamagingEntityUniqueID(), true);
         const cancelled = LXL_Events.onPlayerDie.fire(Player$newPlayer(<ServerPlayer>thiz), src ? Entity$newEntity(src) : null);
         _tickCallback();
         return original(thiz, source);
@@ -992,7 +991,7 @@ events.farmlandDecay.on(event => {
     const original = symhook("?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
     bool_t, null, Actor, ActorDamageSource, int32_t, bool_t, bool_t)
     ((thiz, source, dmg, knock, ignite) => {
-        const src = serverInstance.minecraft.getLevel().fetchEntity(source.getDamagingEntityUniqueID(), true);
+        const src = bedrockServer.level.fetchEntity(source.getDamagingEntityUniqueID(), true);
         const cancelled = LXL_Events.onMobHurt.fire(Entity$newEntity(thiz), src ? Entity$newEntity(src) : null, dmg);
         _tickCallback();
         if (cancelled) {
@@ -1227,7 +1226,7 @@ events.entityDie.on(event => {
     ((thiz, id, obj) => {
         const _id = id.id;
         let player!: ServerPlayer;
-        const level = serverInstance.minecraft.getLevel();
+        const level = bedrockServer.level;
         const sb = level.getScoreboard();
         const pls = level.getPlayers();
         for (const pl of pls) {

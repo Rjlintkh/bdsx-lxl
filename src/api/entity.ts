@@ -1,9 +1,9 @@
 import { Actor, ActorDefinitionIdentifier, DimensionId, ItemActor, Mob } from "bdsx/bds/actor";
 import { Vec3 } from "bdsx/bds/blockpos";
 import { ServerPlayer } from "bdsx/bds/player";
-import { serverInstance } from "bdsx/bds/server";
 import { bin } from "bdsx/bin";
 import { StaticPointer } from "bdsx/core";
+import { bedrockServer } from "bdsx/launcher";
 import { LlAPI, MCAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 import { DirectionAngle$newAngle, FloatPos, FloatPos$newPos, IntPos, IntPos$newPos } from "./base";
@@ -342,7 +342,7 @@ export function Entity$newEntity(p: Actor): LXL_Entity {
 }
 
 export function getAllEntities() {
-    const entityList = serverInstance.minecraft.getLevel().getEntities();
+    const entityList = bedrockServer.level.getEntities();
     const arr = new Array<LXL_Entity>();
     for (const i of entityList) {
         arr.push(Entity$newEntity(i));
@@ -361,7 +361,7 @@ export function spawnMob(name: string, a1: any, a2?: any, a3?: any, a4?: any) {
         pos = Vec3.create(a1, a2, a3);
         dimId = a4;
     }
-    const level = serverInstance.minecraft.getLevel();
+    const level = bedrockServer.level;
     const ad = ActorDefinitionIdentifier.constructWith(name);
     const entity = level.getSpawner().spawnMob(level.getDimension(dimId)!.getBlockSource(), ad, pos);
     if (entity !== null) {
@@ -399,7 +399,7 @@ export function explode(a0: any, a1?: any, a2?: any, a3?: any, a4?: any, a5?: an
         isDestroy = a7;
         isFire = a8;
     }
-    const level = serverInstance.minecraft.getLevel();
+    const level = bedrockServer.level;
     const region = level.getDimension(dimId)!.getBlockSource();
     level.explode(region, source?.[PrivateFields] ? source[PrivateFields]! : null, pos, range, isDestroy, isFire, power, false);
     return true;

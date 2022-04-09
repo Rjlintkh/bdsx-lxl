@@ -4,7 +4,6 @@ import { CompoundTag, ListTag } from "bdsx/bds/nbt";
 import { BossEventPacket } from "bdsx/bds/packets";
 import { ServerPlayer } from "bdsx/bds/player";
 import { ObjectiveSortOrder } from "bdsx/bds/scoreboard";
-import { serverInstance } from "bdsx/bds/server";
 import { bin } from "bdsx/bin";
 import { bedrockServer } from "bdsx/launcher";
 import { LlAPI, MCAPI } from "../dep/native";
@@ -550,7 +549,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LlAPI.Scoreboard.getScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj);
+        return LlAPI.Scoreboard.getScore(bedrockServer.level.getScoreboard(), player, obj);
     }
 
     setScore(obj: string, score: number) {
@@ -559,7 +558,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LlAPI.Scoreboard.setScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj, score);
+        return LlAPI.Scoreboard.setScore(bedrockServer.level.getScoreboard(), player, obj, score);
     }
 
     addScore(obj: string, score: number) {
@@ -568,7 +567,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LlAPI.Scoreboard.addScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj, score);
+        return LlAPI.Scoreboard.addScore(bedrockServer.level.getScoreboard(), player, obj, score);
     }
 
     reduceScore(obj: string, score: number) {
@@ -577,7 +576,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LlAPI.Scoreboard.reduceScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj, score);
+        return LlAPI.Scoreboard.reduceScore(bedrockServer.level.getScoreboard(), player, obj, score);
     }
 
     deleteScore(obj: string) {
@@ -586,7 +585,7 @@ export class LXL_Player {
             return null;
         }
 
-        return LlAPI.Scoreboard.deleteScore(serverInstance.minecraft.getLevel().getScoreboard(), player, obj);
+        return LlAPI.Scoreboard.deleteScore(bedrockServer.level.getScoreboard(), player, obj);
     }
 
     setSidebar(title: string, data: Record<string, number>, sortOrder: ObjectiveSortOrder = 1) {
@@ -918,7 +917,7 @@ export function Player$newPlayer(p: ServerPlayer): LXL_Player {
 export function getPlayer(info: string): LXL_Player | null {
     if (bedrockServer.isLaunched() && info) {
         let target = info.toLowerCase();
-        const playerList = serverInstance.minecraft.getLevel().getPlayers();
+        const playerList = bedrockServer.level.getPlayers();
 
         let delta = 2147483647;
         let found: ServerPlayer | null = null;
@@ -948,7 +947,7 @@ export function getPlayer(info: string): LXL_Player | null {
 }
 
 export function getOnlinePlayers() {
-    const players = serverInstance.minecraft.getLevel().getPlayers();
+    const players = bedrockServer.level.getPlayers();
     const list = new Array<LXL_Player>();
     for (const p of players) {
         list.push(Player$newPlayer(p));
@@ -961,6 +960,6 @@ export function broadcast(msg: string, type = 0) {
     if (newType >= 0 && newType <= 9) {
         type = newType;
     }
-    LlAPI.Level.broadcastText(serverInstance.minecraft.getLevel(), msg, type);
+    LlAPI.Level.broadcastText(bedrockServer.level, msg, type);
     return true;
 }

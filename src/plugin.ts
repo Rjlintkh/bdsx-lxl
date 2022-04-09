@@ -1,5 +1,5 @@
 
-import { serverInstance } from "bdsx/bds/server";
+import { bedrockServer } from "bdsx/launcher";
 import { context } from "./api";
 import { logger, pluginList } from "./api/api_help";
 import { regConsoleCmd, regPlayerCmd, unregConsoleCmd, unregPlayerCmd } from "./api/command";
@@ -185,7 +185,7 @@ export class LLSEPlugin {
     unload(virtual = false) {
         if (this.isLoaded) {
             this.sessionId = 0;
-            const players = serverInstance.getPlayers();
+            const players = bedrockServer.serverInstance.getPlayers();
             if (this.listeners["onLeft"]) {
                 for (const pl of players) {
                     for (const cb of this.listeners["onLeft"]) {
@@ -252,7 +252,7 @@ export class LLSEPlugin {
                         }
                     }
                 }
-                const players = serverInstance.getPlayers();
+                const players = bedrockServer.serverInstance.getPlayers();
                 if (this.listeners["onPreJoin"]) {
                     for (const pl of players) {
                         for (const cb of this.listeners["onPreJoin"]) {

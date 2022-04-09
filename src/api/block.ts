@@ -2,8 +2,8 @@ import { DimensionId } from "bdsx/bds/actor";
 import { Block, BlockSource } from "bdsx/bds/block";
 import { BlockPos, Vec3 } from "bdsx/bds/blockpos";
 import { CompoundTag } from "bdsx/bds/nbt";
-import { serverInstance } from "bdsx/bds/server";
 import { StaticPointer } from "bdsx/core";
+import { bedrockServer } from "bdsx/launcher";
 import { NativeType } from "bdsx/nativetype";
 import { daccess, LlAPI, MCAPI } from "../dep/native";
 import { PrivateFields, Tag2Value } from "./api_help";
@@ -28,7 +28,7 @@ export class LXL_Block {
     }
 
     setNbt(nbt: NbtCompound) {
-        CompoundTag[NativeType.setter](this[PrivateFields], nbt[PrivateFields], 96);
+        CompoundTag[NativeType.setter](<StaticPointer><unknown>this[PrivateFields], nbt[PrivateFields], 96);
         return true;
     }
 
@@ -44,13 +44,13 @@ export class LXL_Block {
     }
 
     hasContainer() {
-        const region = serverInstance.minecraft.getLevel().getDimension(this.pos.dimid)!.getBlockSource();
+        const region = bedrockServer.level.getDimension(this.pos.dimid)!.getBlockSource();
         const container = MCAPI.DropperBlockActor._getContainerAt(new StaticPointer(), region, Vec3.create(this.pos.x, this.pos.y, this.pos.z));
         return container !== null;
     }
 
     getContainer() {
-        const region = serverInstance.minecraft.getLevel().getDimension(this.pos.dimid)!.getBlockSource();
+        const region = bedrockServer.level.getDimension(this.pos.dimid)!.getBlockSource();
         const container = MCAPI.DropperBlockActor._getContainerAt(new StaticPointer(), region, Vec3.create(this.pos.x, this.pos.y, this.pos.z));
         return container;
     }
@@ -60,13 +60,13 @@ export class LXL_Block {
     }
 
     getBlockEntity() {
-        const region = serverInstance.minecraft.getLevel().getDimension(this.pos.dimid)!.getBlockSource();
+        const region = bedrockServer.level.getDimension(this.pos.dimid)!.getBlockSource();
         const be = region.getBlockEntity(BlockPos.create(this.pos.x, this.pos.y, this.pos.z));
         return be ? BlockEntity$newBlockEntity(be, this.pos.dimid) : null;
     }
 
     removeBlockEntity() {
-        const region = serverInstance.minecraft.getLevel().getDimension(this.pos.dimid)!.getBlockSource();
+        const region = bedrockServer.level.getDimension(this.pos.dimid)!.getBlockSource();
         region.removeBlockEntity(BlockPos.create(this.pos.x, this.pos.y, this.pos.z));
         return true;
     }
@@ -92,7 +92,7 @@ export function Block$newBlock(a0: any, a1: any, a2?: any): LXL_Block {
     } else if (a0 instanceof BlockPos) {
         pos = a0;
         dim = ~~a1;
-        const bs = serverInstance.minecraft.getLevel().getDimension(dim)!.getBlockSource();
+        const bs = bedrockServer.level.getDimension(dim)!.getBlockSource();
         p = bs.getBlock(a0);
     }
     newp[PrivateFields] = p;
@@ -142,17 +142,17 @@ export function setBlock(a0: any, a1: any, a2?: any, a3?: any, a4?: any, a5?: an
     }
     let newBlock!: Block;
     if (typeof block === "string") {
-        newBlock = Block.constructWith(block)!;
+        newBlock = Block.create(block)!;
         if (!newBlock) {
             return false;
         }
     } else if (block instanceof LXL_Block) {
         newBlock = block[PrivateFields];
     } else if (block instanceof NbtCompound) {
-        newBlock = Block.constructWith("minecraft:stone")!;
-        CompoundTag[NativeType.setter](newBlock, block[PrivateFields], 96);
+        newBlock = Block.create("minecraft:stone")!;
+        CompoundTag[NativeType.setter](<StaticPointer><unknown>newBlock, block[PrivateFields], 96);
     }
-    const region = serverInstance.minecraft.getLevel().getDimension(dimId)!.getBlockSource();
+    const region = bedrockServer.level.getDimension(dimId)!.getBlockSource();
     return region.setBlock(pos, LlAPI.BlockLegacy.toBlock(newBlock.blockLegacy, tileData));
 }
 
@@ -171,7 +171,7 @@ export function spawnParticle(a0: any, a1: any, a2?: any, a3?: any, a4?: any) {
         dimId = a3;
         type = a4;
     }
-    const level = serverInstance.minecraft.getLevel();
+    const level = bedrockServer.level;
     level.spawnParticleEffect(type, pos, level.getDimension(dimId)!);
     return true;
 }

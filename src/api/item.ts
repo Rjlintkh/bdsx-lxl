@@ -1,7 +1,7 @@
 import { DimensionId } from "bdsx/bds/actor";
 import { Vec3 } from "bdsx/bds/blockpos";
 import { ItemStack } from "bdsx/bds/inventory";
-import { serverInstance } from "bdsx/bds/server";
+import { bedrockServer } from "bdsx/launcher";
 import { LlAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 import { FloatPos, IntPos } from "./base";
@@ -121,7 +121,7 @@ export function spawnItem(item: LXL_Item, a1: any, a2?: any, a3?: any, a4?: any)
         pos = Vec3.create(a1, a2, a3);
         dimId = a4;
     }
-    const level = serverInstance.minecraft.getLevel();
+    const level = bedrockServer.level;
     const actor = level.getSpawner().spawnItem(level.getDimension(dimId)!.getBlockSource(), item[PrivateFields], pos, 0);
     if (actor.isItem()) {
         return Entity$newEntity(actor);

@@ -10,9 +10,9 @@ import { NetworkIdentifier as _NetworkIdentifier, ServerNetworkHandler as _Serve
 import { CommandRequestPacket, LevelChunkPacket, ScorePacketInfo, SetDisplayObjectivePacket, SetScorePacket, TextPacket, TransferPacket } from "bdsx/bds/packets";
 import { Player as _Player, ServerPlayer } from "bdsx/bds/player";
 import { ObjectiveSortOrder, Scoreboard as _Scoreboard, ScoreboardId as _ScoreboardId } from "bdsx/bds/scoreboard";
-import { serverInstance } from "bdsx/bds/server";
 import { pdb, StaticPointer, VoidPointer } from "bdsx/core";
 import { CxxVector } from "bdsx/cxxvector";
+import { bedrockServer } from "bdsx/launcher";
 import { ParamType } from "bdsx/makefunc";
 import { nativeClass, NativeClass, nativeField } from "bdsx/nativeclass";
 import { bool_t, CxxString, float32_t, int32_t, NativeType, uint64_as_float_t, uint8_t, void_t } from "bdsx/nativetype";
@@ -557,7 +557,7 @@ export namespace LlAPI {
     }
     export namespace Level {
         export function broadcastText(thiz: _Level, a1: string, ty: TextPacket.Types) {
-            const players = serverInstance.minecraft.getLevel().getPlayers();
+            const players = bedrockServer.level.getPlayers();
             for (const sp of players) {
                 Player.sendText(sp, a1, ty);
             }
@@ -630,7 +630,7 @@ export namespace LlAPI {
             return true;
         }
         export function getAvgPing(thiz: _Player) {
-            return serverInstance.minecraft.getNetworkHandler().instance.peer.GetAveragePing(thiz.getNetworkIdentifier().address);
+            return bedrockServer.rakPeer.GetAveragePing(thiz.getNetworkIdentifier().address);
         }
         export function getDeviceName(thiz: _Player) {
             switch (thiz.getPlatform()) {
@@ -689,13 +689,13 @@ export namespace LlAPI {
             return thiz.getPermissionLevel() >=2;
         }
         export function kick(thiz: _Player, msg: string) {
-            serverInstance.disconnectClient(thiz.getNetworkIdentifier(), msg, false);
+            bedrockServer.serverInstance.disconnectClient(thiz.getNetworkIdentifier(), msg, false);
             return true;
         }
         export function runcmd(thiz: _Player, cmd: string) {
             let pkt = CommandRequestPacket.allocate();
             pkt.command = cmd;
-            MCAPI.ServerNetworkHandler.handle(serverInstance.minecraft.getServerNetworkHandler(), thiz.getNetworkIdentifier(), pkt);
+            MCAPI.ServerNetworkHandler.handle(bedrockServer.serverNetworkHandler, thiz.getNetworkIdentifier(), pkt);
             return true;
         }
         export function refreshInventory(thiz: _Player) {
@@ -778,7 +778,7 @@ export namespace LlAPI {
             pkt.type = TextPacket.Types.Chat;
             pkt.name = "";
             pkt.message = msg;
-            MCAPI.ServerNetworkHandler.handle(serverInstance.minecraft.getServerNetworkHandler(), thiz.getNetworkIdentifier(), pkt);
+            MCAPI.ServerNetworkHandler.handle(bedrockServer.serverNetworkHandler, thiz.getNetworkIdentifier(), pkt);
             return true;
         }
         export function transferServer(thiz: _Player, server: string, port: number) {

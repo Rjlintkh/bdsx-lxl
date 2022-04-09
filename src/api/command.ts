@@ -5,9 +5,7 @@ import { ActorCommandSelector, Command, CommandItem, CommandMessage, CommandOutp
 import { CommandOrigin, CommandOriginType, ServerCommandOrigin } from "bdsx/bds/commandorigin";
 import { JsonValue } from "bdsx/bds/connreq";
 import { MobEffectInstance } from "bdsx/bds/effects";
-import { ServerLevel } from "bdsx/bds/level";
 import { ServerPlayer } from "bdsx/bds/player";
-import { serverInstance } from "bdsx/bds/server";
 import { command } from "bdsx/command";
 import { CommandParameterType } from "bdsx/commandparam";
 import { StaticPointer } from "bdsx/core";
@@ -246,7 +244,7 @@ function convertResults(value: any, origin: CommandOrigin) {
         return value.getComponentName();
     }
     if (value instanceof ActorDefinitionIdentifier) {
-        return value.canonicalName;
+        return value.canonicalName.str;
     }
     return value;
 }
@@ -321,7 +319,7 @@ export class LLSE_Command {
             this[PrivateFields].softEnums.set(name, new Set(values));
         } else {
             if (!bedrockServer.isLaunched()) return "";
-            const registry = serverInstance.minecraft.getCommands().getRegistry();
+            const registry = bedrockServer.commandRegistry;
             if (!registry.hasSoftEnum(name)) {
                 registry.addSoftEnum(name, values);
                 return name;
@@ -343,7 +341,7 @@ export class LLSE_Command {
             }
         } else {
             if (!bedrockServer.isLaunched()) return false;
-            const registry = serverInstance.minecraft.getCommands().getRegistry();
+            const registry = bedrockServer.commandRegistry;
             if (!registry.hasSoftEnum(name)) {
                 registry.addSoftEnum(name, values);
                 return true;
@@ -365,7 +363,7 @@ export class LLSE_Command {
             return false;
         } else {
             if (bedrockServer.isLaunched()) {
-                const registry = serverInstance.minecraft.getCommands().getRegistry();
+                const registry = bedrockServer.commandRegistry;
                 registry.updateSoftEnum(SoftEnumUpdateType.Remove, name, values);
             }
         }
@@ -374,7 +372,7 @@ export class LLSE_Command {
 
     getSoftEnumValues(name: string) {
         if (bedrockServer.isLaunched()) {
-            const registry = serverInstance.minecraft.getCommands().getRegistry();
+            const registry = bedrockServer.commandRegistry;
             return registry.getSoftEnumValues(name);
         }
         return [];
@@ -382,7 +380,7 @@ export class LLSE_Command {
 
     getSoftEnumNames() {
         if (bedrockServer.isLaunched()) {
-            const registry = serverInstance.minecraft.getCommands().getRegistry();
+            const registry = bedrockServer.commandRegistry;
             const softEnumNames = [];
             for (const softEnumName of registry.softEnumLookup.keys()) {
                 softEnumNames.push(softEnumName);
@@ -411,7 +409,7 @@ export class LLSE_Command {
 
         if (this[PrivateFields].hasRegistered) return true;
 
-        const registry = serverInstance.minecraft.getCommands().getRegistry();
+        const registry = bedrockServer.commandRegistry;
 
         const factory = command.register(this[PrivateFields].name, this[PrivateFields].description, this[PrivateFields].permission, this[PrivateFields].flag);
 
@@ -461,7 +459,7 @@ export class LLSE_Command {
         }
         this[PrivateFields].hasRegistered = true;
 
-        serverInstance.updateCommandList();
+        bedrockServer.serverInstance.updateCommandList();
         return true;
     }
 
@@ -526,7 +524,7 @@ function LxlRegisterNewCmd(isPlayerCmd: boolean, cmd: string, description: strin
         consoleCmdCallbacks.set(cmd, func as any);
     }
     bedrockServer.afterOpen().then(() => {
-        const reg = serverInstance.minecraft.getCommands().getRegistry();
+        const reg = bedrockServer.commandRegistry;
         const sign = reg.findCommand(cmd);
         if (sign) {
             sign.description = description;
@@ -535,7 +533,7 @@ function LxlRegisterNewCmd(isPlayerCmd: boolean, cmd: string, description: strin
         } else {
             reg.registerCommand(cmd, description, level, 0, 0x80);
         }
-        serverInstance.updateCommandList();
+        bedrockServer.serverInstance.updateCommandList();
     });
     return true;
 }
@@ -554,12 +552,12 @@ function LxlUnregisterOldCmd(isPlayerCmd: boolean, cmd: string) {
         }
     }
     bedrockServer.afterOpen().then(() => {
-        const reg = serverInstance.minecraft.getCommands().getRegistry();
+        const reg = bedrockServer.commandRegistry;
         const sign = reg.findCommand(cmd);
         if (sign) {
             sign.permissionLevel = CommandPermissionLevel.Internal;
         }
-        serverInstance.updateCommandList();
+        bedrockServer.serverInstance.updateCommandList();
     });
     return true;
 }
@@ -656,11 +654,11 @@ export function unregConsoleCmd(cmd: string) {
 
 export function sendCmdOutput(output: string): boolean {
     bedrockServer.afterOpen().then(() => {
-        let origin = ServerCommandOrigin.allocateWith("Server", <ServerLevel>serverInstance.minecraft.getLevel(), 5, null);
+        let origin = ServerCommandOrigin.allocateWith("Server", bedrockServer.level, 5, null);
         let opt = CommandOutput.construct();
-        opt.constructAs(3);
+        opt.constructWith(3);
         opt.success(output);
-        serverInstance.minecraft.getCommands().handleOutput(origin, opt);
+        bedrockServer.minecraftCommands.handleOutput(origin, opt);
         origin.destruct();
         opt.destruct();
     });
