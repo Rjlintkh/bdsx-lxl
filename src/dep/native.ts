@@ -2,7 +2,6 @@ import { Actor, Actor as _Actor, ActorDamageCause, ActorDamageSource, ActorUniqu
 import { Block as _Block, BlockLegacy as _BlockLegacy, BlockSource as _BlockSource } from "bdsx/bds/block";
 import { BlockPos as _BlockPos, Vec3, Vec3 as _Vec3 } from "bdsx/bds/blockpos";
 import { Command } from "bdsx/bds/command";
-import { HashedString } from "bdsx/bds/hashedstring";
 import { ArmorSlot, Container as _Container, FillingContainer, ItemStack, ItemStack as _ItemStack } from "bdsx/bds/inventory";
 import { Level as _Level } from "bdsx/bds/level";
 import { ByteArrayTag, ByteTag, CompoundTag as _CompoundTag, FloatTag, Int64Tag, ListTag, StringTag, Tag as _Tag } from "bdsx/bds/nbt";
@@ -10,194 +9,17 @@ import { NetworkIdentifier as _NetworkIdentifier, ServerNetworkHandler as _Serve
 import { CommandRequestPacket, LevelChunkPacket, ScorePacketInfo, SetDisplayObjectivePacket, SetScorePacket, TextPacket, TransferPacket } from "bdsx/bds/packets";
 import { Player as _Player, ServerPlayer } from "bdsx/bds/player";
 import { ObjectiveSortOrder, Scoreboard as _Scoreboard, ScoreboardId as _ScoreboardId } from "bdsx/bds/scoreboard";
-import { pdb, StaticPointer, VoidPointer } from "bdsx/core";
+import { proc } from "bdsx/bds/symbols";
+import { StaticPointer, VoidPointer } from "bdsx/core";
 import { CxxVector } from "bdsx/cxxvector";
 import { bedrockServer } from "bdsx/launcher";
 import { ParamType } from "bdsx/makefunc";
 import { nativeClass, NativeClass, nativeField } from "bdsx/nativeclass";
 import { bool_t, CxxString, float32_t, int32_t, NativeType, uint64_as_float_t, uint8_t, void_t } from "bdsx/nativetype";
-import { ProcHacker } from "bdsx/prochacker";
+import { procHacker } from "bdsx/prochacker";
 import { logger, TODO } from "../api/api_help";
 import path = require("path");
 
-const RVAs = pdb.getList(path.join(__dirname, "pdb.ini"), {}, [
-    // Actor
-    "?_sendDirtyActorData@Actor@@QEAAXXZ",
-    "?canAddPassenger@Actor@@UEBA_NAEAV1@@Z",
-    "?getBlockPosCurrentlyStandingOn@Actor@@QEBA?AVBlockPos@@PEAV1@@Z",
-    // ActorEventCoordinator
-    "?sendActorSneakChanged@ActorEventCoordinator@@QEAAXAEAVActor@@_N@Z",
-    // BarrelBlockActor
-    "?stopOpen@BarrelBlockActor@@UEAAXAEAVPlayer@@@Z",
-    // BaseCommandBlock
-    "?_performCommand@BaseCommandBlock@@AEAA_NAEAVBlockSource@@AEBVCommandOrigin@@AEA_N@Z",
-    "?getCommand@BaseCommandBlock@@QEBAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
-    // BasePressurePlateBlock
-    "?entityInside@BasePressurePlateBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@AEAVActor@@@Z",
-    // BedItem
-    "?_tryUseOn@BedItem@@AEBA_NAEAVItemStackBase@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
-    // Block
-    "?attack@Block@@QEBA_NPEAVPlayer@@AEBVBlockPos@@@Z",
-    "?onExploded@Block@@QEBAXAEAVBlockSource@@AEBVBlockPos@@PEAVActor@@@Z",
-    "?onProjectileHit@Block@@QEBAXAEAVBlockSource@@AEBVBlockPos@@AEBVActor@@@Z",
-    // BlockEventCoordinator
-    "?sendBlockDestructionStarted@BlockEventCoordinator@@QEAAXAEAVPlayer@@AEBVBlockPos@@@Z",
-    // BlockSource
-    "?_blockChanged@BlockSource@@IEAAXAEBVBlockPos@@IAEBVBlock@@1HPEBUActorBlockSyncMessage@@@Z",
-    "?checkBlockDestroyPermissions@BlockSource@@QEAA_NAEAVActor@@AEBVBlockPos@@AEBVItemStackBase@@_N@Z",
-    "?getDimensionId@BlockSource@@UEBA?AV?$AutomaticID@VDimension@@H@@XZ",
-    "?mayPlace@BlockSource@@QEAA_NAEBVBlock@@AEBVBlockPos@@EPEAVActor@@_N@Z",
-    // BucketItem
-    "?useTimeDepleted@BucketItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
-    // ChestBlockActor
-    "?stopOpen@ChestBlockActor@@UEAAXAEAVPlayer@@@Z",
-    // ComparatorBlock
-    "?onRedstoneUpdate@ComparatorBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
-    // CrossbowItem
-    "?_shootFirework@CrossbowItem@@AEBAXAEBVItemInstance@@AEAVPlayer@@@Z",
-    // DiodeBlock
-    "?onRedstoneUpdate@DiodeBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
-    // DoorItem
-    "?_useOn@DoorItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
-    // DropperBlockActor
-    "?_getContainerAt@DropperBlockActor@@AEAAPEAVContainer@@AEAVBlockSource@@AEBVVec3@@@Z",
-    // DyePowderItem
-    "?_useOn@DyePowderItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
-    // Explosion
-    "?explode@Explosion@@QEAAXXZ",
-    // FireBlock
-    "?mayPlace@FireBlock@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@@Z",
-    "?onPlace@FireBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@@Z",
-    // FoodItemComponent
-    "?useTimeDepleted@FoodItemComponent@@UEAAPEBVItem@@AEAVItemStack@@AEAVPlayer@@AEAVLevel@@@Z",
-    // FoodItemComponentLegacy
-    "?useTimeDepleted@FoodItemComponentLegacy@@UEAAPEBVItem@@AEAVItemStack@@AEAVPlayer@@AEAVLevel@@@Z",
-    // GameMode
-    "?baseUseItem@GameMode@@QEAA_NAEAVItemStack@@@Z",
-    "?useItemOn@GameMode@@UEAA_NAEAVItemStack@@AEBVBlockPos@@EAEBVVec3@@PEBVBlock@@@Z",
-    // HitResult
-    "?getEntity@HitResult@@QEBAPEAVActor@@XZ",
-    // Hopper
-    "?_pushOutItems@Hopper@@IEAA_NAEAVBlockSource@@AEAVContainer@@AEBVVec3@@H@Z",
-    "?_tryPullInItemsFromAboveContainer@Hopper@@IEAA_NAEAVBlockSource@@AEAVContainer@@AEBVVec3@@@Z",
-    // ItemFrameBlock
-    "?attack@ItemFrameBlock@@UEBA_NPEAVPlayer@@AEBVBlockPos@@@Z",
-    "?use@ItemFrameBlock@@UEBA_NAEAVPlayer@@AEBVBlockPos@@E@Z",
-    // LevelContainerModel
-    "?_onItemChanged@LevelContainerModel@@MEAAXHAEBVItemStack@@0@Z",
-    "?_playerChangeDimension@Level@@AEAA_NPEAVPlayer@@AEAVChangeDimensionRequest@@@Z",
-    // LiquidBlockDynamic
-    "?_canSpreadTo@LiquidBlockDynamic@@AEBA_NAEAVBlockSource@@AEBVBlockPos@@1E@Z",
-    // MedicineItem
-    "?useTimeDepleted@MedicineItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
-    // Mob
-    "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
-    "?setSprinting@Mob@@UEAAX_N@Z",
-    // MobEffectInstance
-    "?getComponentName@MobEffectInstance@@QEBAAEBVHashedString@@XZ",
-    // NpcActionsContainer
-    "?getActionAt@NpcActionsContainer@@QEAAPEAVNpcAction@@_K@Z",
-    // NpcComponent
-    "?executeCommandAction@NpcComponent@@QEAAXAEAVActor@@AEAVPlayer@@HAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
-    // NpcSceneDialogueData
-    "??0NpcSceneDialogueData@@QEAA@AEAVNpcComponent@@AEAVActor@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
-    "?getActionsContainer@NpcSceneDialogueData@@UEAAAEAUNpcActionsContainer@@XZ",
-    // PacketHandlerDispatcherInstance
-    "?handle@?$PacketHandlerDispatcherInstance@VRespawnPacket@@$0A@@@UEBAXAEBVNetworkIdentifier@@AEAVNetEventCallback@@AEAV?$shared_ptr@VPacket@@@std@@@Z",
-    // PistonBlockActor
-    "?_attachedBlockWalker@PistonBlockActor@@AEAA_NAEAVBlockSource@@AEBVBlockPos@@EE@Z",
-    // Player
-    "?_trySwapItem@ArmorStand@@AEAA_NAEAVPlayer@@W4EquipmentSlot@@@Z",
-    "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
-    "?canOpenContainerScreen@Player@@UEAA_NXZ",
-    "?consumeTotem@Player@@UEAA_NXZ",
-    "?die@Player@@UEAAXAEBVActorDamageSource@@@Z",
-    "?drop@Player@@UEAA_NAEBVItemStack@@_N@Z",
-    "?inventoryChanged@Player@@UEAAXAEAVContainer@@HAEBVItemStack@@1_N@Z",
-    "?jumpFromGround@Player@@UEAAXXZ",
-    "?setArmor@Player@@UEAAXW4ArmorSlot@@AEBVItemStack@@@Z",
-    "?take@Player@@QEAA_NAEAVActor@@HH@Z",
-    // PlayerEventCoordinator
-    "?sendPlayerMove@PlayerEventCoordinator@@QEAAXAEAVPlayer@@@Z",
-    // PotionItem
-    "?useTimeDepleted@PotionItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
-    // ProjectileComponent
-    "?onHit@ProjectileComponent@@QEAAXAEAVActor@@AEBVHitResult@@@Z",
-    // RedStoneDustItem
-    "?_useOn@RedStoneDustItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EAEBVVec3@@@Z",
-    // RedstoneTorchBlock
-    "?onRedstoneUpdate@RedstoneTorchBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
-    // RedstoneWireBlock
-    "?onRedstoneUpdate@RedStoneWireBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H_N@Z",
-    // RespawnAnchorBlock
-    "?trySetSpawn@RespawnAnchorBlock@@CA_NAEAVPlayer@@AEBVBlockPos@@AEAVBlockSource@@AEAVLevel@@@Z",
-    // ScoreboardId
-    "?isValid@ScoreboardId@@QEBA_NXZ",
-    // SeedItemComponentLegacy
-    "?useOn@SeedItemComponentLegacy@@QEAA_NAEAVItemStack@@AEAVActor@@AEBVBlockPos@@EAEBVVec3@@@Z",
-    // ServerCommandOrigin
-    "??0ServerCommandOrigin@@QEAA@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAVServerLevel@@W4CommandPermissionLevel@@V?$AutomaticID@VDimension@@H@@@Z",
-    // ServerNetworkHandler
-    "?_onPlayerLeft@ServerNetworkHandler@@AEAAXPEAVServerPlayer@@_N@Z",
-    "?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@AEBVCommandRequestPacket@@@Z",
-    "?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@AEBVTextPacket@@@Z",
-    "?sendLoginMessageLocal@ServerNetworkHandler@@QEAAXAEBVNetworkIdentifier@@AEBVConnectionRequest@@AEAVServerPlayer@@@Z",
-    // ServerPlayer
-    "?onEffectAdded@ServerPlayer@@MEAAXAEAVMobEffectInstance@@@Z",
-    "?onEffectRemoved@ServerPlayer@@MEAAXAEAVMobEffectInstance@@@Z",
-    "?onEffectUpdated@ServerPlayer@@MEAAXAEAVMobEffectInstance@@@Z",
-    "?setLocalPlayerAsInitialized@ServerPlayer@@QEAAXXZ",
-    // ServerScoreboard
-    "?onScoreChanged@ServerScoreboard@@UEAAXAEBUScoreboardId@@AEBVObjective@@@Z",
-    // SignItem
-    "?_calculatePlacePos@SignItem@@EEBA_NAEAVItemStackBase@@AEAVActor@@AEAEAEAVBlockPos@@@Z",
-    // SimulatedPlayer
-    "??_7SimulatedPlayer@@6B@",
-    // Spawner
-    "?spawnProjectile@Spawner@@QEAAPEAVActor@@AEAVBlockSource@@AEBUActorDefinitionIdentifier@@PEAV2@AEBVVec3@@3@Z",
-    // SuspiciousStewItem
-    "?useTimeDepleted@SuspiciousStewItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
-    // TransformationComponent
-    "?maintainOldData@TransformationComponent@@QEAAXAEAVActor@@0AEBUTransformationDescription@@AEBUActorUniqueID@@AEBVLevel@@@Z",
-    // TridentItem
-    "?releaseUsing@TridentItem@@UEBAXAEAVItemStack@@PEAVPlayer@@H@Z",
-    // VanillaBlocks
-    "?mWoodenDoor@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mWoodenDoorSpruce@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mWoodenDoorBirch@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mWoodenDoorJungle@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mWoodenDoorAcacia@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mWoodenDoorDarkOak@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mIronDoor@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mCrimsonDoor@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mWarpedDoor@VanillaBlocks@@3PEBVBlock@@EB",
-
-    "?mWallSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mSpruceWallSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mSpruceSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mBirchWallSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mBirchSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mJungleWallSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mJungleSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mAcaciaWallSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mAcaciaSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mDarkOakWallSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mDarkOakSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mCrimsonWallSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mCrimsonStandingSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mWarpedWallSign@VanillaBlocks@@3PEBVBlock@@EB",
-    "?mWarpedStandingSign@VanillaBlocks@@3PEBVBlock@@EB",
-    // VanillaServerGameplayEventListener
-    "?onBlockInteractedWith@VanillaServerGameplayEventListener@@UEAA?AW4EventResult@@AEAVPlayer@@AEBVBlockPos@@@Z",
-    "?onEvent@VanillaServerGameplayEventListener@@UEAA?AW4EventResult@@AEBUPlayerOpenContainerEvent@@@Z",
-    // WeakEntityRef
-    "??$tryUnwrap@VPlayer@@$$V@WeakEntityRef@@QEBAPEAVPlayer@@XZ",
-    // WitherBoss
-    "?_destroyBlocks@WitherBoss@@AEAAXAEAVLevel@@AEBVAABB@@AEAVBlockSource@@H@Z",
-], false);
-
-const hacker = new ProcHacker(RVAs);
 export const symcall = ((...args: any[]) => {
     if (!(symcall as any).cache) {
         (symcall as any).cache = new Map();
@@ -205,12 +27,12 @@ export const symcall = ((...args: any[]) => {
     if ((symcall as any).cache.has(args[0])) {
         return (symcall as any).cache.get(args[0]);
     }
-    const func = (hacker.js as any)(...args);
+    const func = (procHacker.js as any)(...args);
     (symcall as any).cache.set(args[0], func);
     return func;
-}) as typeof hacker.js;
+}) as typeof procHacker.js;
 export const symhook = ((...args: any[]) => {
-    const hook = (hacker.hooking as any)(...args);
+    const hook = (procHacker.hooking as any)(...args);
     const func = (cb: any) => {
         return hook((...args: any[]) => {
             try {
@@ -221,8 +43,8 @@ export const symhook = ((...args: any[]) => {
         });
     }
     return func;
-}) as typeof hacker.hooking;
-export const dlsym = (name: keyof typeof RVAs) => RVAs[name];
+}) as typeof procHacker.hooking;
+export const dlsym = (name: keyof typeof proc) => proc[name];
 export const daccess = <T extends ParamType>(ptr: VoidPointer, type: T, offset = 0) => <T extends {prototype:infer V} ? V : never>type[NativeType.getter](ptr as any, offset);
 
 export namespace MCAPI {
@@ -288,7 +110,7 @@ export namespace MCAPI {
         Unknown = -1,
     }
     export namespace Mob {
-        export const _hurt: (thiz: _Actor, source: ActorDamageSource, damage: number, knock: boolean, ignite: boolean) => boolean = symcall("?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z", bool_t, null, _Actor, ActorDamageSource, int32_t, bool_t, bool_t);
+        export const _hurt: (thiz: _Actor, source: ActorDamageSource, damage: number, knock: boolean, ignite: boolean) => boolean = symcall("?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@M_N1@Z", bool_t, null, _Actor, ActorDamageSource, float32_t, bool_t, bool_t);
     }
     @nativeClass(null)
     export class NpcAction extends NativeClass {
@@ -423,12 +245,12 @@ export namespace LlAPI {
             if (thiz.isPlayer()) {
                 return "minecraft:player";
             } else {
-                const hash = daccess(thiz, HashedString, 880);
+                const hash = thiz.getActorIdentifier().canonicalName;
                 return hash.str;
             }
         }
         export function hurtEntity(thiz: _Actor, damage: number) {
-            let ad = ActorDamageSource.constructWith(ActorDamageCause.Void);
+            let ad = ActorDamageSource.create(ActorDamageCause.Void);
             return MCAPI.Mob._hurt(thiz, ad, damage, true, false);
         }
         export function isOnGround(thiz: _Actor) {
@@ -669,7 +491,7 @@ export namespace LlAPI {
             }
         }
         export function getEnderChestContainer(thiz: _Player) {
-            return daccess(thiz, FillingContainer.ref(), 4184);
+            return daccess(thiz, FillingContainer.ref(), 4192);
         }
         export function getRealName(thiz: _Player) {
             if (Actor.isSimulatedPlayer(thiz)) {

@@ -694,16 +694,16 @@ events.playerDropItem.on(event => {
 
 /////////////////// BlockChanged ///////////////////
 {
-    const original = symhook("?_blockChanged@BlockSource@@IEAAXAEBVBlockPos@@IAEBVBlock@@1HPEBUActorBlockSyncMessage@@@Z",
-    void_t, null, BlockSource, BlockPos, uint32_t, Block, Block, int32_t, StaticPointer)
-    ((thiz, pos, layer, block, previousBlock, updateFlags, syncMsg) => {
+    const original = symhook("?_blockChanged@BlockSource@@IEAAXAEBVBlockPos@@IAEBVBlock@@1HPEBUActorBlockSyncMessage@@PEAVActor@@@Z",
+    void_t, null, BlockSource, BlockPos, uint32_t, Block, Block, int32_t, StaticPointer, Actor)
+    ((thiz, pos, layer, block, previousBlock, updateFlags, syncMsg, actor) => {
         const dimId = thiz.getDimensionId();
         const cancelled = LXL_Events.onBlockChanged.fire(Block$newBlock(previousBlock, pos, dimId), Block$newBlock(block, pos, dimId));
         _tickCallback();
         if (cancelled) {
             return;
         }
-        return original(thiz, pos, layer, block, previousBlock, updateFlags, syncMsg);
+        return original(thiz, pos, layer, block, previousBlock, updateFlags, syncMsg, actor);
     });
 }
 
@@ -988,7 +988,7 @@ events.farmlandDecay.on(event => {
 
 /////////////////// MobHurt ///////////////////
 {
-    const original = symhook("?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
+    const original = symhook("?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@M_N1@Z",
     bool_t, null, Actor, ActorDamageSource, int32_t, bool_t, bool_t)
     ((thiz, source, dmg, knock, ignite) => {
         const src = bedrockServer.level.fetchEntity(source.getDamagingEntityUniqueID(), true);
@@ -1031,11 +1031,7 @@ events.farmlandDecay.on(event => {
 /////////////////// MobDie ///////////////////
 events.entityDie.on(event => {
     const src = event.damageSource.getDamagingEntity();
-    const cancelled = LXL_Events.onMobDie.fire(Entity$newEntity(event.entity), src ? Entity$newEntity(src) : null);
-    _tickCallback();
-    if (cancelled) {
-        return CANCEL;
-    }
+    LXL_Events.onMobDie.fire(Entity$newEntity(event.entity), src ? Entity$newEntity(src) : null);
 });
 
 ///////////////////  Entity & Block Explosion ///////////////////

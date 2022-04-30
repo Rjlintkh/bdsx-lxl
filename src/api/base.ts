@@ -131,7 +131,7 @@ export class FloatPos {
 }
 
 export function FloatPos$newPos(x: number, y: number, z: number, dimid: number): FloatPos;
-export function FloatPos$newPos(v: Vec3, dimid: number): FloatPos;
+export function FloatPos$newPos(v: {x: number, y: number, z: number}, dimid: number): FloatPos;
 export function FloatPos$newPos(a0: any, a1: any, a2?: any, a3?: any): FloatPos {
     if (typeof a0 === "number" && typeof a1 === "number" && typeof a2 === "number" && typeof a3 === "number") {
         return new FloatPos(a0, a1, a2, a3);

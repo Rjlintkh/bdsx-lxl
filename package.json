@@ -1,6 +1,6 @@
 {
   "name": "@bdsx/bdsx-llse",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "LiteLoader ScriptingEngine ported into BDSX",
   "main": "index.js",
   "keywords": [],
