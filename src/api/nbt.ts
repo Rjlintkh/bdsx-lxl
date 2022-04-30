@@ -1,12 +1,11 @@
-import { ByteArrayTag, ByteTag, CompoundTag, DoubleTag, EndTag, FloatTag, Int64Tag, IntTag, ListTag, ShortTag, StringTag, Tag } from "bdsx/bds/nbt";
+import { ByteArrayTag, ByteTag, CompoundTag, DoubleTag, EndTag, FloatTag, Int64Tag, IntTag, ListTag, NBT as _NBT, ShortTag, StringTag, Tag } from "bdsx/bds/nbt";
 import { decay } from "bdsx/decay";
 import { LlAPI } from "../dep/native";
-import { SNBT } from "../dep/snbt";
 import { logger, PrivateFields, Tag2Value, TODO } from "./api_help";
 
 export class NBT {
     static parseSNBT(snbt: string) {
-        const tag = SNBT.parse(snbt);
+        const tag = _NBT.allocate(_NBT.parse(snbt));
         if (tag.getId() === Tag.Type.Compound) {
             const nbt = new NbtCompound();
             nbt[PrivateFields] = <CompoundTag>tag;
@@ -169,7 +168,7 @@ export class NbtLong {
     [PrivateFields]: Int64Tag;
 
     constructor(data: number | string) {
-        this[PrivateFields] = Int64Tag.allocateWith(SNBT.Utils.makeBin64fromNumbericString(data.toString()));
+        this[PrivateFields] = Int64Tag.allocateWithString(data+"");
     }
 
     getType() {
@@ -533,7 +532,7 @@ export class NbtCompound {
     }
 
     toSNBT() {
-        return SNBT.stringify(this[PrivateFields]);
+        return _NBT.stringify(this[PrivateFields]);
     }
 
     toBinaryNBT() {
