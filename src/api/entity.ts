@@ -13,7 +13,7 @@ import { Item$newItem } from "./item";
 import { NbtCompound } from "./nbt";
 import { Player$newPlayer } from "./player";
 
-export class LXL_Entity {
+export class LLSE_Entity {
     private [PrivateFields]?: Actor;
 
     getRawPtr() {
@@ -335,22 +335,22 @@ export class LXL_Entity {
     getTag = this.getNbt;
 }
 
-export function Entity$newEntity(p: Actor): LXL_Entity {
-    const newp = new LXL_Entity();
+export function Entity$newEntity(p: Actor): LLSE_Entity {
+    const newp = new LLSE_Entity();
     newp[PrivateFields] = p;
     return newp;
 }
 
 export function getAllEntities() {
     const entityList = bedrockServer.level.getEntities();
-    const arr = new Array<LXL_Entity>();
+    const arr = new Array<LLSE_Entity>();
     for (const i of entityList) {
         arr.push(Entity$newEntity(i));
     }
     return arr;
 }
-export function spawnMob(name: string, pos: IntPos | FloatPos): LXL_Entity;
-export function spawnMob(name: string, x: number, y: number, z: number, dimid: DimensionId): LXL_Entity;
+export function spawnMob(name: string, pos: IntPos | FloatPos): LLSE_Entity;
+export function spawnMob(name: string, x: number, y: number, z: number, dimid: DimensionId): LLSE_Entity;
 export function spawnMob(name: string, a1: any, a2?: any, a3?: any, a4?: any) {
     let pos: Vec3;
     let dimId: DimensionId;
@@ -372,12 +372,12 @@ export function spawnMob(name: string, a1: any, a2?: any, a3?: any, a4?: any) {
 }
 
 
-export function explode(pos: IntPos | FloatPos, source: LXL_Entity | null, power: number, range: number, isDestroy: number, isFire: number): boolean;
-export function explode(x: number, y: number, z: number, dimid: DimensionId, source: LXL_Entity | null, power: number, range: number, isDestroy: number, isFire: number): boolean;
+export function explode(pos: IntPos | FloatPos, source: LLSE_Entity | null, power: number, range: number, isDestroy: number, isFire: number): boolean;
+export function explode(x: number, y: number, z: number, dimid: DimensionId, source: LLSE_Entity | null, power: number, range: number, isDestroy: number, isFire: number): boolean;
 export function explode(a0: any, a1?: any, a2?: any, a3?: any, a4?: any, a5?: any, a6?: any, a7?: any, a8?: any) {
     let pos: Vec3;
     let dimId: DimensionId;
-    let source: LXL_Entity | null,
+    let source: LLSE_Entity | null,
         power: number,
         range: number,
         isDestroy: boolean,

@@ -2,9 +2,9 @@ import { DisplaySlot, Objective } from "bdsx/bds/scoreboard";
 import { bedrockServer } from "bdsx/launcher";
 import { LlAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
-import { LXL_Player } from "./player";
+import { LLSE_Player } from "./player";
 
-export class LXL_Objective {
+export class LLSE_Objective {
     [PrivateFields]: Objective;
 
     getRawPtr() {
@@ -22,29 +22,29 @@ export class LXL_Objective {
         return !!sb.setDisplayObjective(slot, this[PrivateFields], sortOrder);
     }
 
-    setScore(target: LXL_Player | string, value: number) {
+    setScore(target: LLSE_Player | string, value: number) {
         return LlAPI.Scoreboard.setScore(bedrockServer.level.getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name, value);
     }
 
-    addScore(target: LXL_Player | string, value: number) {
+    addScore(target: LLSE_Player | string, value: number) {
         return LlAPI.Scoreboard.addScore(bedrockServer.level.getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name, value);
     }
 
-    reduceScore(target: LXL_Player | string, value: number) {
+    reduceScore(target: LLSE_Player | string, value: number) {
         return LlAPI.Scoreboard.reduceScore(bedrockServer.level.getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name, value);
     }
 
-    deleteScore(target: LXL_Player | string) {
+    deleteScore(target: LLSE_Player | string) {
         return LlAPI.Scoreboard.deleteScore(bedrockServer.level.getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name);
     }
 
-    getScore(target: LXL_Player | string) {
+    getScore(target: LLSE_Player | string) {
         return LlAPI.Scoreboard.getScore(bedrockServer.level.getScoreboard(), typeof target === "string" ? target : target[PrivateFields] as any, this.name);
     }
 }
 
 export function Objective$Objective(p: Objective) {
-    const newp = new LXL_Objective();
+    const newp = new LLSE_Objective();
     newp[PrivateFields] = p;
     Object.defineProperty(newp, "name", { value: p.name });
     return newp;
@@ -91,7 +91,7 @@ export function removeScoreObjective(name: string) {
 export function getAllScoreObjectives() {
     const sb = bedrockServer.level.getScoreboard();
     const objs = sb.getObjectives();
-    const res = new Array<LXL_Objective>();
+    const res = new Array<LLSE_Objective>();
     for (const obj of objs) {
         if (obj) {
             res.push(Objective$Objective(obj));

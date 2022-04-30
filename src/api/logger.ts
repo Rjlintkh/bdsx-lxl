@@ -1,7 +1,7 @@
 import { LlAPI } from "../dep/native";
 import { Logger } from "../utils/logger";
 import { PrivateFields, StringifyValue, TimeNow } from "./api_help";
-import { LXL_Player } from "./player";
+import { LLSE_Player } from "./player";
 
 export const logger = {
     [PrivateFields]: {
@@ -9,7 +9,7 @@ export const logger = {
         consoleLevel: 4,
         filepath: null! as string,
         fileLevel: 4,
-        player: null! as LXL_Player,
+        player: null! as LLSE_Player,
         playerLevel: 4,
         title: "",
         log(mode: string, ...data: any[]) {
@@ -69,7 +69,7 @@ export const logger = {
         }
         return true;
     },
-    setPlayer(player: LXL_Player | null, logLevel?: number) {
+    setPlayer(player: LLSE_Player | null, logLevel?: number) {
         if (player) {
             this[PrivateFields].player = player;
         }

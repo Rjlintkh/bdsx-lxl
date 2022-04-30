@@ -1,23 +1,23 @@
 import { ClearInterval, SetInterval, SetTimeout } from "./api_help";
 import { DirectionAngle, FloatPos, getBDSVersion, IntPos, newFloatPos, newIntPos } from "./base";
-import { getBlock, LXL_Block, setBlock, spawnParticle } from "./block";
-import { LXL_BlockEntity } from "./block_entity";
+import { getBlock, LLSE_Block, setBlock, spawnParticle } from "./block";
+import { LLSE_BlockEntity } from "./block_entity";
 import { LLSE_Command, LLSE_CommandOrigin, LLSE_CommandOutput, newCommand, OriginType, ParamOption, ParamType, PermType, regConsoleCmd, regPlayerCmd, runcmd, runcmdEx, sendCmdOutput } from "./command";
-import { LXL_Container } from "./container";
+import { LLSE_Container } from "./container";
 import { data, IniConfigFile, JsonConfigFile, KVDatabase, money } from "./data";
-import { LXL_Device } from "./device";
-import { explode, getAllEntities, LXL_Entity, spawnMob } from "./entity";
+import { LLSE_Device } from "./device";
+import { explode, getAllEntities, LLSE_Entity, spawnMob } from "./entity";
 import { listen } from "./event";
 import { File } from "./file_system";
 import { Format } from "./game_utils";
-import { LXL_CustomForm, LXL_SimpleForm, newCustomForm, newSimpleForm } from "./gui";
-import { LXL_Item, newItem, spawnItem } from "./item";
+import { LLSE_CustomForm, LLSE_SimpleForm, newCustomForm, newSimpleForm } from "./gui";
+import { LLSE_Item, newItem, spawnItem } from "./item";
 import { ll } from "./ll";
 import { logger } from "./logger";
 import { NBT, NbtByte, NbtByteArray, NbtCompound, NbtDouble, NbtEnd, NbtFloat, NbtInt, NbtList, NbtLong, NbtShort, NbtString } from "./nbt";
 import { network, WSClient } from "./network";
-import { broadcast, getOnlinePlayers, getPlayer, LXL_Player } from "./player";
-import { clearDisplayObjective, getAllScoreObjectives, getDisplayObjective, getScoreObjective, LXL_Objective, newScoreObjective, removeScoreObjective } from "./scoreboard";
+import { broadcast, getOnlinePlayers, getPlayer, LLSE_Player } from "./player";
+import { clearDisplayObjective, getAllScoreObjectives, getDisplayObjective, getScoreObjective, LLSE_Objective, newScoreObjective, removeScoreObjective } from "./scoreboard";
 import { colorLog, fastLog, log } from "./script";
 import { crashBDS as crash, setMotd } from "./server";
 import { system } from "./system";
@@ -92,21 +92,21 @@ const bindings = {
     IntPos,
     FloatPos,
     DirectionAngle,
-    LXL_Block,
+    LLSE_Block,
     KVDatabase,
     JsonConfigFile,
     IniConfigFile,
-    LXL_Device,
-    LXL_Container,
-    LXL_Entity,
+    LLSE_Device,
+    LLSE_Container,
+    LLSE_Entity,
     File,
     WSClient,
-    LXL_BlockEntity,
-    LXL_SimpleForm,
-    LXL_CustomForm,
-    LXL_Item,
-    LXL_Player,
-    LXL_Objective,
+    LLSE_BlockEntity,
+    LLSE_SimpleForm,
+    LLSE_CustomForm,
+    LLSE_Item,
+    LLSE_Player,
+    LLSE_Objective,
     NbtEnd,
     NbtByte,
     NbtShort,

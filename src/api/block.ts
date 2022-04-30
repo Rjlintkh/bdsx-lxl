@@ -11,7 +11,7 @@ import { FloatPos, IntPos, IntPos$newPos } from "./base";
 import { BlockEntity$newBlockEntity } from "./block_entity";
 import { NbtCompound } from "./nbt";
 
-export class LXL_Block {
+export class LLSE_Block {
     [PrivateFields]: Block;
 
     getRawPtr() {
@@ -72,12 +72,12 @@ export class LXL_Block {
     }
 }
 
-export function Block$newBlock(p: Block, pos: BlockPos, dim: number): LXL_Block;
-export function Block$newBlock(p: Block, pos: BlockPos, bs: BlockSource): LXL_Block;
-export function Block$newBlock(pos: BlockPos, dim: number): LXL_Block;
+export function Block$newBlock(p: Block, pos: BlockPos, dim: number): LLSE_Block;
+export function Block$newBlock(p: Block, pos: BlockPos, bs: BlockSource): LLSE_Block;
+export function Block$newBlock(pos: BlockPos, dim: number): LLSE_Block;
 // export function Block$newBlock(pos: IntVec4): Block;
-export function Block$newBlock(a0: any, a1: any, a2?: any): LXL_Block {
-    const newp = new LXL_Block();
+export function Block$newBlock(a0: any, a1: any, a2?: any): LLSE_Block {
+    const newp = new LLSE_Block();
     let p: Block | undefined = undefined!;
     let pos: BlockPos | undefined = void 0;
     let dim: number | undefined = undefined!;
@@ -103,8 +103,8 @@ export function Block$newBlock(a0: any, a1: any, a2?: any): LXL_Block {
     return newp;
 }
 
-export function getBlock(pos: IntPos| FloatPos): LXL_Block;
-export function getBlock(x: number, y: number, z: number, dimid: DimensionId): LXL_Block;
+export function getBlock(pos: IntPos| FloatPos): LLSE_Block;
+export function getBlock(x: number, y: number, z: number, dimid: DimensionId): LLSE_Block;
 export function getBlock(a0: any, a1?: any, a2?: any, a3?: any) {
     let pos: BlockPos;
     let dimId: DimensionId;
@@ -118,12 +118,12 @@ export function getBlock(a0: any, a1?: any, a2?: any, a3?: any) {
     return Block$newBlock(pos, dimId);
 }
 
-export function setBlock(pos: IntPos| FloatPos, block: LXL_Block | string | NbtCompound, tiledata?: number): boolean;
-export function setBlock(x: number, y: number, z: number, dimid: DimensionId, block: LXL_Block | string | NbtCompound, tiledata: number): boolean;
+export function setBlock(pos: IntPos| FloatPos, block: LLSE_Block | string | NbtCompound, tiledata?: number): boolean;
+export function setBlock(x: number, y: number, z: number, dimid: DimensionId, block: LLSE_Block | string | NbtCompound, tiledata: number): boolean;
 export function setBlock(a0: any, a1: any, a2?: any, a3?: any, a4?: any, a5?: any) {
     let pos: BlockPos;
     let dimId: DimensionId;
-    let block: LXL_Block | string | NbtCompound;
+    let block: LLSE_Block | string | NbtCompound;
     let tileData = 0;
     if (a0 instanceof IntPos || a0 instanceof FloatPos) {
         if (typeof a2 === "number") {
@@ -146,7 +146,7 @@ export function setBlock(a0: any, a1: any, a2?: any, a3?: any, a4?: any, a5?: an
         if (!newBlock) {
             return false;
         }
-    } else if (block instanceof LXL_Block) {
+    } else if (block instanceof LLSE_Block) {
         newBlock = block[PrivateFields];
     } else if (block instanceof NbtCompound) {
         newBlock = Block.create("minecraft:stone")!;

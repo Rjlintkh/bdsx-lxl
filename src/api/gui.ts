@@ -1,7 +1,7 @@
 import { CustomForm, FormButton, FormDropdown, FormInput, FormLabel, FormSlider, FormStepSlider, FormToggle, SimpleForm } from "bdsx/bds/form";
 import { PrivateFields } from "./api_help";
 
-export class LXL_SimpleForm {
+export class LLSE_SimpleForm {
     [PrivateFields]: SimpleForm;
 
     setTitle(title: string) {
@@ -25,12 +25,12 @@ export class LXL_SimpleForm {
 }
 
 export function newSimpleForm() {
-    const newp = new LXL_SimpleForm();
+    const newp = new LLSE_SimpleForm();
     newp[PrivateFields] = new SimpleForm();
     return newp;
 }
 
-export class LXL_CustomForm {
+export class LLSE_CustomForm {
     [PrivateFields]: CustomForm;
 
     setTitle(title: string) {
@@ -70,7 +70,7 @@ export class LXL_CustomForm {
 }
 
 export function newCustomForm() {
-    const newp = new LXL_CustomForm();
+    const newp = new LLSE_CustomForm();
     newp[PrivateFields] = new CustomForm();
     return newp;
 }

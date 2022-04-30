@@ -4,7 +4,7 @@ import { BlockPos } from "bdsx/bds/blockpos";
 import { ActorCommandSelector, Command, CommandItem, CommandMessage, CommandOutput, CommandPermissionLevel, CommandPosition, CommandPositionFloat, CommandRawEnum, CommandRawText, PlayerCommandSelector, SoftEnumUpdateType } from "bdsx/bds/command";
 import { CommandOrigin, CommandOriginType, ServerCommandOrigin } from "bdsx/bds/commandorigin";
 import { JsonValue } from "bdsx/bds/connreq";
-import { MobEffectInstance } from "bdsx/bds/effects";
+import { MobEffect } from "bdsx/bds/effects";
 import { ServerPlayer } from "bdsx/bds/player";
 import { command } from "bdsx/command";
 import { CommandParameterType } from "bdsx/commandparam";
@@ -14,14 +14,15 @@ import { bedrockServer } from "bdsx/launcher";
 import { bool_t, CxxString, float32_t, int32_t } from "bdsx/nativetype";
 import { _tickCallback } from "bdsx/util";
 import { IsInDebugMode, LockDebugModeForOnce } from "../debug";
+import { MCAPI } from "../dep/native";
 import { logger, PrivateFields } from "./api_help";
 import { FloatPos$newPos, IntPos$newPos } from "./base";
 import { Block$newBlock } from "./block";
 import { Entity$newEntity } from "./entity";
-import { LXL_Events } from "./event";
+import { LLSE_Events } from "./event";
 import { Item$newItem } from "./item";
 import { NbtCompound } from "./nbt";
-import { LXL_Player, Player$newPlayer } from "./player";
+import { LLSE_Player, Player$newPlayer } from "./player";
 
 export const OriginType = {
     Player: 0,
@@ -240,8 +241,8 @@ function convertResults(value: any, origin: CommandOrigin) {
     if (value instanceof Block) {
         return Block$newBlock(value, BlockPos.create(0,0,0), -1);
     }
-    if (value instanceof MobEffectInstance) {
-        return value.getComponentName();
+    if (value instanceof MobEffect) {
+        return MCAPI.MobEffect.getResourceName(value);
     }
     if (value instanceof ActorDefinitionIdentifier) {
         return value.canonicalName.str;
@@ -511,7 +512,7 @@ export function runcmdEx(cmd: string): { success: boolean, output: string } {
     }
 }
 
-const playerCmdCallbacks = new Map<string, (player: LXL_Player, args: string[]) => void>();
+const playerCmdCallbacks = new Map<string, (player: LLSE_Player, args: string[]) => void>();
 const consoleCmdCallbacks = new Map<string, (args: string[]) => void>();
 
 function LxlRegisterNewCmd(isPlayerCmd: boolean, cmd: string, description: string, level: number, func: Function) {
@@ -569,7 +570,7 @@ events.command.on((cmd, _, ctx) => {
         }
         const player = ctx.origin.getEntity();
         if (player?.isPlayer()) {
-            const cancelled = LXL_Events.onPlayerCmd.fire(Player$newPlayer(player), cmd);
+            const cancelled = LLSE_Events.onPlayerCmd.fire(Player$newPlayer(player), cmd);
             _tickCallback();
             if (cancelled) {
                 return 0;
@@ -600,7 +601,7 @@ events.command.on((cmd, _, ctx) => {
                 return 0;
             }
         } else {
-            const cancelled = LXL_Events.onConsoleCmd.fire(cmd);
+            const cancelled = LLSE_Events.onConsoleCmd.fire(cmd);
             _tickCallback();
             if (cancelled) {
                 return 0;
@@ -635,7 +636,7 @@ events.command.on((cmd, _, ctx) => {
 });
 
 /** @deprecated */
-export function regPlayerCmd(cmd: string, description: string, callback: (player: LXL_Player, args: string[]) => void, level: number = 0) {
+export function regPlayerCmd(cmd: string, description: string, callback: (player: LLSE_Player, args: string[]) => void, level: number = 0) {
     return LxlRegisterNewCmd(true, cmd, description, level, callback);
 }
 

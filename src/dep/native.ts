@@ -2,6 +2,7 @@ import { Actor, Actor as _Actor, ActorDamageCause, ActorDamageSource, ActorUniqu
 import { Block as _Block, BlockLegacy as _BlockLegacy, BlockSource as _BlockSource } from "bdsx/bds/block";
 import { BlockPos as _BlockPos, Vec3, Vec3 as _Vec3 } from "bdsx/bds/blockpos";
 import { Command } from "bdsx/bds/command";
+import { MobEffect as _MobEffect } from "bdsx/bds/effects";
 import { ArmorSlot, Container as _Container, FillingContainer, ItemStack, ItemStack as _ItemStack } from "bdsx/bds/inventory";
 import { Level as _Level } from "bdsx/bds/level";
 import { ByteArrayTag, ByteTag, CompoundTag as _CompoundTag, FloatTag, Int64Tag, ListTag, StringTag, Tag as _Tag } from "bdsx/bds/nbt";
@@ -14,11 +15,10 @@ import { StaticPointer, VoidPointer } from "bdsx/core";
 import { CxxVector } from "bdsx/cxxvector";
 import { bedrockServer } from "bdsx/launcher";
 import { ParamType } from "bdsx/makefunc";
-import { nativeClass, NativeClass, nativeField } from "bdsx/nativeclass";
+import { nativeClass, NativeClass, nativeField, NativeStruct } from "bdsx/nativeclass";
 import { bool_t, CxxString, float32_t, int32_t, NativeType, uint64_as_float_t, uint8_t, void_t } from "bdsx/nativetype";
 import { procHacker } from "bdsx/prochacker";
 import { logger, TODO } from "../api/api_help";
-import path = require("path");
 
 export const symcall = ((...args: any[]) => {
     if (!(symcall as any).cache) {
@@ -49,7 +49,7 @@ export const daccess = <T extends ParamType>(ptr: VoidPointer, type: T, offset =
 
 export namespace MCAPI {
     @nativeClass(0x1C)
-    export class AABB extends NativeClass {
+    export class AABB extends NativeStruct {
         @nativeField(Vec3)
         min: Vec3;
         @nativeField(Vec3)
@@ -111,6 +111,9 @@ export namespace MCAPI {
     }
     export namespace Mob {
         export const _hurt: (thiz: _Actor, source: ActorDamageSource, damage: number, knock: boolean, ignite: boolean) => boolean = symcall("?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@M_N1@Z", bool_t, null, _Actor, ActorDamageSource, float32_t, bool_t, bool_t);
+    }
+    export namespace MobEffect {
+        export const getResourceName: (thiz: _MobEffect) => string = symcall("?getResourceName@MobEffect@@QEBAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", CxxString, null, _MobEffect);
     }
     @nativeClass(null)
     export class NpcAction extends NativeClass {
@@ -452,6 +455,8 @@ export namespace LlAPI {
             return true;
         }
         export function getAvgPing(thiz: _Player) {
+            if (Actor.isSimulatedPlayer(thiz))
+                return -1;
             return bedrockServer.rakPeer.GetAveragePing(thiz.getNetworkIdentifier().address);
         }
         export function getDeviceName(thiz: _Player) {
@@ -494,11 +499,9 @@ export namespace LlAPI {
             return daccess(thiz, FillingContainer.ref(), 4192);
         }
         export function getRealName(thiz: _Player) {
-            if (Actor.isSimulatedPlayer(thiz)) {
-                return thiz.getName();
-            } else {
-                return thiz.getCertificate().getIdentityName();
-            }
+            if (Actor.isSimulatedPlayer(thiz))
+                return daccess(thiz, CxxString, 2232);
+            return thiz.getCertificate().getIdentityName();
         }
         export function giveItem(thiz: _Player, item: ItemStack) {
             if (!thiz.addItem(item)) {

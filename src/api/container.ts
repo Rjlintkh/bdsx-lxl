@@ -1,9 +1,9 @@
 import { Container as _Container } from "bdsx/bds/inventory";
 import { LlAPI } from "../dep/native";
 import { logger, PrivateFields } from "./api_help";
-import { Item$newItem, LXL_Item } from "./item";
+import { Item$newItem, LLSE_Item } from "./item";
 
-export class LXL_Container {
+export class LLSE_Container {
     private [PrivateFields]: _Container;
 
     getRawPtr() {
@@ -18,7 +18,7 @@ export class LXL_Container {
         return LlAPI.Container.getTypeName(this[PrivateFields]);
     }
 
-    addItem(item: LXL_Item) {
+    addItem(item: LLSE_Item) {
         if (!item[PrivateFields]) {
             logger.error("Wrong type of argument in addItem!");
             return null;
@@ -26,7 +26,7 @@ export class LXL_Container {
         return LlAPI.Container.addItemSafe(this[PrivateFields], item[PrivateFields]);
     }
 
-    addItemToFirstEmptySlot(item: LXL_Item) {
+    addItemToFirstEmptySlot(item: LLSE_Item) {
         if (!item[PrivateFields]) {
             logger.error("Wrong type of argument in addItemToFirstEmptySlot!");
             return null;
@@ -34,7 +34,7 @@ export class LXL_Container {
         return LlAPI.Container.addItemToFirstEmptySlotSafe(this[PrivateFields], item[PrivateFields]);
     }
 
-    hasRoomFor(item: LXL_Item) {
+    hasRoomFor(item: LLSE_Item) {
         if (!item[PrivateFields]) {
             logger.error("Wrong type of argument in hasRoomFor!");
             return null;
@@ -55,7 +55,7 @@ export class LXL_Container {
         return Item$newItem(item);
     }
 
-    setItem(index: number, item: LXL_Item) {
+    setItem(index: number, item: LLSE_Item) {
         if (!item[PrivateFields]) {
             logger.error("Wrong type of argument in setItem!");
             return null;
@@ -94,8 +94,8 @@ export class LXL_Container {
     getAllSlots = this.getAllItems;
 }
 
-export function Container$newContainer(p: _Container): LXL_Container {
-    const newp = new LXL_Container();
+export function Container$newContainer(p: _Container): LLSE_Container {
+    const newp = new LLSE_Container();
     newp[PrivateFields] = p;
     return newp;
 }

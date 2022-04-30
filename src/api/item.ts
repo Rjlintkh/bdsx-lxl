@@ -5,10 +5,10 @@ import { bedrockServer } from "bdsx/launcher";
 import { LlAPI } from "../dep/native";
 import { PrivateFields } from "./api_help";
 import { FloatPos, IntPos } from "./base";
-import { Entity$newEntity, LXL_Entity } from "./entity";
+import { Entity$newEntity, LLSE_Entity } from "./entity";
 import { NbtCompound } from "./nbt";
 
-export class LXL_Item {
+export class LLSE_Item {
     [PrivateFields]: ItemStack;
 
     getRawPtr() {
@@ -25,7 +25,7 @@ export class LXL_Item {
 
     aux: number;
 
-    set(item: LXL_Item) {
+    set(item: LLSE_Item) {
         const itemNew = item[PrivateFields];
         if (!itemNew) {
             return null;
@@ -77,7 +77,7 @@ export class LXL_Item {
 }
 
 export function Item$newItem(p: ItemStack) {
-    const newp = new LXL_Item();
+    const newp = new LLSE_Item();
     newp[PrivateFields] = p;
     Object.defineProperty(newp, "name", { value: p.getCustomName() });
     Object.defineProperty(newp, "type", { value: LlAPI.ItemStack.getTypeName(p) });
@@ -87,8 +87,8 @@ export function Item$newItem(p: ItemStack) {
     return newp;
 }
 
-export function newItem(name: string, count: number): LXL_Item | null;
-export function newItem(nbt: NbtCompound): LXL_Item | null;
+export function newItem(name: string, count: number): LLSE_Item | null;
+export function newItem(nbt: NbtCompound): LLSE_Item | null;
 export function newItem(a0: any, a1?: any) {
     if (typeof a0 === "string") {
         const item = ItemStack.constructWith(a0, a1);
@@ -109,9 +109,9 @@ export function newItem(a0: any, a1?: any) {
     }
 }
 
-export function spawnItem(item: LXL_Item, pos: IntPos | FloatPos): LXL_Entity;
-export function spawnItem(item: LXL_Item, x: number, y: number, z: number, dimid: DimensionId): LXL_Entity;
-export function spawnItem(item: LXL_Item, a1: any, a2?: any, a3?: any, a4?: any) {
+export function spawnItem(item: LLSE_Item, pos: IntPos | FloatPos): LLSE_Entity;
+export function spawnItem(item: LLSE_Item, x: number, y: number, z: number, dimid: DimensionId): LLSE_Entity;
+export function spawnItem(item: LLSE_Item, a1: any, a2?: any, a3?: any, a4?: any) {
     let pos: Vec3;
     let dimId: DimensionId;
     if (a1 instanceof IntPos || a1 instanceof FloatPos) {

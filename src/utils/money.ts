@@ -1,6 +1,6 @@
 import { events } from "bdsx/event";
 import { bedrockServer } from "bdsx/launcher";
-import { LXL_Events } from "../api/event";
+import { LLSE_Events } from "../api/event";
 import fs = require("fs");
 import path = require("path");
 
@@ -63,7 +63,7 @@ export namespace LLMoney {
         const _isRealTrans = isRealTrans;
         isRealTrans = true;
         if (_isRealTrans) {
-            const cancelled = LXL_Events.onMoneyTrans.fire(from, to, val);
+            const cancelled = LLSE_Events.onMoneyTrans.fire(from, to, val);
             if (cancelled) {
                 return false;
             }
@@ -102,7 +102,7 @@ export namespace LLMoney {
     }
     export function Add(xuid: string, money: number) {
         money = ~~money;
-        const cancelled = LXL_Events.onMoneyAdd.fire(xuid, money);
+        const cancelled = LLSE_Events.onMoneyAdd.fire(xuid, money);
         if (cancelled) {
             return false;
         }
@@ -112,7 +112,7 @@ export namespace LLMoney {
     }
     export function Reduce(xuid: string, money: number) {
         money = ~~money;
-        const cancelled = LXL_Events.onMoneyReduce.fire(xuid, money);
+        const cancelled = LLSE_Events.onMoneyReduce.fire(xuid, money);
         if (cancelled) {
             return false;
         }
@@ -122,7 +122,7 @@ export namespace LLMoney {
     }
     export function Set(xuid: string, money: number) {
         money = ~~money;
-        const cancelled = LXL_Events.onMoneySet.fire(xuid, money);
+        const cancelled = LLSE_Events.onMoneySet.fire(xuid, money);
         if (cancelled) {
             return false;
         }

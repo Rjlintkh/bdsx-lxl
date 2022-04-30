@@ -13,11 +13,11 @@ import { DirectionAngle$newAngle, FloatPos, FloatPos$newPos, IntPos, IntPos$newP
 import { Block$newBlock } from "./block";
 import { Container$newContainer } from "./container";
 import { Device$newDevice } from "./device";
-import { LXL_CustomForm, LXL_SimpleForm } from "./gui";
-import { Item$newItem, LXL_Item } from "./item";
+import { LLSE_CustomForm, LLSE_SimpleForm } from "./gui";
+import { Item$newItem, LLSE_Item } from "./item";
 import { NbtCompound } from "./nbt";
 
-export class LXL_Player {
+export class LLSE_Player {
     private [PrivateFields]?: ServerPlayer;
 
     getRawPtr() {
@@ -377,7 +377,7 @@ export class LXL_Player {
         return player.resendAllChunks();
     }
 
-    giveItem(item: LXL_Item) {
+    giveItem(item: LLSE_Item) {
         const player = this[PrivateFields];
         if (!player) {
             return null;
@@ -627,7 +627,7 @@ export class LXL_Player {
         return true;
     }
 
-    sendSimpleForm(title: string, content: string, buttons: string[], images: string[], callback: (player: LXL_Player, id: number | null) => any) {
+    sendSimpleForm(title: string, content: string, buttons: string[], images: string[], callback: (player: LLSE_Player, id: number | null) => any) {
         const player = this[PrivateFields];
         if (!player) {
             return null;
@@ -653,7 +653,7 @@ export class LXL_Player {
         return 1;
     }
 
-    sendModalForm(title: string, content: string, button1: string, button2: string, callback: (player: LXL_Player, result: boolean | null) => any) {
+    sendModalForm(title: string, content: string, button1: string, button2: string, callback: (player: LLSE_Player, result: boolean | null) => any) {
         const player = this[PrivateFields];
         if (!player) {
             return null;
@@ -672,7 +672,7 @@ export class LXL_Player {
         return 2;
     }
 
-    sendCustomForm(json: string, callback: (player: LXL_Player, result: any[] | null) => any) {
+    sendCustomForm(json: string, callback: (player: LLSE_Player, result: any[] | null) => any) {
         const player = this[PrivateFields];
         if (!player) {
             return null;
@@ -694,15 +694,15 @@ export class LXL_Player {
         }
     }
 
-    sendForm(fm: LXL_SimpleForm, callback: (player: LXL_Player, result: number | null) => any): boolean;
-    sendForm(fm: LXL_CustomForm, callback: (player: LXL_Player, result: any[] | null) => any): boolean;
-    sendForm(fm: LXL_SimpleForm | LXL_CustomForm, callback: (player: LXL_Player, result: any) => any) {
+    sendForm(fm: LLSE_SimpleForm, callback: (player: LLSE_Player, result: number | null) => any): boolean;
+    sendForm(fm: LLSE_CustomForm, callback: (player: LLSE_Player, result: any[] | null) => any): boolean;
+    sendForm(fm: LLSE_SimpleForm | LLSE_CustomForm, callback: (player: LLSE_Player, result: any) => any) {
         const player = this[PrivateFields];
         if (!player) {
             return null as any;
         }
 
-        const id = (fm as LXL_SimpleForm)[PrivateFields].sendTo(player.getNetworkIdentifier(), data => {
+        const id = (fm as LLSE_SimpleForm)[PrivateFields].sendTo(player.getNetworkIdentifier(), data => {
             try {
                 callback(this, data.response);
             } catch (e) {
@@ -908,13 +908,13 @@ export class LXL_Player {
     removeScore = this.deleteScore;
 }
 
-export function Player$newPlayer(p: ServerPlayer): LXL_Player {
-    const newp = new LXL_Player();
+export function Player$newPlayer(p: ServerPlayer): LLSE_Player {
+    const newp = new LLSE_Player();
     newp[PrivateFields] = p;
     return newp;
 }
 
-export function getPlayer(info: string): LXL_Player | null {
+export function getPlayer(info: string): LLSE_Player | null {
     if (bedrockServer.isLaunched() && info) {
         let target = info.toLowerCase();
         const playerList = bedrockServer.level.getPlayers();
@@ -948,7 +948,7 @@ export function getPlayer(info: string): LXL_Player | null {
 
 export function getOnlinePlayers() {
     const players = bedrockServer.level.getPlayers();
-    const list = new Array<LXL_Player>();
+    const list = new Array<LLSE_Player>();
     for (const p of players) {
         list.push(Player$newPlayer(p));
     }

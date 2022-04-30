@@ -2,16 +2,16 @@
 ## BDSX-LLSE: Load LiteLoader ScriptingEngine JS plugins in BDSX!
 
 #### Background
-Both LiteLoader ScriptingEngine (LLSE) and Bedrock Dedicated Server eXtended (BDSX) are popular options of loading different kinds of plugins currently. However, JS plugins designed for LXL cannot be loaded in BDSX and they need a lot of extra work to port to BDSX. This plugin aims to reduce the work and allow users to load some of the LXL JS plugins with BDSX.
+Both LiteLoader ScriptingEngine (LLSE) and Bedrock Dedicated Server eXtended (BDSX) are popular options of loading different kinds of plugins currently. However, JS plugins designed for LLSE cannot be loaded in BDSX and they need a lot of extra work to port to BDSX. This plugin aims to reduce the work and allow users to load some of the LLSE JS plugins with BDSX.
 
 #### Features
-We aim to be consistent with the features of LXL, even with the bugs it has. However, there are some features that we could not implement at the time.
+We aim to be consistent with the features of LLSE, even with the bugs it has. However, there are some features that we could not implement at the time.
 
 - Supported APIs:
     - Scripting
         - [x] [💼 Helpers](https://lxl.litebds.com/#/zh_CN/Development/ScriptAPI/ScriptHelp)
         - [x] [📅 Logger](https://lxl.litebds.com/#/zh_CN/Development/ScriptAPI/Logger)
-        - [x] [💡 LXL](https://lxl.litebds.com/#/zh_CN/Development/ScriptAPI/Lxl)
+        - [x] [💡 LL](https://lxl.litebds.com/#/zh_CN/Development/ScriptAPI/Ll)
         - [ ] [💡 I18n](https://lxl.litebds.com/#/zh_CN/Development/ScriptAPI/i18n)
     - Game
         - [x] [🎨 Basic](https://lxl.litebds.com/#/zh_CN/Development/GameAPI/Basic)
@@ -68,7 +68,7 @@ We aim to be consistent with the features of LXL, even with the bugs it has. How
     - Scripts that pass through `TSC` may throw errors with different position rather than the position of the original code.
     - Logging to file is not yet implemented and some colors and formats are not same as LXL's.
     - This plugin does not load any plugins written in Lua, the closet approach we tried was using `glua`, but it does not support `GOTO` syntax yet.
-    - There is no auto-update system currently, but you can run `npm i` to update it if this project got onto it.
+    - There is no auto-update system currently.
 
 - Tested Plugins:
     - [x] [BDSLM - 基岩版卫星地图](https://www.minebbs.com/resources/bdslm.3484/)
@@ -98,15 +98,15 @@ We aim to be consistent with the features of LXL, even with the bugs it has. How
 
 #### Usage
 1. Download `bdsx-lxl.zip` from the [latest release](https://github.com/Rjlintkh/bdsx-lxl/releases/latest) and extract it to `your_bdsx_folder/plugins` so that there is a folder named `your_bdsx_folder/plugins/bdsx-lxl`.
-2. Create a folder `your_bdsx_folder/bedrock_server/plugins` and put all the LXL `.js` plugins inside.
+2. Create a folder `your_bdsx_folder/bedrock_server/plugins` and put all the LLSE `.js` plugins inside.
 OR
-Copy all content or create a junction from `your_lxl_folder/plugins` to `your_bdsx_folder/bedrock_server/plugins` if you have previously worked on LXL.
+Copy all content or create a junction from `your_llse_folder/plugins` to `your_bdsx_folder/bedrock_server/plugins` if you have previously worked on LLSE.
 1. Start the server from `your_bdsx_folder/bdsx.bat`.
 
 #### Disclaimers
-- In order to use this project, you must follow the terms of EULA and LXL.
-- This project is not affiliated to LXL, but it imitates the functionalities of LXL. No code is directly copied, but the logic of codes are kept for the purpose of loading plugins.
-- We do not offer guarantee of successfully loading any LXL plugins.
+- In order to use this project, you must follow the terms of EULA and LLSE.
+- This project is not affiliated to LLSE, but it imitates the functionalities of LLSE. No code is directly copied, but the logic of codes are kept for the purpose of loading plugins.
+- We do not offer guarantee of successfully loading any LLSE plugins.
 - The project is experimental, it may contain bugs, bugs found in loading the plugins using this loader should not be reported to their according developers.
 - We will not hold any responsibiliy for any corruptions of server. Use it at your own risk.
 
